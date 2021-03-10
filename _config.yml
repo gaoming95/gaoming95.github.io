@@ -3,7 +3,7 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Ming Gao’s Blog
+title: Gao Ming’s Blog
 subtitle: Java后端开发，Python自然语言处理，爬虫等技术博客
 author: 高明
 language: zh-CN
@@ -134,4 +134,4 @@ theme: huxblog
 deploy:
   type: git
   repo: https://github.com/gaoming95/gaoming95.github.io.git
-  branch: master
+  branch: dev

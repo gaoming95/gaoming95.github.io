@@ -3,14 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="78994f88-7040-4bfc-9099-ce17c6b1b405" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/_config.yml" beforeDir="false" afterPath="$PROJECT_DIR$/_config.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/_posts/hello-world.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/source/about/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/source/about/index.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/themes/huxblog/layout/_partial/footer.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/themes/huxblog/layout/_partial/footer.ejs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/themes/huxblog/layout/layout.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/themes/huxblog/layout/layout.ejs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/themes/huxblog/layout/page.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/themes/huxblog/layout/page.ejs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/themes/huxblog/layout/post.ejs" beforeDir="false" afterPath="$PROJECT_DIR$/themes/huxblog/layout/post.ejs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/source/_posts/Hexo搭建个人博客.md" beforeDir="false" afterPath="$PROJECT_DIR$/source/_posts/Hexo搭建个人博客.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +35,7 @@
       <updated>1615296026486</updated>
       <workItem from="1615296027614" duration="2565000" />
       <workItem from="1615350062857" duration="1364000" />
+      <workItem from="1615373998421" duration="252000" />
     </task>
     <servers />
   </component>
