@@ -99,7 +99,7 @@ hexo deploy # 发布
 
 [主题列表](https://hexo.io/themes/)
 
-<img src="https://github.com/gaoming95/gaoming95.github.io/tree/master/source/_posts/Hexo搭建个人博客/image-20210310151233351.png" alt="image-20210310151233351" style="zoom:80%;" />
+<img src="https://raw.githubusercontent.com/gaoming95/gaoming95.github.io/master/source/_posts/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310151233351.png" alt="image-20210310151233351" style="zoom:80%;" />
 
 选择自己喜欢的主题，点击进入代码仓库，按照`readme`进行构建，将`themes`文件夹下面的文件复制到`blog`中的`themes`
 
@@ -127,7 +127,7 @@ tags:
 	- Java基础
 ```
 
-![image-20210310152320947](https://github.com/gaoming95/gaoming95.github.io/tree/master/source/_posts/Hexo搭建个人博客/image-20210310152320947.png)
+![image-20210310152320947](https://raw.githubusercontent.com/gaoming95/gaoming95.github.io/master/source/_posts/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310152320947.png)
 
 ## 5 增加图片
 
@@ -139,7 +139,7 @@ tags:
 
 `Typora`在`md`文件中新增图片时，可直接在原位置粘贴，在偏好设置中修改文件存储方式。该方式会在目录下自动生成和`**.md`文件同名的文件夹，用以存储资源文件
 
-<img src="https://github.com/gaoming95/gaoming95.github.io/tree/master/source/_posts/Hexo搭建个人博客/image-20210310152539681.png" alt="image-20210310152539681" style="zoom:80%;" />
+<img src="https://raw.githubusercontent.com/gaoming95/gaoming95.github.io/master/source/_posts/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310152539681.png" alt="image-20210310152539681" style="zoom:80%;" />
 
 此时还会存在问题，编译时地址为出现`http://**/hello/hello/example.jpg`，多了一个相对的路径，此时安装如下插件
 
@@ -148,13 +148,13 @@ tags:
 npm install hexo-asset-image@0.0.1 --save
 ```
 
-![image-20210310152730455](https://github.com/gaoming95/gaoming95.github.io/tree/master/source/_posts/Hexo搭建个人博客/image-20210310152730455.png)
+![image-20210310152730455](https://raw.githubusercontent.com/gaoming95/gaoming95.github.io/master/source/_posts/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310152730455.png)
 
 ## 6 开启百度的数据统计
 
 [百度统计](https://tongji.baidu.com/sc-web)
 
-![image-20210310154058132](https://github.com/gaoming95/gaoming95.github.io/tree/master/source/_posts/Hexo搭建个人博客/image-20210310154058132.png)
+![image-20210310154058132](https://raw.githubusercontent.com/gaoming95/gaoming95.github.io/master/source/_posts/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310154058132.png)
 
 在`_config.yml`中配置
 
@@ -169,9 +169,9 @@ ba_track_id: 87fec1e5b2bb914ad19c5ba8ca638aad
 
 效果如下
 
-![image-20210310154511229](https://github.com/gaoming95/gaoming95.github.io/tree/master/source/_posts/Hexo搭建个人博客/image-20210310154511229.png)
+![image-20210310154511229](https://raw.githubusercontent.com/gaoming95/gaoming95.github.io/master/source/_posts/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310154511229.png)
 
 ## 7 成品如下
 
-![image-20210310154701061](https://github.com/gaoming95/gaoming95.github.io/tree/master/source/_posts/Hexo搭建个人博客/image-20210310154701061.png)
+![image-20210310154701061](https://raw.githubusercontent.com/gaoming95/gaoming95.github.io/master/source/_posts/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310154701061.png)
 
