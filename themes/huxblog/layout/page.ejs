@@ -179,6 +179,10 @@ layout: layout
                         <% if(config['sidebar-about-description']) { %>
                             <p><%= config['sidebar-about-description'] %></p>
                         <% }%>
+                        <!-- Image to hack wechat -->
+                        <% if(config['sidebar-wechat']) { %>
+                            <img src="<%= config['root'] %><%= config['sidebar-wechat'] %>"  width="100" height="100" />
+                        <% } %>
 
                         <!-- SNS Link -->
                         <ul class="list-inline">

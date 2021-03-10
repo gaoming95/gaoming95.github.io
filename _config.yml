@@ -11,8 +11,8 @@ timezone: Asia/Shanghai
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: https://github.com/gaoming95/gaoming95.github.io/
-root: /gaoming95.github.io/
+# url: https://github.com/gaoming95/gaoming95.github.io/
+# root: /gaoming95.github.io/
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 
@@ -28,12 +28,12 @@ keyword: "Java Python NLP"
 
 # SNS settings
 # RSS: false
-weibo_username:     仰望星空361度
-zhihu_username:     墨鱼仔
+weibo_username:     u/3874944289
+zhihu_username:     gao-ming-40-81
 github_username:    gaoming95
 # twitter_username:   Demonbane_x
 # facebook_username:  demonbane.cn
-linkedin_username:  高明
+linkedin_username:  明-高-7570aa105
 
 # Build settings
 anchorjs: true                          # if you want to customize anchor. check out line:181 of `post.html`
@@ -59,7 +59,8 @@ ba_track_id: 87fec1e5b2bb914ad19c5ba8ca638aad
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
 sidebar-about-description: "喜欢尝试，永不止步"
-sidebar-avatar: /img/avatar.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+sidebar-avatar: img/avatar.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
+#sidebar-wechat: img/icon_wechat.png
 
 
 # Featured Tags
