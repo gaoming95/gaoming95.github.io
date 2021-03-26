@@ -1,5 +1,5 @@
 ---
-title: 多线程——CountDownLatch
+title: 多线程之CountDownLatch
 subtitle: CountDownLatch
 date: 2020-06-06
 author: 高明
@@ -74,7 +74,7 @@ final CountDownLatch latch = new CountDownLatch(3);
  });
 
 try {
-    // 等待两个线程执行完毕
+    // 等待三个线程执行完毕
     latch.await();
 } catch (InterruptedException e) {
     e.printStackTrace();
