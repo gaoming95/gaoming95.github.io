@@ -184,3 +184,13 @@ ba_track_id: 87fec1e5b2bb914ad19c5ba8ca638aad
 
 ![image-20210310154701061](Hexo搭建个人博客/image-20210310154701061.png)
 
+****
+
+**【Tips】**
+
+代码主题
+
+```bash
+ themes/huxblog/_config.yml
+```
+
