@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="78994f88-7040-4bfc-9099-ce17c6b1b405" name="Default Changelist" comment="" />
+    <list default="true" id="78994f88-7040-4bfc-9099-ce17c6b1b405" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -22,6 +24,18 @@
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
+  <component name="RunManager">
+    <configuration name="server" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="server" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -33,6 +47,7 @@
       <workItem from="1615296027614" duration="2565000" />
       <workItem from="1615350062857" duration="1364000" />
       <workItem from="1615373998421" duration="3086000" />
+      <workItem from="1616759884780" duration="1139000" />
     </task>
     <servers />
   </component>
@@ -40,13 +55,29 @@
     <option name="version" value="3" />
   </component>
   <component name="WindowStateProjectService">
-    <state x="-1506" y="-143" width="1092" height="740" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1615350351553">
+    <state x="-1506" y="-143" width="1092" height="765" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1616760238306">
       <screen x="-1920" y="-318" width="1920" height="1040" />
     </state>
-    <state x="-1506" y="-143" width="1092" height="740" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728/-1920.-318.1920.1040@-1920.-318.1920.1040" timestamp="1615350351553" />
-    <state x="-1258" y="-200" width="596" height="804" key="find.popup" timestamp="1615350246654">
+    <state x="-1506" y="-143" width="1092" height="765" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1366.728/-1920.-318.1920.1040@-1920.-318.1920.1040" timestamp="1616760238306" />
+    <state width="1899" height="282" key="GridCell.Tab.0.bottom" timestamp="1616993169390">
       <screen x="-1920" y="-318" width="1920" height="1040" />
     </state>
-    <state x="-1258" y="-200" width="596" height="804" key="find.popup/0.0.1366.728/-1920.-318.1920.1040@-1920.-318.1920.1040" timestamp="1615350246654" />
+    <state width="1899" height="282" key="GridCell.Tab.0.bottom/0.0.1366.728/-1920.-318.1920.1040@-1920.-318.1920.1040" timestamp="1616993169390" />
+    <state width="1899" height="282" key="GridCell.Tab.0.center" timestamp="1616993169390">
+      <screen x="-1920" y="-318" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.center/0.0.1366.728/-1920.-318.1920.1040@-1920.-318.1920.1040" timestamp="1616993169390" />
+    <state width="1899" height="282" key="GridCell.Tab.0.left" timestamp="1616993169390">
+      <screen x="-1920" y="-318" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.left/0.0.1366.728/-1920.-318.1920.1040@-1920.-318.1920.1040" timestamp="1616993169390" />
+    <state width="1899" height="282" key="GridCell.Tab.0.right" timestamp="1616993169390">
+      <screen x="-1920" y="-318" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="282" key="GridCell.Tab.0.right/0.0.1366.728/-1920.-318.1920.1040@-1920.-318.1920.1040" timestamp="1616993169390" />
+    <state x="-1258" y="-200" width="596" height="804" key="find.popup" timestamp="1616759964552">
+      <screen x="-1920" y="-318" width="1920" height="1040" />
+    </state>
+    <state x="-1258" y="-200" width="596" height="804" key="find.popup/0.0.1366.728/-1920.-318.1920.1040@-1920.-318.1920.1040" timestamp="1616759964552" />
   </component>
 </project>
