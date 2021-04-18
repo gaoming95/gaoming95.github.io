@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Java注解(Annotation) - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/06/10/Java注解/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                    <h1>Java注解(Annotation)</h1>
+                    <h2 class="subheading">Java语言的类、方法、变量、参数和包等都可以被标注，和JavaDoc不同，Java标注可以通过反射获取标注内容，在编译器生成类文件时，标注可以被嵌入到字节码中</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-06-10
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="Java注解-Annotation"><a href="#Java注解-Annotation" class="headerlink" title="Java注解(Annotation)"></a>Java注解(Annotation)</h1><p><code>Java</code>注解（<code>Annotation</code>）又称<code>Java</code>标注，是<code>JDK1.5</code>引入的一种注释机制</p>
+<p>Java语言的类、方法、变量、参数和包等都可以被标注，和<code>JavaDoc</code>不同，<code>Java</code>标注可以通过反射获取标注内容，在编译器生成类文件时，标注可以被嵌入到字节码中。<code>Java</code>虚拟机可以保留标注内容，当然它也支持自定义<code>Java</code>标注</p>
+<h2 id="1-内置的注解"><a href="#1-内置的注解" class="headerlink" title="1 内置的注解"></a>1 内置的注解</h2><p><code>Java</code>定义了一套注解，共有7个，3个在<code>java.lang</code>中，剩下4个在<code>java.lang.annotation</code>中</p>
+<h3 id="1-1-作用在代码的注解是"><a href="#1-1-作用在代码的注解是" class="headerlink" title="1.1 作用在代码的注解是"></a>1.1 作用在代码的注解是</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@Override</span></span><br><span class="line">检查该方法是否是重写方法，如果发现其父类，或者是引用的接口中并没有该方法，会编译报错</span><br><span class="line"><span class="variable">@Deprecated</span></span><br><span class="line">标记过时方法，如果使用该方法，会报编译警告</span><br><span class="line"><span class="variable">@SuppressWarnings</span></span><br><span class="line">指示编译器去忽略注解中声明的警告</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-作用在其他注解的注解（或者说是元注解）"><a href="#1-2-作用在其他注解的注解（或者说是元注解）" class="headerlink" title="1.2 作用在其他注解的注解（或者说是元注解）"></a>1.2 作用在其他注解的注解（或者说是元注解）</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@Retention</span></span><br><span class="line"><span class="variable">@Retention</span>(RetentionPolicy.RUNTIME) 运行时通过反射访问</span><br><span class="line"><span class="variable">@Retention</span>(RetentionPolicy.SOURCE) </span><br><span class="line"><span class="variable">@Retention</span>(RetentionPolicy.CLASS) </span><br><span class="line">标记这个注解怎么保存，是只在代码中，还是编入class文件中，或者是在运行时可以通过反射访问</span><br><span class="line"><span class="variable">@Documented</span></span><br><span class="line">标记这些注解是否包含在用户文档中</span><br><span class="line"><span class="variable">@Target</span></span><br><span class="line">标记这个注解应该是哪种Java成员</span><br><span class="line"><span class="variable">@Inherited</span></span><br><span class="line">标记这个注解是继承于哪个注解类（默认 注解没有继承于任何子类）</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-3-从Java-7开始，额外添加了3个注解"><a href="#1-3-从Java-7开始，额外添加了3个注解" class="headerlink" title="1.3 从Java 7开始，额外添加了3个注解"></a>1.3 从Java 7开始，额外添加了3个注解</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@SafeVarargs</span></span><br><span class="line">Java7开始支持，忽略任何使用参数为泛型变量的方法或构造函数调用的警告</span><br><span class="line"><span class="variable">@FuncationalInterface</span></span><br><span class="line">Java8开始支持，标识一个匿名函数或函数式接口</span><br><span class="line"><span class="variable">@Repeatable</span></span><br><span class="line">Java8开始支持，标识某注解可以在同一个声明上使用多次</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-自定义注解"><a href="#2-自定义注解" class="headerlink" title="2 自定义注解"></a>2 自定义注解</h2><h3 id="2-1-示例"><a href="#2-1-示例" class="headerlink" title="2.1 示例"></a>2.1 示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation1 &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面的作用是定义一个<code>Annotation</code>，它的名字是<code>MyAnnotation1</code>，定义了<code>MyAnnotation1</code>之后，我们可以在代码中通过<code>@MyAnnotation1</code>来使用它，其他的，<code>@Documented</code>,<code>@Traget</code>,<code>@Retention</code>,<code>@interface</code>都是来修饰<code>MyAnnotation1</code>的，下面说说它们的含义：</p>
+<h4 id="2-1-1-interface"><a href="#2-1-1-interface" class="headerlink" title="2.1.1 @interface"></a>2.1.1 @interface</h4><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">使用 <span class="variable">@interface</span> 定义注解时，意味着它实现了 java.lang.annotation.Annotation 接口，即该注解就是一个Annotation。</span><br><span class="line">定义 Annotation 时，<span class="variable">@interface</span> 是必须的。</span><br><span class="line">注意：它和我们通常的 implemented 实现接口的方法不同。Annotation 接口的实现细节都由编译器完成。通过 <span class="variable">@interface</span> 定义注解后，该注解不能继承其他的注解或接口。</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-1-2-Documented"><a href="#2-1-2-Documented" class="headerlink" title="2.1.2 @Documented"></a>2.1.2 @Documented</h4><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">类和方法的 <span class="built_in">Annotation</span> 在缺省情况下是不出现在 <span class="variable">javadoc</span> 中的。如果使用 <span class="operator">@</span><span class="variable">Documented</span> 修饰该 <span class="built_in">Annotation</span>，则表示它可以出现在 <span class="variable">javadoc</span> 中。</span><br><span class="line"></span><br><span class="line">定义 <span class="built_in">Annotation</span> 时，<span class="operator">@</span><span class="variable">Documented</span> 可有可无；若没有定义，则 <span class="built_in">Annotation</span> 不会出现在 <span class="variable">javadoc</span> 中。</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-1-3-Target-ElementType-TYPE"><a href="#2-1-3-Target-ElementType-TYPE" class="headerlink" title="2.1.3 @Target(ElementType.TYPE)"></a>2.1.3 @Target(ElementType.TYPE)</h4><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">前面我们说过，ElementType 是 Annotation 的类型属性。而 @<span class="keyword">Target</span> 的作用，就是来指定 Annotation 的类型属性。</span><br><span class="line"></span><br><span class="line">@<span class="keyword">Target</span>(ElementType.<span class="keyword">TYPE</span>) 的意思就是指定该 Annotation 的类型是 ElementType.<span class="keyword">TYPE</span>。这就意味着，MyAnnotation1 是来修饰<span class="string">&quot;类、接口（包括注释类型）或枚举声明&quot;</span>的注解。</span><br><span class="line"></span><br><span class="line">定义 Annotation 时，@<span class="keyword">Target</span> 可有可无。若有 @<span class="keyword">Target</span>，则该 Annotation 只能用于它所指定的地方；若没有 @<span class="keyword">Target</span>，则该 Annotation 可以用于任何地方。</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-1-4-Retention-RetentionPolicy-RUNTIME"><a href="#2-1-4-Retention-RetentionPolicy-RUNTIME" class="headerlink" title="2.1.4 @Retention(RetentionPolicy.RUNTIME)"></a>2.1.4 @Retention(RetentionPolicy.RUNTIME)</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">前面我们说过，RetentionPolicy 是 Annotation 的策略属性，而 <span class="meta">@Retention</span> 的作用，就是指定 Annotation 的策略属性。</span><br><span class="line"></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span> 的意思就是指定该 Annotation 的策略是 RetentionPolicy.RUNTIME。这就意味着，编译器会将该 Annotation 信息保留在 .<span class="keyword">class</span> 文件中，并且能被虚拟机读取。</span><br><span class="line"></span><br><span class="line">定义 Annotation 时，<span class="meta">@Retention</span> 可有可无。若没有 <span class="meta">@Retention</span>，则默认是 RetentionPolicy.CLASS。</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-实例1：反射获取注解"><a href="#2-2-实例1：反射获取注解" class="headerlink" title="2.2 实例1：反射获取注解"></a>2.2 实例1：反射获取注解</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.FIELD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyField &#123;</span><br><span class="line">    <span class="function">String <span class="title">description</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyFieldTest</span> </span>&#123;</span><br><span class="line">    <span class="meta">@MyField(description = &quot;用户名&quot;, length = 12)</span></span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@MyField(description = &quot;密码&quot;, length = 13)</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMyField</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 获取类模板</span></span><br><span class="line">        Class c = MyFieldTest.class;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Field f :</span><br><span class="line">                c.getDeclaredFields()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (f.isAnnotationPresent(MyField.class)) &#123;</span><br><span class="line">                MyField annotation = f.getAnnotation(MyField.class);</span><br><span class="line">                System.out.println(f.getName() + <span class="string">&quot; &quot;</span> + annotation.description() + <span class="string">&quot; &quot;</span> + annotation.length());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">username 用户名 <span class="number">12</span></span><br><span class="line">password 密码 <span class="number">13</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-应用场景1：自定义注解-拦截器-实现登录校验"><a href="#2-3-应用场景1：自定义注解-拦截器-实现登录校验" class="headerlink" title="2.3 应用场景1：自定义注解+拦截器 实现登录校验"></a>2.3 应用场景1：自定义注解+拦截器 实现登录校验</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> LoginRequired &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IndexController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@GetMapping(&quot;/sourceA&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sourceA</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;sourceA&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@LoginRequired</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/sourceB&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sourceB</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;sourceB&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>没有使用<code>@LoginRequired</code>直接可以访问，使用之后，可以在拦截器中获取这个注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">handlerMethod.getMethod().getAnnotation(LoginRequired.class);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SourceAccessInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;进入拦截器了&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 反射获取方法上的LoginRequired注解</span></span><br><span class="line">        HandlerMethod handlerMethod = (HandlerMethod) handler;</span><br><span class="line">        LoginRequired loginRequired = handlerMethod.getMethod().getAnnotation(LoginRequired.class);</span><br><span class="line">        <span class="keyword">if</span> (loginRequired == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        response.setContentType(<span class="string">&quot;application/json;charset=utf-8&quot;</span>);</span><br><span class="line">        response.getWriter().print(<span class="string">&quot;你访问的资源需要登录&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterCompletion</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterceptorTrainConfigurer</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> </span>&#123;</span><br><span class="line">        registry.addInterceptor(<span class="keyword">new</span> SourceAccessInterceptor()).addPathPatterns(<span class="string">&quot;/**&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-应用场景2：自定义注解-AOP实现日志打印"><a href="#2-4-应用场景2：自定义注解-AOP实现日志打印" class="headerlink" title="2.4 应用场景2：自定义注解+AOP实现日志打印"></a>2.4 应用场景2：自定义注解+AOP实现日志打印</h3><p>先导入切面需要的依赖包</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>定义一个注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyLog &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>定义一个切面类，见如下代码注释理解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyLogAspect</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Pointcut(&quot;@annotation(com.example.annotation.anno.MyLog)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logPointCut</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. 环绕通知</span></span><br><span class="line">    <span class="meta">@Around(&quot;logPointCut()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">logAround</span><span class="params">(ProceedingJoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">        <span class="comment">// 获取方法名称</span></span><br><span class="line">        String methodName = joinPoint.getSignature().getName();</span><br><span class="line">        <span class="comment">// 获取入参</span></span><br><span class="line">        Object[] param = joinPoint.getArgs();</span><br><span class="line"></span><br><span class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">for</span> (Object o : param) &#123;</span><br><span class="line">            sb.append(o + <span class="string">&quot;; &quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;进入[&quot;</span> + methodName + <span class="string">&quot;]方法,参数为:&quot;</span> + sb.toString());</span><br><span class="line">        <span class="keyword">return</span> joinPoint.proceed();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>IndexController中写一个sourceC进行测试，加上我们的自定义注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MyLog</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/sourceC/&#123;source_name&#125;&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">sourceC</span><span class="params">(<span class="meta">@PathVariable(&quot;source_name&quot;)</span> String sourceName)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;你正在访问sourceC资源&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-自定义注解—参数校验"><a href="#2-5-自定义注解—参数校验" class="headerlink" title="2.5 自定义注解—参数校验"></a>2.5 自定义注解—参数校验</h3><h4 id="2-5-1-依赖"><a href="#2-5-1-依赖" class="headerlink" title="2.5.1 依赖"></a>2.5.1 依赖</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.18.12<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-2-声明参数注解"><a href="#2-5-2-声明参数注解" class="headerlink" title="2.5.2 声明参数注解"></a>2.5.2 声明参数注解</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(&#123;ElementType.PARAMETER&#125;)</span> <span class="comment">// PARAMETER 参数</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ValidCom &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-3-声明字段注解"><a href="#2-5-3-声明字段注解" class="headerlink" title="2.5.3 声明字段注解"></a>2.5.3 声明字段注解</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span> <span class="comment">// FIELD </span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Length &#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxLength</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">minLength</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function">String <span class="title">message</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span> <span class="comment">// FIELD</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> NotNull &#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Value &#123;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxValue</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">minValue</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">String <span class="title">message</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-4-AOP-切入"><a href="#2-5-4-AOP-切入" class="headerlink" title="2.5.4 AOP 切入"></a>2.5.4 AOP 切入</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValidComAspect</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Pointcut(&quot;within(com.example.annotation.controller.IndexController)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">validComCut</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Around(&quot;validComCut()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">validComCutAround</span><span class="params">(ProceedingJoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line"></span><br><span class="line">        Object[] args = joinPoint.getArgs(); <span class="comment">// 获取所有的参数 PersonVo(name=hahah, age=11)</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (args.length == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> joinPoint.proceed(args);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        Signature signature = joinPoint.getSignature(); <span class="comment">// String com.example.annotation.controller.IndexController.index(PersonVo)</span></span><br><span class="line"></span><br><span class="line">        Method method = ((MethodSignature) signature).getMethod(); <span class="comment">// 获取方法 public java.lang.String com.example.annotation.controller.IndexController.index(com.example.annotation.dto.PersonVo)</span></span><br><span class="line"></span><br><span class="line">        Annotation[][] parameterAnnotations = method.getParameterAnnotations();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; parameterAnnotations.length; i++) &#123;</span><br><span class="line">            Object object = args[i];</span><br><span class="line">            Annotation[] paramAnn = parameterAnnotations[i];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (object == <span class="keyword">null</span> || paramAnn.length == <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (Annotation annotation :</span><br><span class="line">                    parameterAnnotations[i]) &#123;</span><br><span class="line">                <span class="keyword">if</span> (annotation.annotationType().equals(ValidCom.class)) &#123;</span><br><span class="line">                    <span class="comment">// 校验</span></span><br><span class="line">                    validParam(object);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> joinPoint.proceed();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validParam</span><span class="params">(Object object)</span> <span class="keyword">throws</span> IllegalAccessException </span>&#123;</span><br><span class="line">        Field[] declaredFields = object.getClass().getDeclaredFields();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Field field :</span><br><span class="line">                declaredFields) &#123;</span><br><span class="line">            Annotation[] declaredAnnotations = field.getDeclaredAnnotations();</span><br><span class="line">            <span class="keyword">for</span> (Annotation anno :</span><br><span class="line">                    declaredAnnotations) &#123;</span><br><span class="line">                <span class="keyword">if</span> (anno.annotationType().equals(NotNull.class)) &#123;</span><br><span class="line">                    field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    Object o = field.get(object);</span><br><span class="line">                    System.out.println(o);</span><br><span class="line">                    Assert.notNull(o, field.getName() + <span class="string">&quot;不可为空&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (anno.annotationType().equals(Length.class)) &#123;</span><br><span class="line">                    Length length = field.getAnnotation(Length.class);</span><br><span class="line">                    field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    String o = (String) field.get(object);</span><br><span class="line">                    Assert.isTrue(o.length() &lt;= length.maxLength(), length.message());</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (anno.annotationType().equals(Value.class)) &#123;</span><br><span class="line">                    Value value = field.getAnnotation(Value.class);</span><br><span class="line">                    field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    Integer o = (Integer) field.get(object);</span><br><span class="line">                    Assert.isTrue(o &lt;= value.maxValue() &amp;&amp; o &gt;= value.minValue(), value.message());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-5-实体类"><a href="#2-5-5-实体类" class="headerlink" title="2.5.5 实体类"></a>2.5.5 实体类</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonVo</span> </span>&#123;</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Length(maxLength = 10, minLength = 1, message = &quot;名字长度不在范围&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="meta">@Value(minValue = 18, maxValue = 28, message = &quot;年龄长度不再范围&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-6-Controller"><a href="#2-5-6-Controller" class="headerlink" title="2.5.6 Controller"></a>2.5.6 Controller</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IndexController</span> <span class="keyword">extends</span> <span class="title">BasicController</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;index&quot;, method = RequestMethod.POST)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">index</span><span class="params">(<span class="meta">@ValidCom</span> <span class="meta">@RequestBody</span> PersonVo personVo)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> personVo.getName() + <span class="string">&quot; &quot;</span> + personVo.getAge();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-5-7-BasicController"><a href="#2-5-7-BasicController" class="headerlink" title="2.5.7 BasicController"></a>2.5.7 BasicController</h4><p>（不是必须，只是想增加异常处理的类，接口得到的返回结果更好看点）</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">BasicController</span> </span>&#123;</span><br><span class="line">    @ExceptionHandler(&#123;IllegalArgumentException.class&#125;)</span><br><span class="line">    public</span><br><span class="line">    @ResponseBody</span><br><span class="line">    Response&lt;<span class="built_in">String</span>&gt; <span class="function"><span class="title">handleIllegalArgumentException</span>(<span class="params">HttpServletRequest req, IllegalArgumentException exception</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> Response.FAIL(<span class="number">500</span>, exception.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Response</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String status;</span><br><span class="line">    <span class="keyword">private</span> E result;</span><br><span class="line">    <span class="keyword">private</span> Integer error_code;</span><br><span class="line">    <span class="keyword">private</span> String error_msg;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> current_time;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getCurrent_time</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.current_time;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCurrent_time</span><span class="params">(<span class="keyword">long</span> current_time)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.current_time = current_time;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Response</span><span class="params">(String status, E result, Integer error_code, String error_msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.status = status;</span><br><span class="line">        <span class="keyword">this</span>.result = result;</span><br><span class="line">        <span class="keyword">this</span>.error_code = error_code;</span><br><span class="line">        <span class="keyword">this</span>.error_msg = error_msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getStatus</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.status;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setStatus</span><span class="params">(String status)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.status = status;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">getResult</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setResult</span><span class="params">(E result)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.result = result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getError_code</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.error_code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setError_code</span><span class="params">(Integer error_code)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.error_code = error_code;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getError_msg</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.error_msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setError_msg</span><span class="params">(String error_msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.error_msg = error_msg;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> &lt;E&gt; <span class="function">Response&lt;E&gt; <span class="title">SUCCESS</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> SUCCESS((E) <span class="keyword">null</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> &lt;E&gt; <span class="function">Response&lt;E&gt; <span class="title">SUCCESS</span><span class="params">(E result)</span> </span>&#123;</span><br><span class="line">        Response response = <span class="keyword">new</span> Response(<span class="string">&quot;success&quot;</span>, result, (Integer) <span class="keyword">null</span>, (String) <span class="keyword">null</span>);</span><br><span class="line">        response.setCurrent_time(System.currentTimeMillis());</span><br><span class="line">        <span class="keyword">return</span> response;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> &lt;E&gt; <span class="function">Response&lt;E&gt; <span class="title">FAIL</span><span class="params">(Integer error_code, String error_msg)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Response(<span class="string">&quot;fail&quot;</span>, (Object) <span class="keyword">null</span>, error_code, error_msg);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Response&#123;status=&#x27;&quot;</span> + <span class="keyword">this</span>.status + <span class="string">&#x27;\&#x27;&#x27;</span> + <span class="string">&quot;, result=&quot;</span> + <span class="keyword">this</span>.result + <span class="string">&quot;, error_code=&quot;</span> + <span class="keyword">this</span>.error_code + <span class="string">&quot;, error_msg=&#x27;&quot;</span> + <span class="keyword">this</span>.error_msg + <span class="string">&#x27;\&#x27;&#x27;</span> + <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-常见注解"><a href="#3-常见注解" class="headerlink" title="3 常见注解"></a>3 常见注解</h2><h3 id="3-1-PostConstruct"><a href="#3-1-PostConstruct" class="headerlink" title="3.1 @PostConstruct"></a>3.1 @PostConstruct</h3><p>这是<code>Java</code>自己的注解，<code>Java</code>注解的说明：<code>@PostConstruct</code>该注解被用来修饰一个非静态的<code>void()</code>方法。被<code>@PostConstruct</code>修饰的方法会在服务器加载<code>Servlet</code>的时候运行，并且只会被服务器执行一次。<code>PostConstruct</code>在构造函数之后执行，<code>init()</code>方法前执行。</p>
+<p>通常我们会是在<code>Spring</code>框架中使用到<code>@PostConstruct</code>注解，该注解的方法在整个<code>Bean</code>初始化中的执行顺序：</p>
+<p><code>Constructor</code>（构造方法）-&gt; <code>@Autowired</code>（依赖注入） -&gt; <code>@PostConstruct</code>（注释的方法）</p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/06/08/mongodb/" data-toggle="tooltip" data-placement="top" title="MongoDB">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+    <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/06/10/Java%E6%B3%A8%E8%A7%A3/";
+    var disqus_url = "http://example.com/2020/06/10/Java%E6%B3%A8%E8%A7%A3/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2021 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>
