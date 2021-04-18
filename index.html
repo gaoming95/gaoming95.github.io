@@ -92,12 +92,12 @@
                     
 
                         
-                    
-
-                        
                         <li>
                             <a href="/archives/">Archives</a>
                         </li>
+                        
+                    
+
                         
                     
 
@@ -198,9 +198,7 @@
             Java语言的类、方法、变量、参数和包等都可以被标注，和JavaDoc不同，Java标注可以通过反射获取标注内容，在编译器生成类文件时，标注可以被嵌入到字节码中
         </h3>
         <div class="post-content-preview">
-            Java注解(Annotation)Java注解（Annotation）又称Java标注，是JDK1.5引入的一种注释机制
-Java语言的类、方法、变量、参数和包等都可以被标注，和JavaDoc不同，Java标注可以通过反射获取标注内容，在编译器生成类文件时，标注可以被嵌入到字节码中。Java虚拟机可以保留标注内容，当然它也支持自定义Java标注
-1 内置的注解Java定义了一套注解，共有7......
+            Java&#x6CE8;&#x89E3;(Annotation)Java&#x6CE8;&#x89E3;&#xFF08;Annotation&#xFF09;&#x53C8;&#x79F0;Java&#x6807;&#x6CE8;&#xFF0C;&#x662F;JDK1.5&#x5F15;&#x5165;&#x7684;&#x4E00;&#x79CD;&#x6CE8;&#x91CA;&#x67......
         </div>
     </a>
     <p class="post-meta">
@@ -221,7 +219,7 @@ Java语言的类、方法、变量、参数和包等都可以被标注，和Java
             Spring集成MongoDB
         </h3>
         <div class="post-content-preview">
-            MongoDb1安装 MongoDb2 配置2.1 mongodb.conf123456dbpath=/var/lib/mongo                                                                                                                     logpath=/var/lo......
+            MongoDb1&#x5B89;&#x88C5; MongoDb2 &#x914D;&#x7F6E;2.1 mongodb.conf123456dbpath=/var/lib/mongo                                                                                                        ......
         </div>
     </a>
     <p class="post-meta">
@@ -242,10 +240,8 @@ Java语言的类、方法、变量、参数和包等都可以被标注，和Java
             Java Pdf文件转图片
         </h3>
         <div class="post-content-preview">
-            PdfBoxpdf文件转图片，并上传服务器
-考虑到单线程情况下，16页的pdf转成图片需要6-8s
-使用多线程，16页的pdf转成图片需要2s，提升了部分速度
-1 引入依赖12345&lt;dependency&gt;    &lt;groupId&gt;org.apache.pdfbox&lt;/groupId&gt;    &lt;artifactId&gt;pdfbox&lt;/art......
+            PdfBoxpdf&#x6587;&#x4EF6;&#x8F6C;&#x56FE;&#x7247;&#xFF0C;&#x5E76;&#x4E0A;&#x4F20;&#x670D;&#x52A1;&#x5668;
+&#x8003;&#x8651;&#x5230;&#x5355;&#x7EBF;&#x7A0B;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;16&#x9875;&......
         </div>
     </a>
     <p class="post-meta">
@@ -267,11 +263,7 @@ Java语言的类、方法、变量、参数和包等都可以被标注，和Java
         </h3>
         <div class="post-content-preview">
             CountDownLatch
-countDownLatch是在java1.5被引入，跟它一起被引入的工具类还有CyclicBarrier、Semaphore、concurrentHashMap和BlockingQueue
-存在于java.util.cucurrent包下
-
-1 概念countDownLatch这个类使一个线程等待其他线程各自执行完毕后再执行
-是通过一个计数器来实现的，计数器的......
+countDownLatch&#x662F;&#x5728;java1.5&#x88AB;&#x5F15;&#x5165;&#xFF0C;&#x8DDF;&#x5B83;&#x4E00;&#x8D77;&#x88AB;&#x5F15;&#x5165;&#x7684;&#x5DE5;&#x5177;&#x7C7B;&#x8FD8;&#x6709;CyclicBar......
         </div>
     </a>
     <p class="post-meta">
@@ -292,10 +284,7 @@ countDownLatch是在java1.5被引入，跟它一起被引入的工具类还有Cy
             Mysql设计规范
         </h3>
         <div class="post-content-preview">
-            数据库设计规范1 必须遵守库名、表名、字段名、索引名必须使用小写字母，并且不能以Mysql关键字&amp;保留字命名 Mysql 5.7
-所有表必须又INT/BIGINT unsigned NOT NULL AUTO_INCREMENT 类型的主键，提高顺序insert效率，强烈建议该列与业务没有联系，并且不建议使用组合主键，仅仅作为自增主键id使用
-
-当表的预估数量在42亿条以内，请使用I......
+            &#x6570;&#x636E;&#x5E93;&#x8BBE;&#x8BA1;&#x89C4;&#x8303;1 &#x5FC5;&#x987B;&#x9075;&#x5B88;&#x5E93;&#x540D;&#x3001;&#x8868;&#x540D;&#x3001;&#x5B57;&#x6BB5;&#x540D;&#x3001;&#x7D22;&#x5F15;&#x540D;&#x......
         </div>
     </a>
     <p class="post-meta">
@@ -316,19 +305,14 @@ countDownLatch是在java1.5被引入，跟它一起被引入的工具类还有Cy
             利用 Hexo 快速生成个人博客网站更换主题，Typora 快速编辑文章，github.io 发布，百度统计网站访问
         </h3>
         <div class="post-content-preview">
-            Hexo搭建个人博客github地址
+            Hexo&#x642D;&#x5EFA;&#x4E2A;&#x4EBA;&#x535A;&#x5BA2;github&#x5730;&#x5740;
 demo
 
-安装git
-安装nodeJs
-安装hexo
-配置Typora
-配置百度网站统计
-
-
-1 Hexo1234# 安装 hexonpm install -g hexo-cli# 查看版本信息hexo -v
-
-12345678910# 初始化项目hexo init blog # blog为项目名，可随意更改# 进入项目cd blog# npm ins......
+&#x5B89;&#x88C5;git
+&#x5B89;&#x88C5;nodeJs
+&#x5B89;&#x88C5;hexo
+&#x914D;&#x7F6E;Typora
+&#x914D;&#x7F6E;&#x767E;&#x5E......
         </div>
     </a>
     <p class="post-meta">
@@ -349,12 +333,7 @@ demo
             Java虚拟机有自己完善的硬体架构，如处理器、堆栈、寄存器等，还具有相应的指令系统。Java虚拟机屏蔽了与具体操作系统平台相关的信息，使得Java程序只需生成在Java虚拟机上运行的目标代码（字节码），就可以在多种平台上不加修改地运行
         </h3>
         <div class="post-content-preview">
-            Java虚拟机1 编译器和解释器编译器的主要功能：把高阶语言写的源程序翻译成具体的机器语言
-解释器：将程序翻译成为一系列用来执行程序的动作，能够发现runtime中的逻辑错误，并找到出错位置
-JIT（Just In Time）编译器
-编译型语言：把做好的源程序全部编译成二进制代码的可运行程序，然后，可以直接运行这个程序
-解释型语言：把源程序翻译一句，然后执行一句，直至结束。
-二者各有优势，当......
+            Java&#x865A;&#x62DF;&#x673A;1 &#x7F16;&#x8BD1;&#x5668;&#x548C;&#x89E3;&#x91CA;&#x5668;&#x7F16;&#x8BD1;&#x5668;&#x7684;&#x4E3B;&#x8981;&#x529F;&#x80FD;&#xFF1A;&#x628A;&#x9AD8;&#x9636;&#x8BED;&#x8A00......
         </div>
     </a>
     <p class="post-meta">
@@ -400,11 +379,11 @@ JIT（Just In Time）编译器
                             
                         
                             
-                            <a href="/tags/#数据库" title="数据库" rel="2">数据库</a>
+                            <a href="/tags/#Java基础" title="Java基础" rel="3">Java基础</a>
                             
                         
                             
-                            <a href="/tags/#Java基础" title="Java基础" rel="3">Java基础</a>
+                            <a href="/tags/#数据库" title="数据库" rel="2">数据库</a>
                             
                         
                             
