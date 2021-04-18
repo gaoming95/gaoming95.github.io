@@ -99,6 +99,7 @@ deploy:
 ```
 hexo clean
 hexo generate
+#npm install --save hexo-deployer-git
 hexo deploy # 发布
 ```
 
