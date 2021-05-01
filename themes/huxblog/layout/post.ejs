@@ -19,7 +19,7 @@ layout: layout
                 <div class="post-heading">
                     <div class="tags">
                         <% page.tags.forEach(function(tag){ %>
-                          <a class="tag" href="<%= config.root %>tags/#<%= tag.name %>" title="<%= tag.name %>"><%= tag.name %></a>
+                            <a class="tag" href="<%= config.root %>tags/#<%= tag.name %>" title="<%= tag.name %>"><%= tag.name %></a>
                         <% }) %>
                     </div>
                     <h1><%= page.title %></h1>
@@ -39,7 +39,7 @@ layout: layout
     <div class="container">
         <div class="row">
 
-    <!-- Post Container -->
+            <!-- Post Container -->
             <div class="
                 col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
@@ -50,28 +50,27 @@ layout: layout
                 <hr>
 
                 <% if(config['duoshuo_share'] && config['duoshuo_username']) { %>
-                <!-- 多说 Share start -->
-                </style>
-                <div class="ds-share"
-                    style="text-align: right"
-                    data-thread-key="<%= page.path %>"
-                    data-title="<%= page.title %>"
-                    data-url="<%= page.permalink %>"
-                    data-images="<%= page["header-img"] ? page.permalink + page["header-img"] : '' %>"
-                    data-content="<%- truncate(strip_html(page.content), {length: 50, omission: '...'}) %> | <%= config.SEOTitle %> " >
-                    <div class="ds-share-inline">
-                      <ul  class="ds-share-icons-16">
-                        <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
-                        <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
-                        <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
-                        <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
-                      </ul>
-                      <div class="ds-share-icons-more">
-                      </div>
+                    <!-- 多说 Share start -->
+                    <div class="ds-share"
+                         style="text-align: right"
+                         data-thread-key="<%= page.path %>"
+                         data-title="<%= page.title %>"
+                         data-url="<%= page.permalink %>"
+                         data-images="<%= page["header-img"] ? page.permalink + page["header-img"] : '' %>"
+                         data-content="<%- truncate(strip_html(page.content), {length: 50, omission: '...'}) %> | <%= config.SEOTitle %> " >
+                        <div class="ds-share-inline">
+                            <ul  class="ds-share-icons-16">
+                                <li data-toggle="ds-share-icons-more"><a class="ds-more" href="#">分享到：</a></li>
+                                <li><a class="ds-wechat flat" href="javascript:void(0);" data-service="wechat">微信</a></li>
+                                <li><a class="ds-weibo flat" href="javascript:void(0);" data-service="weibo">微博</a></li>
+                                <li><a class="ds-douban flat" href="javascript:void(0);" data-service="douban">豆瓣</a></li>
+                            </ul>
+                            <div class="ds-share-icons-more">
+                            </div>
+                        </div>
+                        <hr>
                     </div>
-                <hr>
-                </div>
-                <!-- 多说 Share end-->
+                    <!-- 多说 Share end-->
                 <% } %>
 
                 <ul class="pager">
@@ -88,44 +87,52 @@ layout: layout
                 </ul>
 
                 <% if(config['duoshuo_username']) { %>
-                <!-- 多说评论框 start -->
-                <div class="comment">
-                    <div class="ds-thread"
-                        data-thread-key="<%= page.path %>"
-                        data-title="<%= page.title %>"
-                        data-url="<%= page.permalink %>" >
+                    <!-- 多说评论框 start -->
+                    <div class="comment">
+                        <div class="ds-thread"
+                             data-thread-key="<%= page.path %>"
+                             data-title="<%= page.title %>"
+                             data-url="<%= page.permalink %>" >
+                        </div>
                     </div>
-                </div>
-                <!-- 多说评论框 end -->
+                    <!-- 多说评论框 end -->
                 <% } %>
 
                 <% if(config['disqus_username']) { %>
-                <!-- disqus 评论框 start -->
-                <div class="comment">
-                    <div id="disqus_thread" class="disqus-thread"></div>
-                </div>
-                <!-- disqus 评论框 end -->
+                    <!-- disqus 评论框 start -->
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                    <!-- disqus 评论框 end -->
                 <% } %>
 
             </div>
-    <!-- Side Catalog Container -->
-        <% if (page.catalog) { %>
-            <div class="
+            <!-- Tabe of Content -->
+            <%- toc(page.content, {
+                class: 'post-toc',
+                list_number: false,
+                maxDepth: 0,
+                slugify: false
+            }) %>
+
+            <!-- Side Catalog Container -->
+            <% if (page.catalog) { %>
+                <div class="
                 col-lg-2 col-lg-offset-0
                 visible-lg-block
                 sidebar-container
                 catalog-container">
-                <div class="side-catalog">
-                    <hr class="hidden-sm hidden-xs">
-                    <h5>
-                        <a class="catalog-toggle" href="#">CATALOG</a>
-                    </h5>
-                    <ul class="catalog-body"></ul>
+                    <div class="side-catalog">
+                        <hr class="hidden-sm hidden-xs">
+                        <h5>
+                            <a class="catalog-toggle" href="#">CATALOG</a>
+                        </h5>
+                        <ul class="catalog-body"></ul>
+                    </div>
                 </div>
-            </div>
-        <% } %>
+            <% } %>
 
-    <!-- Sidebar Container -->
+            <!-- Sidebar Container -->
 
             <div class="
                 col-lg-8 col-lg-offset-2
@@ -134,27 +141,27 @@ layout: layout
 
                 <!-- Featured Tags -->
                 <% if(config['featured-tags']) { %>
-                <section>
-                    <!-- no hr -->
-                    <h5><a href="<%= config.root %>tags/">FEATURED TAGS</a></h5>
-                    <div class="tags">
-                       <% page.tags.forEach(function(tag){ %>
-                          <a class="tag" href="<%= config.root %>tags/#<%= tag.name %>" title="<%= tag.name %>"><%= tag.name %></a>
-                        <% }) %>
-                    </div>
-                </section>
+                    <section>
+                        <!-- no hr -->
+                        <h5><a href="<%= config.root %>tags/">FEATURED TAGS</a></h5>
+                        <div class="tags">
+                            <% page.tags.forEach(function(tag){ %>
+                                <a class="tag" href="<%= config.root %>tags/#<%= tag.name %>" title="<%= tag.name %>"><%= tag.name %></a>
+                            <% }) %>
+                        </div>
+                    </section>
                 <% }%>
 
                 <!-- Friends Blog -->
                 <% if(config.friends) { %>
-                <hr>
-                <h5>FRIENDS</h5>
-                <ul class="list-inline">
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
 
-                    <% config.friends.forEach(function(friend){ %>
-                        <li><a href="<%= friend.href %>" target="_blank"><%= friend.title %></a></li>
-                    <% }); %>
-                </ul>
+                        <% config.friends.forEach(function(friend){ %>
+                            <li><a href="<%= friend.href %>" target="_blank"><%= friend.title %></a></li>
+                        <% }); %>
+                    </ul>
                 <% }%>
             </div>
 
@@ -163,75 +170,109 @@ layout: layout
 </article>
 
 <% if(config['duoshuo_username']) { %>
-<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-    // dynamic User by Hux
-    var _user = '<%= config['duoshuo_username'] %>';
+    <!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+        // dynamic User by Hux
+        var _user = '<%= config['duoshuo_username'] %>';
 
-    // duoshuo comment query.
-    var duoshuoQuery = {short_name: _user };
-    (function() {
-        var ds = document.createElement('script');
-        ds.type = 'text/javascript';ds.async = true;
-        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
-        ds.charset = 'UTF-8';
-        (document.getElementsByTagName('head')[0]
-         || document.getElementsByTagName('body')[0]).appendChild(ds);
-    })();
-</script>
-<!-- 多说公共JS代码 end -->
+        // duoshuo comment query.
+        var duoshuoQuery = {short_name: _user };
+        (function() {
+            var ds = document.createElement('script');
+            ds.type = 'text/javascript';ds.async = true;
+            ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+            ds.charset = 'UTF-8';
+            (document.getElementsByTagName('head')[0]
+                || document.getElementsByTagName('body')[0]).appendChild(ds);
+        })();
+    </script>
+    <!-- 多说公共JS代码 end -->
 <% } %>
 
 <% if(config['disqus_username']) { %>
-<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES * * */
-    var disqus_shortname = "<%= config['disqus_username'] %>";
-    var disqus_identifier = "<%= page.permalink %>";
-    var disqus_url = "<%= page.permalink %>";
+    <!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = "<%= config['disqus_username'] %>";
+        var disqus_identifier = "<%= page.permalink %>";
+        var disqus_url = "<%= page.permalink %>";
 
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<!-- disqus 公共JS代码 end -->
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <!-- disqus 公共JS代码 end -->
 <% } %>
 
 
 <% if(config['anchorjs']) { %>
-<!-- async load function -->
-<script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
-    }
-</script>
-<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
-<script>
-    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'always',
-          placement: 'right',
-          icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
-</script>
-<style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -0.75em;
-            font-size: 1.1em;
-            margin-top : -0.1em;
+    <!-- async load function -->
+    <script>
+        function async(u, c) {
+            var d = document, t = 'script',
+                o = d.createElement(t),
+                s = d.getElementsByTagName(t)[0];
+            o.src = u;
+            if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+            s.parentNode.insertBefore(o, s);
         }
-    }
-</style>
+        setTimeout(()=> {
+            let tocText = document.getElementsByClassName('post-toc-text')
+            let arr = Array.prototype.slice.call(tocText)
+            arr.forEach((item)=> {
+                item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+            })
+            //
+            window.onscroll= function(e){
+                console.log(e)
+                var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+
+                var bignav = document.querySelector('.post-toc');//获取到导航栏id
+                if(topScroll >= 532){
+                    //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+                    bignav.style.position = 'fixed';
+                    bignav.style.top = '80px';
+                    bignav.style.right = '0';
+                } else {
+                    bignav.style.position = 'absolute';
+                    bignav.style.top = '582px';
+                    bignav.style.right = '0';
+                }
+
+            }
+            // console.log(tocText)
+        }, 0)
+
+    </script>
+    <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+    <script>
+        async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+            anchors.options = {
+                visible: 'always',
+                placement: 'right',
+                icon: '#'
+            };
+            anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+        })
+    </script>
+    <style>
+        /* place left on bigger screen */
+        @media all and (min-width: 800px) {
+            .anchorjs-link{
+                position: absolute;
+
+            }
+        }
+        .post-toc {
+            position: absolute;
+            top: 582px;
+            right: 0;
+        }
+        .post-toc-child {
+            min-width: 240px;
+        }
+    </style>
 <% } %>
