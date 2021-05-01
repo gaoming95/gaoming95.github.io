@@ -13,11 +13,11 @@ tags:
 
 Java语言的类、方法、变量、参数和包等都可以被标注，和`JavaDoc`不同，`Java`标注可以通过反射获取标注内容，在编译器生成类文件时，标注可以被嵌入到字节码中。`Java`虚拟机可以保留标注内容，当然它也支持自定义`Java`标注
 
-## 1 内置的注解
+## 内置的注解
 
 `Java`定义了一套注解，共有7个，3个在`java.lang`中，剩下4个在`java.lang.annotation`中
 
-### 1.1 作用在代码的注解是
+### 作用在代码的注解是
 
 ```
 @Override
@@ -28,7 +28,7 @@ Java语言的类、方法、变量、参数和包等都可以被标注，和`Jav
 指示编译器去忽略注解中声明的警告
 ```
 
-### 1.2 作用在其他注解的注解（或者说是元注解）
+### 作用在其他注解的注解（或者说是元注解）
 
 ```
 @Retention
@@ -44,7 +44,7 @@ Java语言的类、方法、变量、参数和包等都可以被标注，和`Jav
 标记这个注解是继承于哪个注解类（默认 注解没有继承于任何子类）
 ```
 
-### 1.3 从Java 7开始，额外添加了3个注解
+### 从Java 7开始，额外添加了3个注解
 
 ```
 @SafeVarargs
@@ -55,9 +55,9 @@ Java8开始支持，标识一个匿名函数或函数式接口
 Java8开始支持，标识某注解可以在同一个声明上使用多次
 ```
 
-## 2 自定义注解
+## 自定义注解
 
-### 2.1 示例
+### 示例
 
 ```java
 @Documented
@@ -69,7 +69,7 @@ public @interface MyAnnotation1 {
 
 上面的作用是定义一个`Annotation`，它的名字是`MyAnnotation1`，定义了`MyAnnotation1`之后，我们可以在代码中通过`@MyAnnotation1`来使用它，其他的，`@Documented`,`@Traget`,`@Retention`,`@interface`都是来修饰`MyAnnotation1`的，下面说说它们的含义：
 
-#### 2.1.1 @interface
+#### @interface
 
 ```
 使用 @interface 定义注解时，意味着它实现了 java.lang.annotation.Annotation 接口，即该注解就是一个Annotation。
@@ -77,7 +77,7 @@ public @interface MyAnnotation1 {
 注意：它和我们通常的 implemented 实现接口的方法不同。Annotation 接口的实现细节都由编译器完成。通过 @interface 定义注解后，该注解不能继承其他的注解或接口。
 ```
 
-#### 2.1.2 @Documented
+####  @Documented
 
 ```
 类和方法的 Annotation 在缺省情况下是不出现在 javadoc 中的。如果使用 @Documented 修饰该 Annotation，则表示它可以出现在 javadoc 中。
@@ -85,7 +85,7 @@ public @interface MyAnnotation1 {
 定义 Annotation 时，@Documented 可有可无；若没有定义，则 Annotation 不会出现在 javadoc 中。
 ```
 
-#### 2.1.3 @Target(ElementType.TYPE)
+####  @Target(ElementType.TYPE)
 
 ```
 前面我们说过，ElementType 是 Annotation 的类型属性。而 @Target 的作用，就是来指定 Annotation 的类型属性。
@@ -95,7 +95,7 @@ public @interface MyAnnotation1 {
 定义 Annotation 时，@Target 可有可无。若有 @Target，则该 Annotation 只能用于它所指定的地方；若没有 @Target，则该 Annotation 可以用于任何地方。
 ```
 
-#### 2.1.4 @Retention(RetentionPolicy.RUNTIME)
+####  @Retention(RetentionPolicy.RUNTIME)
 
 ```
 前面我们说过，RetentionPolicy 是 Annotation 的策略属性，而 @Retention 的作用，就是指定 Annotation 的策略属性。
@@ -105,7 +105,7 @@ public @interface MyAnnotation1 {
 定义 Annotation 时，@Retention 可有可无。若没有 @Retention，则默认是 RetentionPolicy.CLASS。
 ```
 
-### 2.2 实例1：反射获取注解
+### 实例1：反射获取注解
 
 ```java
 @Target(ElementType.FIELD)
@@ -146,7 +146,7 @@ username 用户名 12
 password 密码 13
 ```
 
-### 2.3 应用场景1：自定义注解+拦截器 实现登录校验
+### 应用场景1：自定义注解+拦截器 实现登录校验
 
 ```java
 @Target(ElementType.METHOD)
@@ -214,7 +214,7 @@ public class InterceptorTrainConfigurer implements WebMvcConfigurer {
 }
 ```
 
-### 2.4 应用场景2：自定义注解+AOP实现日志打印
+### 应用场景2：自定义注解+AOP实现日志打印
 
 先导入切面需要的依赖包
 
@@ -272,9 +272,9 @@ public String sourceC(@PathVariable("source_name") String sourceName){
 }
 ```
 
-### 2.5 自定义注解—参数校验
+### 自定义注解—参数校验
 
-#### 2.5.1 依赖
+#### 依赖
 
 ```xml
 <dependency>
@@ -289,7 +289,7 @@ public String sourceC(@PathVariable("source_name") String sourceName){
 </dependency>
 ```
 
-#### 2.5.2 声明参数注解
+#### 声明参数注解
 
 ```java
 @Target({ElementType.PARAMETER}) // PARAMETER 参数
@@ -298,7 +298,7 @@ public @interface ValidCom {
 }
 ```
 
-#### 2.5.3 声明字段注解
+#### 声明字段注解
 
 ```java
 @Documented
@@ -330,7 +330,7 @@ public @interface Value {
 }
 ```
 
-#### 2.5.4 AOP 切入
+#### AOP 切入
 
 ```java
 @Aspect
@@ -410,7 +410,7 @@ public class ValidComAspect {
 }
 ```
 
-#### 2.5.5 实体类
+#### 实体类
 
 ```java
 @Data
@@ -426,7 +426,7 @@ public class PersonVo {
 }
 ```
 
-#### 2.5.6 Controller
+#### Controller
 
 ```java
 @RestController
@@ -439,7 +439,7 @@ public class IndexController extends BasicController {
 }
 ```
 
-#### 2.5.7 BasicController
+#### BasicController
 
 （不是必须，只是想增加异常处理的类，接口得到的返回结果更好看点）
 
@@ -529,9 +529,9 @@ public class Response<E> {
 }
 ```
 
-## 3 常见注解
+## 常见注解
 
-### 3.1 @PostConstruct
+### @PostConstruct
 
 这是`Java`自己的注解，`Java`注解的说明：`@PostConstruct`该注解被用来修饰一个非静态的`void()`方法。被`@PostConstruct`修饰的方法会在服务器加载`Servlet`的时候运行，并且只会被服务器执行一次。`PostConstruct`在构造函数之后执行，`init()`方法前执行。
 

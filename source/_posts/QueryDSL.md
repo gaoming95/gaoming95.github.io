@@ -9,7 +9,7 @@ tags:
 
 # QueryDSL
 
-## 1 特性对比
+## 特性对比
 
 | 方面     | 分类       | 特性                                                         | Mybatis                                                      | JPA（Hibernate）                                             | Querydsl-sql                                               |
 | -------- | ---------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------- |
@@ -56,9 +56,9 @@ tags:
 |          | 数据库迁移 | 迁移改动量                                                   | 多                                                           | 中（部分Native Sql）                                         | 少（少量Sql Template）                                     |
 |          | 功能扩展   | 日志等功能切入                                               | 拦截器                                                       | 拦截器、监听器                                               | 监听器、异常转换器                                         |
 
-## 2 快速使用
+## 快速使用
 
-### 2.1 引入依赖
+### 引入依赖
 
 ```xml
 <properties>
@@ -128,7 +128,7 @@ tags:
 </dependencies>
 ```
 
-### 2.2 配置插件
+### 配置插件
 
 ```xml
 <plugins>
@@ -204,7 +204,7 @@ tags:
 </plugins>
 ```
 
-### 2.3 生成 ORM 文件
+### 生成 ORM 文件
 
 执行命令或者点击`Maven`插件中`querydsl`中的`querydsl:test-export`
 
@@ -309,7 +309,7 @@ public class QSysRole extends com.querydsl.sql.RelationalPathBase<SysRoleDo> {
 }
 ```
 
-### 2.4 配置
+### 配置
 
 ```java
 package com.gaoming.querydsl.config;
@@ -369,7 +369,7 @@ public class QueryDslConfig {
 }
 ```
 
-### 2.5 Controller
+### Controller
 
 ```java
 package com.gaoming.querydsl.controller;
@@ -397,7 +397,7 @@ public class IndexController {
 }
 ```
 
-### 2.6 Service
+### Service
 
 ```java
 @Service

@@ -12,15 +12,15 @@ tags:
 1. countDownLatch是在java1.5被引入，跟它一起被引入的工具类还有CyclicBarrier、Semaphore、concurrentHashMap和BlockingQueue
 2. 存在于java.util.cucurrent包下
 
-## 1 概念
+## 概念
 
 countDownLatch这个类使一个线程等待其他线程各自执行完毕后再执行
 
 是通过一个计数器来实现的，计数器的初始值是线程的数量。每当一个线程执行完毕后，计数器的值就-1，当计数器的值为0时，表示所有线程都执行完毕，然后在闭锁上等待的线程就可以恢复工作了
 
-## 2 Demo
+## Demo
 
-### 2.1 线程池配置
+### 线程池配置
 
 ```java
 @Configuration
@@ -38,7 +38,7 @@ public class ThreadPoolConfig {
 }
 ```
 
-### 2.2 多线程
+### 多线程
 
 ```java
 @Autowired
@@ -98,7 +98,7 @@ handleResult(r1, r2, r3)
 2.CyclicBarrier的计数器更像一个阀门，需要所有线程都到达，然后继续执行，计数器递增，提供reset功能，可以多次使用
 ```
 
-### 2.3 ExecutorCompletionService
+### ExecutorCompletionService
 
 ```java
 @Autowired

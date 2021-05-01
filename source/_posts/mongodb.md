@@ -9,11 +9,11 @@ tags:
 
 # MongoDb
 
-## 1安装 MongoDb
+## 安装 MongoDb
 
-## 2 配置
+## 配置
 
-### 2.1 mongodb.conf
+### mongodb.conf
 
 ```bash
 dbpath=/var/lib/mongo                                                                                                                     logpath=/var/log/mongodb/mongod.log
@@ -24,7 +24,7 @@ bind_ip=0.0.0.0
 auth=true
 ```
 
-### 2.2 启动服务
+### 启动服务
 
 ```bash
 # 启动服务
@@ -32,14 +32,14 @@ auth=true
 ./mongod --config mongodb.conf
 ```
 
-### 2.3 关闭服务
+### 关闭服务
 
 ```bash
 # 关闭服务
 ./mongod --shutdown --dbpath /var/lib/mongo
 ```
 
-### 2.4 创建用户 
+### 创建用户 
 
 ```sql
 db.createUser({user:"test",pwd:"test",roles: [{role: "root", db: "db_name"}]})
@@ -51,7 +51,7 @@ mongo -utest -ptest
 db.auth("test","test")
 ```
 
-## 3 SpringData 集成
+## SpringData 集成
 
 ```xml
 <dependency>
@@ -118,7 +118,7 @@ public class MongoConfig {
 }
 ```
 
-### 3.1 Po
+### Po
 
 ```java
 @Builder
@@ -138,14 +138,14 @@ public class MongoPageConfigPo {
 }
 ```
 
-### 3.2 IMongoPageRepository
+### IMongoPageRepository
 
 ```java
 public interface IMongoPageRepository extends MongoRepository<MongoPageConfigPo, Long> {
 }
 ```
 
-### 3.3 IMongoPageService 业务接口与实现
+### IMongoPageService 业务接口与实现
 
 ```java
 public interface IMongoPageService {
@@ -182,7 +182,7 @@ public class MongoPageServiceImpl implements IMongoPageService {
 }
 ```
 
-## 4 本地测试
+## 本地测试
 
 ```java
 public class MyMain {

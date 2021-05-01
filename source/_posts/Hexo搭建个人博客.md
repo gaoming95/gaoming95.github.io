@@ -21,7 +21,7 @@ tags:
 
 ****
 
-## 1 Hexo
+## Hexo
 
 ```
 # 安装 hexo
@@ -45,7 +45,7 @@ hexo server # 本地启动
 
 访问`localhost:4000`
 
-## 2 配置github.io
+## 配置github.io
 
 ```
 # github新建仓库
@@ -105,7 +105,7 @@ hexo deploy # 发布
 
 访问 `https://github.com/gaoming95/gaoming95.github.io/`
 
-## 3 增加主题
+## 增加主题
 
 [主题列表](https://hexo.io/themes/)
 
@@ -124,7 +124,7 @@ theme: huxblog
 
 只需要更改`_config.xml`中关于`github.io`的配置
 
-## 4 增加文章
+## 增加文章
 
 在`blogs\source\_posts`文件下增加`**.md`文件即可，`md`文件的头可如下编辑
 
@@ -139,7 +139,7 @@ tags:
 
 ![image-20210310152320947](Hexo搭建个人博客/image-20210310152320947.png)
 
-## 5 增加图片
+## 增加图片
 
 在`_config.yml`设置`post_asset_folder: true`
 
@@ -160,7 +160,7 @@ npm install hexo-asset-image@0.0.1 --save
 
 ![image-20210310152730455](Hexo搭建个人博客/image-20210310152730455.png)
 
-## 6 开启百度的数据统计
+## 开启百度的数据统计
 
 [百度统计](https://tongji.baidu.com/sc-web)
 
@@ -181,7 +181,7 @@ ba_track_id: 87fec1e5b2bb914ad19c5ba8ca638aad
 
 ![image-20210310154511229](Hexo搭建个人博客/image-20210310154511229.png)
 
-## 7 成品如下
+## 成品如下
 
 ![image-20210310154701061](Hexo搭建个人博客/image-20210310154701061.png)
 

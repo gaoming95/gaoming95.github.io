@@ -9,7 +9,7 @@ tags:
 
 # Jvm 工具
 
-## 1 jps
+## jps
 
 `Java Virtual Machine Process Status Tool`
 
@@ -90,7 +90,7 @@ C:\Users\gaoming>jps -V
 19720 Launcher
 ```
 
-## 2 jstack
+## jstack
 
 用于生成`java`虚拟机当前时刻的线程快照（一般称为`threaddump`或`javacore`文件），线程快照就是当前虚拟机内每一条线程正在执行的方法堆栈的集合，生成线程快照的主要目的就是定位线程出现长时间停顿的原因，如线程间死锁，死循环，请求外部资源导致的长时间等待等都是导致线程长时间停顿的原因。
 
@@ -209,7 +209,7 @@ Java stack information for the threads listed above:
 Found 1 deadlock.
 ```
 
-## 3 jstat
+## jstat
 
 `jstat`是`JDK`自带的一个轻量级小工具，全称`Java Virtual Machine statistics monitoring tool`，它位于`java`的`bin`目录下，主要利用`jvm`内建的指令对`java`应用程序的资源和性能进行实时的命令行的监控，包括了对`Heap Size`和垃圾回收状况的监控。可见，`jstat`是轻量级的，专门针对`jvm`的工具，非常适用
 
@@ -504,7 +504,7 @@ Compiled  Size  Type Method
 | Type     | 编译类型                                                     |
 | Method   | 类名和方法名用来标识编译的方法。类名使用/做为一个命名空间分隔符。方法名是给定类中的方法。上述格式是由-XX:+PrintComplation选项进行设置的 |
 
-## 4jinfo
+## jinfo
 
 `jinfo`主要用于打印配置信息，包括命令行参数、系统变量。极少数的情况下，我们可以用其来修改命令行参数。
 
@@ -726,7 +726,7 @@ sun.cpu.isalist = amd64
 
 ****
 
-## 5 jmap 
+## jmap 
 
 命令`jmap`是一个多功能的命令。它可以生成 `java` 程序的 `dump` 文件， 也可以查看堆内对象示例的统计信息、查看 `ClassLoader` 的信息以及 `finalizer` 队列
 
@@ -971,13 +971,13 @@ Heap dump file created
 
 **`-F`**当虚拟机进程对`-dump`选项没有响应时，可使用这个选项强制生成`dump`快照。只在`Linux/Solaris`平台下有效
 
-## 6 jhat
+## jhat
 
 `jhat`也是`jdk`内置的工具之一。主要是用来分析`java`堆的命令，可以将堆中的对象以`html`的形式显示出来，包括对象的数量，大小等等，并支持**对象查询语言**
 
 使用`jmap`等方法生成`java`的堆文件后，使用其进行分析
 
-### 6.1 生成快照文件
+### 生成快照文件
 
 ```bash
 C:\Users\gaoming>jmap -dump:format=b,file=heapdump.hprof 7712
@@ -985,7 +985,7 @@ Dumping heap to C:\Users\gaoming\heapdump.hprof ...
 Heap dump file created
 ```
 
-### 6.2 jhat
+### jhat
 
 ```bash
 C:\Users\gaoming>jhat heapdump.hprof
@@ -1000,7 +1000,7 @@ Started HTTP server on port 7000
 Server is ready.
 ```
 
-### 6.3 http://localhost:7000/
+### http://localhost:7000/
 
 ![image-20210501135921538](Jvm工具/image-20210501135921538.png)
 
