@@ -135,3 +135,5 @@ deploy:
   type: git
   repo: https://github.com/gaoming95/gaoming95.github.io.git
   branch: dev
+toc:
+  maxDepth:
