@@ -34,6 +34,11 @@
 <link rel="stylesheet" href="/css/highlight.css">
 
 
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
     <!-- Custom Fonts -->
     <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
     <!-- Hux change font-awesome CDN to qiniu -->
@@ -92,12 +97,12 @@
                     
 
                         
-                        <li>
-                            <a href="/archives/">Archives</a>
-                        </li>
-                        
                     
 
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
                         
                     
 
@@ -110,7 +115,7 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/archives/">Archives</a>
                         </li>
                         
                     
@@ -171,7 +176,7 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                            <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
+                          <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
                         
                     </div>
                     <h1>CountDownLatch</h1>
@@ -191,7 +196,7 @@
     <div class="container">
         <div class="row">
 
-            <!-- Post Container -->
+    <!-- Post Container -->
             <div class="
                 col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
@@ -237,21 +242,31 @@
                 
 
                 
-                    <!-- disqus 评论框 start -->
-                    <div class="comment">
-                        <div id="disqus_thread" class="disqus-thread"></div>
-                    </div>
-                    <!-- disqus 评论框 end -->
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
                 
 
             </div>
-            <!-- Tabe of Content -->
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#CountDownLatch"><span class="post-toc-text">CountDownLatch</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#&#x6982;&#x5FF5;"><span class="post-toc-text">&amp;#x6982;&amp;#x5FF5;</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Demo"><span class="post-toc-text">Demo</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#&#x7EBF;&#x7A0B;&#x6C60;&#x914D;&#x7F6E;"><span class="post-toc-text">&amp;#x7EBF;&amp;#x7A0B;&amp;#x6C60;&amp;#x914D;&amp;#x7F6E;</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#&#x591A;&#x7EBF;&#x7A0B;"><span class="post-toc-text">&amp;#x591A;&amp;#x7EBF;&amp;#x7A0B;</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ExecutorCompletionService"><span class="post-toc-text">ExecutorCompletionService</span></a></li></ol></li></ol></li></ol>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#CountDownLatch"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">CountDownLatch</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x6982;&#x5FF5;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x6982;&amp;#x5FF5;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Demo"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">Demo</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x7EBF;&#x7A0B;&#x6C60;&#x914D;&#x7F6E;"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">&amp;#x7EBF;&amp;#x7A0B;&amp;#x6C60;&amp;#x914D;&amp;#x7F6E;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x591A;&#x7EBF;&#x7A0B;"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">&amp;#x591A;&amp;#x7EBF;&amp;#x7A0B;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#ExecutorCompletionService"><span class="toc-nav-number">1.2.3.</span> <span class="toc-nav-text">ExecutorCompletionService</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+\
 
             <!-- Side Catalog Container -->
-            
+        
 
-            <!-- Sidebar Container -->
+    <!-- Sidebar Container -->
 
             <div class="
                 col-lg-8 col-lg-offset-2
@@ -260,27 +275,27 @@
 
                 <!-- Featured Tags -->
                 
-                    <section>
-                        <!-- no hr -->
-                        <h5><a href="/tags/">FEATURED TAGS</a></h5>
-                        <div class="tags">
-                            
-                                <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
-                            
-                        </div>
-                    </section>
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
+                        
+                    </div>
+                </section>
                 
 
                 <!-- Friends Blog -->
                 
-                    <hr>
-                    <h5>FRIENDS</h5>
-                    <ul class="list-inline">
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
 
-                        
-                            <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
-                        
-                    </ul>
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
                 
             </div>
 
@@ -291,112 +306,134 @@
 
 
 
-    <!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-    <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES * * */
-        var disqus_shortname = "hexo-theme-huxblog";
-        var disqus_identifier = "http://example.com/2020/06/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8Bcountdownlatch/";
-        var disqus_url = "http://example.com/2020/06/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8Bcountdownlatch/";
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/06/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8Bcountdownlatch/";
+    var disqus_url = "http://example.com/2020/06/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8Bcountdownlatch/";
 
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <!-- disqus 公共JS代码 end -->
-
-
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
 
 
-    <!-- async load function -->
-    <script>
 
 
-        function async(u, c) {
-            var d = document, t = 'script',
-                o = d.createElement(t),
-                s = d.getElementsByTagName(t)[0];
-            o.src = u;
-            if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-            s.parentNode.insertBefore(o, s);
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
         }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
 
-        function IsPC() {
-            var userAgentInfo = navigator.userAgent;
-            var Agents = ["Android", "iPhone",
-                "SymbianOS", "Windows Phone",
-                "iPad", "iPod"];
-            var flag = true;
-            for (var v = 0; v < Agents.length; v++) {
-                if (userAgentInfo.indexOf(Agents[v]) > 0) {
-                    flag = false;
-                    break;
-                }
-            }
-            return flag;
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
         }
-        setTimeout(()=> {
+      }
 
-            if(!IsPC) {
-                return
-            }
 
-            let arr = Array.prototype.slice.call(tocText)
-            arr.forEach((item)=> {
-                item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
 
-            })
-            //
-            window.onscroll= function(e){
-                console.log(e)
-                var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
-
-                var bignav = document.querySelector('.post-toc');//获取到导航栏id
-                if(topScroll >= 532){
-                    //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
-                    bignav.style.position = 'fixed';
-                    bignav.style.top = '80px';
-                    bignav.style.right = '0';
-                } else {
-                    bignav.style.position = 'absolute';
-                    bignav.style.top = '582px';
-                    bignav.style.right = '0';
-                }
-
-            }
-            // console.log(tocText)
-        }, 0)
-
-    </script>
-    <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
-    <script>
-        async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
-            anchors.options = {
-                visible: 'always',
-                placement: 'right',
-                icon: '#'
-            };
-            anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-        })
-    </script>
-    <style>
-        /* place left on bigger screen */
-        @media all and (min-width: 800px) {
-            .anchorjs-link{
-                position: absolute;
-
-            }
-        }
-        .post-toc {
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
             position: absolute;
-            top: 582px;
-            right: 0;
+
         }
-        .post-toc-child {
-            min-width: 240px;
-        }
-    </style>
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
 
 
 
