@@ -92,6 +92,10 @@
                     
 
                         
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
                     
 
                         
@@ -108,10 +112,6 @@
                         
                     
 
-                        
-                        <li>
-                            <a href="/about/">About</a>
-                        </li>
                         
                     
                     
@@ -171,7 +171,7 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                            <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
                         
                     </div>
                     <h1>Java注解(Annotation)</h1>
@@ -191,7 +191,7 @@
     <div class="container">
         <div class="row">
 
-    <!-- Post Container -->
+            <!-- Post Container -->
             <div class="
                 col-lg-8 col-lg-offset-2
                 col-md-10 col-md-offset-1
@@ -292,18 +292,21 @@
                 
 
                 
-                <!-- disqus 评论框 start -->
-                <div class="comment">
-                    <div id="disqus_thread" class="disqus-thread"></div>
-                </div>
-                <!-- disqus 评论框 end -->
+                    <!-- disqus 评论框 start -->
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                    <!-- disqus 评论框 end -->
                 
 
             </div>
-    <!-- Side Catalog Container -->
-        
+            <!-- Tabe of Content -->
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#Java&#x6CE8;&#x89E3;-Annotation"><span class="post-toc-text">Java&amp;#x6CE8;&amp;#x89E3;(Annotation)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#1-&#x5185;&#x7F6E;&#x7684;&#x6CE8;&#x89E3;"><span class="post-toc-text">1 &amp;#x5185;&amp;#x7F6E;&amp;#x7684;&amp;#x6CE8;&amp;#x89E3;</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-1-&#x4F5C;&#x7528;&#x5728;&#x4EE3;&#x7801;&#x7684;&#x6CE8;&#x89E3;&#x662F;"><span class="post-toc-text">1.1 &amp;#x4F5C;&amp;#x7528;&amp;#x5728;&amp;#x4EE3;&amp;#x7801;&amp;#x7684;&amp;#x6CE8;&amp;#x89E3;&amp;#x662F;</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-2-&#x4F5C;&#x7528;&#x5728;&#x5176;&#x4ED6;&#x6CE8;&#x89E3;&#x7684;&#x6CE8;&#x89E3;&#xFF08;&#x6216;&#x8005;&#x8BF4;&#x662F;&#x5143;&#x6CE8;&#x89E3;&#xFF09;"><span class="post-toc-text">1.2 &amp;#x4F5C;&amp;#x7528;&amp;#x5728;&amp;#x5176;&amp;#x4ED6;&amp;#x6CE8;&amp;#x89E3;&amp;#x7684;&amp;#x6CE8;&amp;#x89E3;&amp;#xFF08;&amp;#x6216;&amp;#x8005;&amp;#x8BF4;&amp;#x662F;&amp;#x5143;&amp;#x6CE8;&amp;#x89E3;&amp;#xFF09;</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#1-3-&#x4ECE;Java-7&#x5F00;&#x59CB;&#xFF0C;&#x989D;&#x5916;&#x6DFB;&#x52A0;&#x4E86;3&#x4E2A;&#x6CE8;&#x89E3;"><span class="post-toc-text">1.3 &amp;#x4ECE;Java 7&amp;#x5F00;&amp;#x59CB;&amp;#xFF0C;&amp;#x989D;&amp;#x5916;&amp;#x6DFB;&amp;#x52A0;&amp;#x4E86;3&amp;#x4E2A;&amp;#x6CE8;&amp;#x89E3;</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#2-&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;"><span class="post-toc-text">2 &amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x6CE8;&amp;#x89E3;</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-1-&#x793A;&#x4F8B;"><span class="post-toc-text">2.1 &amp;#x793A;&amp;#x4F8B;</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-1-1-interface"><span class="post-toc-text">2.1.1 @interface</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-1-2-Documented"><span class="post-toc-text">2.1.2 @Documented</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-1-3-Target-ElementType-TYPE"><span class="post-toc-text">2.1.3 @Target(ElementType.TYPE)</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-1-4-Retention-RetentionPolicy-RUNTIME"><span class="post-toc-text">2.1.4 @Retention(RetentionPolicy.RUNTIME)</span></a></li></ol></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-2-&#x5B9E;&#x4F8B;1&#xFF1A;&#x53CD;&#x5C04;&#x83B7;&#x53D6;&#x6CE8;&#x89E3;"><span class="post-toc-text">2.2 &amp;#x5B9E;&amp;#x4F8B;1&amp;#xFF1A;&amp;#x53CD;&amp;#x5C04;&amp;#x83B7;&amp;#x53D6;&amp;#x6CE8;&amp;#x89E3;</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-3-&#x5E94;&#x7528;&#x573A;&#x666F;1&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;-&#x62E6;&#x622A;&#x5668;-&#x5B9E;&#x73B0;&#x767B;&#x5F55;&#x6821;&#x9A8C;"><span class="post-toc-text">2.3 &amp;#x5E94;&amp;#x7528;&amp;#x573A;&amp;#x666F;1&amp;#xFF1A;&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x6CE8;&amp;#x89E3;+&amp;#x62E6;&amp;#x622A;&amp;#x5668; &amp;#x5B9E;&amp;#x73B0;&amp;#x767B;&amp;#x5F55;&amp;#x6821;&amp;#x9A8C;</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-4-&#x5E94;&#x7528;&#x573A;&#x666F;2&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;-AOP&#x5B9E;&#x73B0;&#x65E5;&#x5FD7;&#x6253;&#x5370;"><span class="post-toc-text">2.4 &amp;#x5E94;&amp;#x7528;&amp;#x573A;&amp;#x666F;2&amp;#xFF1A;&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x6CE8;&amp;#x89E3;+AOP&amp;#x5B9E;&amp;#x73B0;&amp;#x65E5;&amp;#x5FD7;&amp;#x6253;&amp;#x5370;</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#2-5-&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;&#x2014;&#x53C2;&#x6570;&#x6821;&#x9A8C;"><span class="post-toc-text">2.5 &amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x6CE8;&amp;#x89E3;&amp;#x2014;&amp;#x53C2;&amp;#x6570;&amp;#x6821;&amp;#x9A8C;</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-5-1-&#x4F9D;&#x8D56;"><span class="post-toc-text">2.5.1 &amp;#x4F9D;&amp;#x8D56;</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-5-2-&#x58F0;&#x660E;&#x53C2;&#x6570;&#x6CE8;&#x89E3;"><span class="post-toc-text">2.5.2 &amp;#x58F0;&amp;#x660E;&amp;#x53C2;&amp;#x6570;&amp;#x6CE8;&amp;#x89E3;</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-5-3-&#x58F0;&#x660E;&#x5B57;&#x6BB5;&#x6CE8;&#x89E3;"><span class="post-toc-text">2.5.3 &amp;#x58F0;&amp;#x660E;&amp;#x5B57;&amp;#x6BB5;&amp;#x6CE8;&amp;#x89E3;</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-5-4-AOP-&#x5207;&#x5165;"><span class="post-toc-text">2.5.4 AOP &amp;#x5207;&amp;#x5165;</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-5-5-&#x5B9E;&#x4F53;&#x7C7B;"><span class="post-toc-text">2.5.5 &amp;#x5B9E;&amp;#x4F53;&amp;#x7C7B;</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-5-6-Controller"><span class="post-toc-text">2.5.6 Controller</span></a></li><li class="post-toc-item post-toc-level-4"><a class="post-toc-link" href="#2-5-7-BasicController"><span class="post-toc-text">2.5.7 BasicController</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#3-&#x5E38;&#x89C1;&#x6CE8;&#x89E3;"><span class="post-toc-text">3 &amp;#x5E38;&amp;#x89C1;&amp;#x6CE8;&amp;#x89E3;</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#3-1-PostConstruct"><span class="post-toc-text">3.1 @PostConstruct</span></a></li></ol></li></ol></li></ol>
 
-    <!-- Sidebar Container -->
+            <!-- Side Catalog Container -->
+            
+
+            <!-- Sidebar Container -->
 
             <div class="
                 col-lg-8 col-lg-offset-2
@@ -312,27 +315,27 @@
 
                 <!-- Featured Tags -->
                 
-                <section>
-                    <!-- no hr -->
-                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
-                    <div class="tags">
-                       
-                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
-                        
-                    </div>
-                </section>
+                    <section>
+                        <!-- no hr -->
+                        <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                        <div class="tags">
+                            
+                                <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                            
+                        </div>
+                    </section>
                 
 
                 <!-- Friends Blog -->
                 
-                <hr>
-                <h5>FRIENDS</h5>
-                <ul class="list-inline">
+                    <hr>
+                    <h5>FRIENDS</h5>
+                    <ul class="list-inline">
 
-                    
-                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
-                    
-                </ul>
+                        
+                            <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                        
+                    </ul>
                 
             </div>
 
@@ -343,57 +346,91 @@
 
 
 
-<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
-<script type="text/javascript">
-    /* * * CONFIGURATION VARIABLES * * */
-    var disqus_shortname = "hexo-theme-huxblog";
-    var disqus_identifier = "http://example.com/2020/06/10/Java%E6%B3%A8%E8%A7%A3/";
-    var disqus_url = "http://example.com/2020/06/10/Java%E6%B3%A8%E8%A7%A3/";
+    <!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES * * */
+        var disqus_shortname = "hexo-theme-huxblog";
+        var disqus_identifier = "http://example.com/2020/06/10/Java%E6%B3%A8%E8%A7%A3/";
+        var disqus_url = "http://example.com/2020/06/10/Java%E6%B3%A8%E8%A7%A3/";
 
-    (function() {
-        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-    })();
-</script>
-<!-- disqus 公共JS代码 end -->
-
-
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <!-- disqus 公共JS代码 end -->
 
 
-<!-- async load function -->
-<script>
-    function async(u, c) {
-      var d = document, t = 'script',
-          o = d.createElement(t),
-          s = d.getElementsByTagName(t)[0];
-      o.src = u;
-      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
-      s.parentNode.insertBefore(o, s);
-    }
-</script>
-<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
-<script>
-    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
-        anchors.options = {
-          visible: 'always',
-          placement: 'right',
-          icon: '#'
-        };
-        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
-    })
-</script>
-<style>
-    /* place left on bigger screen */
-    @media all and (min-width: 800px) {
-        .anchorjs-link{
-            position: absolute;
-            left: -0.75em;
-            font-size: 1.1em;
-            margin-top : -0.1em;
+
+
+    <!-- async load function -->
+    <script>
+        function async(u, c) {
+            var d = document, t = 'script',
+                o = d.createElement(t),
+                s = d.getElementsByTagName(t)[0];
+            o.src = u;
+            if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+            s.parentNode.insertBefore(o, s);
         }
-    }
-</style>
+        setTimeout(()=> {
+            let tocText = document.getElementsByClassName('post-toc-text')
+            let arr = Array.prototype.slice.call(tocText)
+            arr.forEach((item)=> {
+                item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+            })
+            //
+            window.onscroll= function(e){
+                console.log(e)
+                var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+
+                var bignav = document.querySelector('.post-toc');//获取到导航栏id
+                if(topScroll >= 532){
+                    //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+                    bignav.style.position = 'fixed';
+                    bignav.style.top = '80px';
+                    bignav.style.right = '0';
+                } else {
+                    bignav.style.position = 'absolute';
+                    bignav.style.top = '582px';
+                    bignav.style.right = '0';
+                }
+
+            }
+            // console.log(tocText)
+        }, 0)
+
+    </script>
+    <!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+    <script>
+        async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+            anchors.options = {
+                visible: 'always',
+                placement: 'right',
+                icon: '#'
+            };
+            anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+        })
+    </script>
+    <style>
+        /* place left on bigger screen */
+        @media all and (min-width: 800px) {
+            .anchorjs-link{
+                position: absolute;
+
+            }
+        }
+        .post-toc {
+            position: absolute;
+            top: 582px;
+            right: 0;
+        }
+        .post-toc-child {
+            min-width: 240px;
+        }
+    </style>
 
 
 
