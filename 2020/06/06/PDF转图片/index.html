@@ -92,8 +92,11 @@
                     
 
                         
+                    
+
+                        
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -107,11 +110,8 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/about/">About</a>
                         </li>
-                        
-                    
-
                         
                     
                     
@@ -200,9 +200,9 @@
                 <h1 id="PdfBox"><a href="#PdfBox" class="headerlink" title="PdfBox"></a>PdfBox</h1><p>pdf&#x6587;&#x4EF6;&#x8F6C;&#x56FE;&#x7247;&#xFF0C;&#x5E76;&#x4E0A;&#x4F20;&#x670D;&#x52A1;&#x5668;</p>
 <p>&#x8003;&#x8651;&#x5230;&#x5355;&#x7EBF;&#x7A0B;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;16&#x9875;&#x7684;pdf&#x8F6C;&#x6210;&#x56FE;&#x7247;&#x9700;&#x8981;6-8s</p>
 <p>&#x4F7F;&#x7528;&#x591A;&#x7EBF;&#x7A0B;&#xFF0C;16&#x9875;&#x7684;pdf&#x8F6C;&#x6210;&#x56FE;&#x7247;&#x9700;&#x8981;2s&#xFF0C;&#x63D0;&#x5347;&#x4E86;&#x90E8;&#x5206;&#x901F;&#x5EA6;</p>
-<h2 id="1-&#x5F15;&#x5165;&#x4F9D;&#x8D56;"><a href="#1-&#x5F15;&#x5165;&#x4F9D;&#x8D56;" class="headerlink" title="1 &#x5F15;&#x5165;&#x4F9D;&#x8D56;"></a>1 &#x5F15;&#x5165;&#x4F9D;&#x8D56;</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.pdfbox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>pdfbox<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.22<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="&#x5F15;&#x5165;&#x4F9D;&#x8D56;"><a href="#&#x5F15;&#x5165;&#x4F9D;&#x8D56;" class="headerlink" title="&#x5F15;&#x5165;&#x4F9D;&#x8D56;"></a>&#x5F15;&#x5165;&#x4F9D;&#x8D56;</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.pdfbox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>pdfbox<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.22<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="2-Demo"><a href="#2-Demo" class="headerlink" title="2 Demo"></a>2 Demo</h2><p><strong>&#x5355;&#x7EBF;&#x7A0B;</strong></p>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p><strong>&#x5355;&#x7EBF;&#x7A0B;</strong></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">byte</span>[]&gt; pdfToImage(<span class="keyword">byte</span>[] fileContent) <span class="keyword">throws</span> IOException {</span><br><span class="line">    List&lt;<span class="keyword">byte</span>[]&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">try</span> (PDDocument document = PDDocument.load(fileContent)) {</span><br><span class="line">        PDFRenderer renderer = <span class="keyword">new</span> PDFRenderer(document);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; document.getNumberOfPages(); ++i) {</span><br><span class="line">            BufferedImage bufferedImage = renderer.renderImageWithDPI(i, DPI);</span><br><span class="line">            ByteArrayOutputStream out = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">            ImageIO.write(bufferedImage, IMG_TYPE, out);</span><br><span class="line">            result.add(out.toByteArray());</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 
 <hr>
@@ -244,7 +244,7 @@
 
             </div>
             <!-- Tabe of Content -->
-            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#PdfBox"><span class="post-toc-text">PdfBox</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#1-&#x5F15;&#x5165;&#x4F9D;&#x8D56;"><span class="post-toc-text">1 &amp;#x5F15;&amp;#x5165;&amp;#x4F9D;&amp;#x8D56;</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#2-Demo"><span class="post-toc-text">2 Demo</span></a></li></ol></li></ol>
+            <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#PdfBox"><span class="post-toc-text">PdfBox</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#&#x5F15;&#x5165;&#x4F9D;&#x8D56;"><span class="post-toc-text">&amp;#x5F15;&amp;#x5165;&amp;#x4F9D;&amp;#x8D56;</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#Demo"><span class="post-toc-text">Demo</span></a></li></ol></li></ol>
 
             <!-- Side Catalog Container -->
             
