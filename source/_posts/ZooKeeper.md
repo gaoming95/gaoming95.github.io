@@ -1,6 +1,6 @@
 ---
 title: Zookeeper
-subtitle:zookeeper是一个开源的分布式的，为分布式应用提供协调服务的Apache项目
+subtitle: zookeeper是一个开源的分布式的，为分布式应用提供协调服务的Apache项目
 date: 2020-08-02
 author: 高明
 tags:
