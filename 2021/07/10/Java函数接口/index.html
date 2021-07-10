@@ -13,11 +13,11 @@
 
     <title>
         
-          Pdf转图片 - 高明的博客 | GaoMing&#39;s Blog
+          高明的博客 | GaoMing&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="http://example.com/2020/06/06/PDF转图片/">
+    <link rel="canonical" href="http://example.com/2021/07/10/Java函数接口/">
 
     <!-- Bootstrap Core CSS -->
     
@@ -176,14 +176,12 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                          <a class="tag" href="/tags/#工具" title="工具">工具</a>
-                        
                     </div>
-                    <h1>Pdf转图片</h1>
-                    <h2 class="subheading">Java Pdf文件转图片</h2>
+                    <h1></h1>
+                    <h2 class="subheading"></h2>
                     <span class="meta">
                         Posted by 高明 on
-                        2020-06-06
+                        2021-07-10
                     </span>
                 </div>
             </div>
@@ -202,22 +200,8 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <h1 id="PdfBox"><a href="#PdfBox" class="headerlink" title="PdfBox"></a>PdfBox</h1><p>pdf&#x6587;&#x4EF6;&#x8F6C;&#x56FE;&#x7247;&#xFF0C;&#x5E76;&#x4E0A;&#x4F20;&#x670D;&#x52A1;&#x5668;</p>
-<p>&#x8003;&#x8651;&#x5230;&#x5355;&#x7EBF;&#x7A0B;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;16&#x9875;&#x7684;pdf&#x8F6C;&#x6210;&#x56FE;&#x7247;&#x9700;&#x8981;6-8s</p>
-<p>&#x4F7F;&#x7528;&#x591A;&#x7EBF;&#x7A0B;&#xFF0C;16&#x9875;&#x7684;pdf&#x8F6C;&#x6210;&#x56FE;&#x7247;&#x9700;&#x8981;2s&#xFF0C;&#x63D0;&#x5347;&#x4E86;&#x90E8;&#x5206;&#x901F;&#x5EA6;</p>
-<h2 id="&#x5F15;&#x5165;&#x4F9D;&#x8D56;"><a href="#&#x5F15;&#x5165;&#x4F9D;&#x8D56;" class="headerlink" title="&#x5F15;&#x5165;&#x4F9D;&#x8D56;"></a>&#x5F15;&#x5165;&#x4F9D;&#x8D56;</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.pdfbox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>pdfbox<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.22<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><p><strong>&#x5355;&#x7EBF;&#x7A0B;</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;<span class="keyword">byte</span>[]&gt; pdfToImage(<span class="keyword">byte</span>[] fileContent) <span class="keyword">throws</span> IOException {</span><br><span class="line">    List&lt;<span class="keyword">byte</span>[]&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">try</span> (PDDocument document = PDDocument.load(fileContent)) {</span><br><span class="line">        PDFRenderer renderer = <span class="keyword">new</span> PDFRenderer(document);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; document.getNumberOfPages(); ++i) {</span><br><span class="line">            BufferedImage bufferedImage = renderer.renderImageWithDPI(i, DPI);</span><br><span class="line">            ByteArrayOutputStream out = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">            ImageIO.write(bufferedImage, IMG_TYPE, out);</span><br><span class="line">            result.add(out.toByteArray());</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-
-<hr>
-<p><strong>&#x591A;&#x7EBF;&#x7A0B;</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadPoolConfig</span> </span>{</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ThreadPoolTaskExecutor <span class="title">taskExecutor</span><span class="params">()</span> </span>{</span><br><span class="line">        ThreadPoolTaskExecutor taskExecutor = <span class="keyword">new</span> ThreadPoolTaskExecutor();</span><br><span class="line">        taskExecutor.setCorePoolSize(<span class="number">8</span>);</span><br><span class="line">        taskExecutor.setMaxPoolSize(<span class="number">32</span>);</span><br><span class="line">        taskExecutor.setKeepAliveSeconds(<span class="number">300</span>);</span><br><span class="line">        taskExecutor.setQueueCapacity(<span class="number">128</span>);</span><br><span class="line">        taskExecutor.setRejectedExecutionHandler(<span class="keyword">new</span> ThreadPoolExecutor.AbortPolicy());</span><br><span class="line">        <span class="keyword">return</span> taskExecutor;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight aspectj"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> ThreadPoolTaskExecutor taskExecutor;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">uploadAndParsePDF</span><span class="params">(File file)</span> <span class="keyword">throws</span> IOException </span>{</span><br><span class="line">    List&lt;Tuple2&lt;Integer, String&gt;&gt; imgUrls = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    PDDocument doc = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> {</span><br><span class="line">        doc = PDDocument.load(file);</span><br><span class="line">        PDFRenderer renderer = <span class="keyword">new</span> PDFRenderer(doc);</span><br><span class="line">        <span class="keyword">int</span> pageCount = doc.getNumberOfPages();</span><br><span class="line">        CompletionService&lt;Tuple2&lt;Integer, String&gt;&gt; cService = <span class="keyword">new</span> ExecutorCompletionService&lt;&gt;(taskExecutor);</span><br><span class="line">        IntStream.range(<span class="number">0</span>, pageCount).forEach(i -&gt; cService.submit(() -&gt; {</span><br><span class="line">            BufferedImage image = renderer.renderImage(i, <span class="number">2.5f</span>);</span><br><span class="line">            <span class="keyword">byte</span>[] bytes = imageToBytes(image, <span class="string">&quot;PNG&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Tuple2(i, pictureService.upload(fileName + <span class="string">&quot;.png&quot;</span>, bytes));</span><br><span class="line">        }));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pageCount; i++) {</span><br><span class="line">            Future&lt;Tuple2&lt;Integer, String&gt;&gt; future = cService.take();</span><br><span class="line">            imgUrls.add(future.get());</span><br><span class="line">        }</span><br><span class="line">    } <span class="keyword">catch</span> (Exception e) {</span><br><span class="line">        Assert.isTrue(<span class="keyword">true</span>, <span class="string">&quot;&#x6587;&#x4EF6;&#x89E3;&#x6790;&#x9519;&#x8BEF;&quot;</span>);</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    } <span class="keyword">finally</span> {</span><br><span class="line">        <span class="keyword">if</span> (doc != <span class="keyword">null</span>) {</span><br><span class="line">            doc.close();</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> imgUrls;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
-
+                <p><strong>&#x51FD;&#x6570;&#x63A5;&#x53E3;&#x662F;&#x6307;&#x5185;&#x90E8;&#x53EA;&#x6709;&#x4E00;&#x4E2A;&#x62BD;&#x8C61;&#x65B9;&#x6CD5;&#x7684;&#x63A5;&#x53E3;</strong></p>
+<p>&#x901A;&#x5E38;&#x51FD;&#x6570;&#x63A5;&#x53E3;&#x51FA;&#x73B0;&#x7684;&#x5730;&#x65B9;&#x90FD;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;Lambda&#x8868;&#x8FBE;&#x5F0F;&#xFF0C;&#x6240;&#x4EE5;&#x4E0D;&#x5FC5;&#x8BB0;&#x5FC6;&#x51FD;&#x6570;&#x63A5;&#x53E3;&#x7684;&#x540D;&#x5B57;</p>
 
 
                 <hr>
@@ -226,13 +210,9 @@
 
                 <ul class="pager">
                     
-                        <li class="previous">
-                            <a href="/2020/06/08/mongodb/" data-toggle="tooltip" data-placement="top" title="MongoDB">&larr; Previous Post</a>
-                        </li>
-                    
                     
                         <li class="next">
-                            <a href="/2020/06/06/Mockito/" data-toggle="tooltip" data-placement="top" title="Mockito 测试框架">Next Post &rarr;</a>
+                            <a href="/2021/07/09/Stream流常规用法/" data-toggle="tooltip" data-placement="top" title="Stream流常规用法">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
@@ -255,7 +235,7 @@
     <div id="toc" class="toc-article">
         <strong class="toc-title">Contents</strong>
         
-            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#PdfBox"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">PdfBox</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x5F15;&#x5165;&#x4F9D;&#x8D56;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x5F15;&amp;#x5165;&amp;#x4F9D;&amp;#x8D56;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Demo"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">Demo</span></a></li></ol></li></ol>
+            <ol class="nav">none</ol>
         
     </div>
 </aside>
@@ -277,8 +257,6 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
-                          <a class="tag" href="/tags/#工具" title="工具">工具</a>
-                        
                     </div>
                 </section>
                 
@@ -307,8 +285,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "hexo-theme-huxblog";
-    var disqus_identifier = "http://example.com/2020/06/06/PDF%E8%BD%AC%E5%9B%BE%E7%89%87/";
-    var disqus_url = "http://example.com/2020/06/06/PDF%E8%BD%AC%E5%9B%BE%E7%89%87/";
+    var disqus_identifier = "http://example.com/2021/07/10/Java%E5%87%BD%E6%95%B0%E6%8E%A5%E5%8F%A3/";
+    var disqus_url = "http://example.com/2021/07/10/Java%E5%87%BD%E6%95%B0%E6%8E%A5%E5%8F%A3/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
