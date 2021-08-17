@@ -24,21 +24,21 @@ comments: true
 | `2014.09 - 2017.06` | 双学位 | 武汉大学 | 经济学           |
 
 - **工作经历**
-  - `2020/06/02-至今`	**上海哔哩哔哩科技有限公司**	**高级开发工程师 **[*全职*]
+  - `2020/06/02-至今`	**上海哔哩哔哩科技有限公司**	**高级开发工程师** [*全职*]
     - 动态商品广告
     - 建站工具
     - 创意中心
-    - `B`站指数
+    - B站指数
   - `2019/06/12-2019/9/12`	**华为科技有限公司**	**人工智能工程师** [*实习*]
-    - `Xbot`智能助手
-    - `NCE`领域知识图谱
+    - Xbot智能助手
+    - NCE领域知识图谱
 - **项目经历**
   - 动态商品广告项目`2021/04/01-至今`
   - 落地页建站工具项目`2020/06/02-至今`
   - 创意中心项目`2020/06/02-至今`
   - B站指数项目`2020/06/02-至今`
-  - `Xbot`智能助手项目`2019/06/12-2020/09/12`
-  - `NCE`领域知识图谱`2019/06/12-2020/09/12`
+  - Xbot智能助手项目`2019/06/12-2020/09/12`
+  - NCE领域知识图谱`2019/06/12-2020/09/12`
   - 精准医疗-中国十万人基因组计划项目
   - 互联网公开信息采集课题研究
 - **荣誉证书**
@@ -50,5 +50,5 @@ comments: true
   - *An Improved Method for named entity recognition and Its Appliaction to CEMR*，发表于*Future Internet*（*ESCI*期刊），第一作者 
   - *A Topic-Enhanced Recurrent Autoencoder Model for Sentiment Analysis of Short Texts*，发表于*EI*期刊*International Journal of Internet Manufacturing and Services*， 第二作者
   - Chinese Electronic Medical Record Named Entity Recognition Based on PreAtt-BiLSTM-CRF，发表于一般期刊*Data SCIENCE AND INDUSTRIAL INTERNET*，第一作者
-  - *A Topic-Enhanced Recurrent Autoencoder Model for Sentiment Analysis of Short Texts*，发表于国际会议`2018 11th International Conference on Service Science (ICSS2018)`， 第二作者
+  - *A Topic-Enhanced Recurrent Autoencoder Model for Sentiment Analysis of Short Texts*，发表于国际会议*2018 11th International Conference on Service Science (ICSS2018)*， 第二作者
 
