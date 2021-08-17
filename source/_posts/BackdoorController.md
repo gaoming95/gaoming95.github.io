@@ -1,5 +1,5 @@
 ---
-title: BackdoorController
+title: BcakdoorController
 subtitle: 动态代理，执行项目中任意代码
 date: 2021-02-11
 author: 高明
@@ -7,11 +7,19 @@ tags:
 	- 工具
 ---
 
-
-
 # BackdoorController
 
+动态代理，执行项目中任意代码
+
+## Demo
+
+****
+
 ![image-20210617115621431](BackdoorController/image-20210617115621431.png)
+
+****
+
+## 代码
 
 ```java
 /**
