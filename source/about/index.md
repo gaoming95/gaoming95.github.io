@@ -39,8 +39,8 @@ comments: true
   - B站指数项目`2020/06/02-至今`
   - Xbot智能助手项目`2019/06/12-2020/09/12`
   - NCE领域知识图谱`2019/06/12-2020/09/12`
-  - 精准医疗-中国十万人基因组计划项目
-  - 互联网公开信息采集课题研究
+  - 精准医疗-中国十万人基因组计划项目`2018/01/01-2020/04/06`
+  - 互联网公开信息采集课题研究`2021/07/01-2021/11/01`
 - **荣誉证书**
   - 上海市优秀毕业生
   - 上海大学优秀学生
@@ -50,5 +50,5 @@ comments: true
   - *An Improved Method for named entity recognition and Its Appliaction to CEMR*，发表于*Future Internet*（*ESCI*期刊），第一作者 
   - *A Topic-Enhanced Recurrent Autoencoder Model for Sentiment Analysis of Short Texts*，发表于*EI*期刊*International Journal of Internet Manufacturing and Services*， 第二作者
   - Chinese Electronic Medical Record Named Entity Recognition Based on PreAtt-BiLSTM-CRF，发表于一般期刊*Data SCIENCE AND INDUSTRIAL INTERNET*，第一作者
-  - *A Topic-Enhanced Recurrent Autoencoder Model for Sentiment Analysis of Short Texts*，发表于国际会议*2018 11th International Conference on Service Science (ICSS2018)*， 第二作者
+  - *A Topic-Enhanced Recurrent Autoencoder Model for Sentiment Analysis of Short Texts*，发表于国际会议 *2018 11th International Conference on Service Science (ICSS2018)*， 第二作者
 
