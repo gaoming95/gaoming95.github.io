@@ -13,7 +13,7 @@
 
     <title>
         
-          高明的博客 | GaoMing&#39;s Blog
+          工厂模式 - 高明的博客 | GaoMing&#39;s Blog
         
     </title>
 
@@ -108,14 +108,14 @@
 
                         
                         <li>
-                            <a href="/about/">About</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/about/">About</a>
                         </li>
                         
                     
@@ -176,9 +176,11 @@
                 <div class="post-heading">
                     <div class="tags">
                         
+                          <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
                     </div>
-                    <h1></h1>
-                    <h2 class="subheading"></h2>
+                    <h1>工厂模式</h1>
+                    <h2 class="subheading">工厂顾名思义就是创建产品，根据产品是具体产品还是具体工厂可分为简单工厂模式和工厂方法模式，根据工厂的抽象程度可分为工厂方法模式和抽象工厂模式</h2>
                     <span class="meta">
                         Posted by 高明 on
                         2021-09-13
@@ -200,9 +202,7 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-                <hr>
-<hr>
-<h1 id="&#x5DE5;&#x5382;&#x6A21;&#x5F0F;"><a href="#&#x5DE5;&#x5382;&#x6A21;&#x5F0F;" class="headerlink" title="&#x5DE5;&#x5382;&#x6A21;&#x5F0F;"></a>&#x5DE5;&#x5382;&#x6A21;&#x5F0F;</h1><p>&#x5DE5;&#x5382;&#x987E;&#x540D;&#x601D;&#x4E49;&#x5C31;&#x662F;&#x521B;&#x5EFA;&#x4EA7;&#x54C1;&#xFF0C;&#x6839;&#x636E;&#x4EA7;&#x54C1;&#x662F;&#x5177;&#x4F53;&#x4EA7;&#x54C1;&#x8FD8;&#x662F;&#x5177;&#x4F53;&#x5DE5;&#x5382;&#x53EF;&#x5206;&#x4E3A;&#x7B80;&#x5355;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;&#x548C;&#x5DE5;&#x5382;&#x65B9;&#x6CD5;&#x6A21;&#x5F0F;&#xFF0C;&#x6839;&#x636E;&#x5DE5;&#x5382;&#x7684;&#x62BD;&#x8C61;&#x7A0B;&#x5EA6;&#x53EF;&#x5206;&#x4E3A;&#x5DE5;&#x5382;&#x65B9;&#x6CD5;&#x6A21;&#x5F0F;&#x548C;&#x62BD;&#x8C61;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;&#x3002;&#x8BE5;&#x6A21;&#x5F0F;&#x7528;&#x4E8E;&#x5C01;&#x88C5;&#x548C;&#x7BA1;&#x7406;&#x5BF9;&#x8C61;&#x7684;&#x521B;&#x5EFA;&#xFF0C;&#x662F;&#x4E00;&#x79CD;&#x521B;&#x5EFA;&#x578B;&#x6A21;&#x5F0F;&#x3002;</p>
+                <h1 id="&#x5DE5;&#x5382;&#x6A21;&#x5F0F;"><a href="#&#x5DE5;&#x5382;&#x6A21;&#x5F0F;" class="headerlink" title="&#x5DE5;&#x5382;&#x6A21;&#x5F0F;"></a>&#x5DE5;&#x5382;&#x6A21;&#x5F0F;</h1><p>&#x5DE5;&#x5382;&#x987E;&#x540D;&#x601D;&#x4E49;&#x5C31;&#x662F;&#x521B;&#x5EFA;&#x4EA7;&#x54C1;&#xFF0C;&#x6839;&#x636E;&#x4EA7;&#x54C1;&#x662F;&#x5177;&#x4F53;&#x4EA7;&#x54C1;&#x8FD8;&#x662F;&#x5177;&#x4F53;&#x5DE5;&#x5382;&#x53EF;&#x5206;&#x4E3A;&#x7B80;&#x5355;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;&#x548C;&#x5DE5;&#x5382;&#x65B9;&#x6CD5;&#x6A21;&#x5F0F;&#xFF0C;&#x6839;&#x636E;&#x5DE5;&#x5382;&#x7684;&#x62BD;&#x8C61;&#x7A0B;&#x5EA6;&#x53EF;&#x5206;&#x4E3A;&#x5DE5;&#x5382;&#x65B9;&#x6CD5;&#x6A21;&#x5F0F;&#x548C;&#x62BD;&#x8C61;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;&#x3002;&#x8BE5;&#x6A21;&#x5F0F;&#x7528;&#x4E8E;&#x5C01;&#x88C5;&#x548C;&#x7BA1;&#x7406;&#x5BF9;&#x8C61;&#x7684;&#x521B;&#x5EFA;&#xFF0C;&#x662F;&#x4E00;&#x79CD;&#x521B;&#x5EFA;&#x578B;&#x6A21;&#x5F0F;&#x3002;</p>
 <h2 id="&#x7B80;&#x5355;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;"><a href="#&#x7B80;&#x5355;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;" class="headerlink" title="&#x7B80;&#x5355;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;"></a>&#x7B80;&#x5355;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;</h2><p>&#x8BE5;&#x6A21;&#x5F0F;&#x5BF9;&#x5BF9;&#x8C61;&#x521B;&#x5EFA;&#x7BA1;&#x7406;&#x65B9;&#x5F0F;&#x6700;&#x4E3A;&#x7B80;&#x5355;&#xFF0C;&#x56E0;&#x4E3A;&#x5176;&#x4EC5;&#x4EC5;&#x7B80;&#x5355;&#x7684;&#x5BF9;&#x4E0D;&#x540C;&#x7C7B;&#x5BF9;&#x8C61;&#x7684;&#x521B;&#x5EFA;&#x8FDB;&#x884C;&#x4E86;&#x4E00;&#x5C42;&#x8584;&#x8584;&#x7684;&#x5C01;&#x88C5;&#x3002;&#x8BE5;&#x6A21;&#x5F0F;&#x901A;&#x8FC7;&#x5411;&#x5DE5;&#x5382;&#x4F20;&#x9012;&#x7C7B;&#x578B;&#x6765;&#x6307;&#x5B9A;&#x8981;&#x521B;&#x5EFA;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x5176;<code>UML</code>&#x7C7B;&#x56FE;&#x5982;&#x4E0B;</p>
 <p><img src="/2021/09/13/%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/1419489-20190628144601084-563759643.png" alt="img"></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Phone</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">make</span><span class="params">()</span></span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
@@ -318,6 +318,8 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
+                          <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
                     </div>
                 </section>
                 
