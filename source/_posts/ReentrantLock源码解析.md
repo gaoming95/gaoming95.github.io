@@ -4,8 +4,8 @@ subtitle: java除了使用关键字synchronized外，还可以使用ReentrantLoc
 date: 2021-09-04
 author: 高明
 tags:
-	- java基础
-    - 源码解析
+	- Java基础
+	- 源码解析
 ---
 
 # ReentrantLock源码解析
