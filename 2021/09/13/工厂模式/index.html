@@ -97,12 +97,12 @@
                     
 
                         
-                    
-
-                        
                         <li>
                             <a href="/about/">About</a>
                         </li>
+                        
+                    
+
                         
                     
 
@@ -261,7 +261,9 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] arg)</span> </span>{</span><br><span class="line">        AbstractFactory miFactory = <span class="keyword">new</span> XiaoMiFactory();</span><br><span class="line">        AbstractFactory appleFactory = <span class="keyword">new</span> AppleFactory();</span><br><span class="line">        miFactory.makePhone();            <span class="comment">// make xiaomi phone!</span></span><br><span class="line">        miFactory.makePC();                <span class="comment">// make xiaomi PC!</span></span><br><span class="line">        appleFactory.makePhone();        <span class="comment">// make iphone!</span></span><br><span class="line">        appleFactory.makePC();            <span class="comment">// make MAC!</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 
 <h2 id="&#x603B;&#x7ED3;"><a href="#&#x603B;&#x7ED3;" class="headerlink" title="&#x603B;&#x7ED3;"></a>&#x603B;&#x7ED3;</h2><p>&#x4E0A;&#x9762;&#x4ECB;&#x7ECD;&#x7684;&#x4E09;&#x79CD;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;&#x6709;&#x5404;&#x81EA;&#x7684;&#x5E94;&#x7528;&#x573A;&#x666F;&#xFF0C;&#x5B9E;&#x9645;&#x5E94;&#x7528;&#x65F6;&#x80FD;&#x89E3;&#x51B3;&#x95EE;&#x9898;&#x6EE1;&#x8DB3;&#x9700;&#x6C42;&#x5373;&#x53EF;&#xFF0C;&#x53EF;&#x7075;&#x6D3B;&#x53D8;&#x901A;&#xFF0C;&#x65E0;&#x6240;&#x8C13;&#x9AD8;&#x7EA7;&#x4E0E;&#x4F4E;&#x7EA7;&#x3002;</p>
-<p>&#x6B64;&#x5916;&#x65E0;&#x8BBA;&#x54EA;&#x79CD;&#x6A21;&#x5F0F;&#xFF0C;&#x7531;&#x4E8E;&#x53EF;&#x80FD;&#x5C01;&#x88C5;&#x4E86;&#x5927;&#x91CF;&#x5BF9;&#x8C61;&#x548C;&#x5DE5;&#x5382;&#x521B;&#x5EFA;&#xFF0C;&#x65B0;&#x52A0;&#x4EA7;&#x54C1;&#x9700;&#x8981;&#x4FEE;&#x6539;&#x5DF2;&#x5B9A;&#x4E49;&#x597D;&#x7684;&#x5DE5;&#x5382;&#x76F8;&#x5173;&#x7684;&#x7C7B;&#xFF0C;&#x56E0;&#x6B64;&#x5BF9;&#x4E8E;&#x4EA7;&#x54C1;&#x548C;&#x5DE5;&#x5382;&#x7684;&#x6269;&#x5C55;&#x4E0D;&#x592A;&#x53CB;&#x597D;&#xFF0C;&#x5229;&#x5F0A;&#x9700;&#x8981;&#x6743;&#x8861;&#x4E00;&#x4E0B;&#x3002; </p>
+<p>&#x6B64;&#x5916;&#x65E0;&#x8BBA;&#x54EA;&#x79CD;&#x6A21;&#x5F0F;&#xFF0C;&#x7531;&#x4E8E;&#x53EF;&#x80FD;&#x5C01;&#x88C5;&#x4E86;&#x5927;&#x91CF;&#x5BF9;&#x8C61;&#x548C;&#x5DE5;&#x5382;&#x521B;&#x5EFA;&#xFF0C;&#x65B0;&#x52A0;&#x4EA7;&#x54C1;&#x9700;&#x8981;&#x4FEE;&#x6539;&#x5DF2;&#x5B9A;&#x4E49;&#x597D;&#x7684;&#x5DE5;&#x5382;&#x76F8;&#x5173;&#x7684;&#x7C7B;&#xFF0C;&#x56E0;&#x6B64;&#x5BF9;&#x4E8E;&#x4EA7;&#x54C1;&#x548C;&#x5DE5;&#x5382;&#x7684;&#x6269;&#x5C55;&#x4E0D;&#x592A;&#x53CB;&#x597D;&#xFF0C;&#x5229;&#x5F0A;&#x9700;&#x8981;&#x6743;&#x8861;&#x4E00;&#x4E0B;&#x3002;</p>
+<p>&#x5DE5;&#x5382;&#x65B9;&#x6CD5;&#xFF1A;<code>FactoryMethod</code>&#xFF0C;&#x4EA7;&#x54C1;&#x7EF4;&#x5EA6;</p>
+<p>&#x62BD;&#x8C61;&#x5DE5;&#x5382;&#xFF1A;&#x4EA7;&#x54C1;&#x4E00;&#x65CF;&#x8FDB;&#x884C;&#x6269;&#x5C55;&#xFF0C;&#x6362;&#x76AE;&#x80A4;&#x7B49;</p>
 <h2 id="&#x53C2;&#x8003;&#x6587;&#x7AE0;"><a href="#&#x53C2;&#x8003;&#x6587;&#x7AE0;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x7AE0;"></a>&#x53C2;&#x8003;&#x6587;&#x7AE0;</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/yssjun/p/11102162.html">&#x8BBE;&#x8BA1;&#x6A21;&#x5F0F;&#x4E4B;&#x5DE5;&#x5382;&#x6A21;&#x5F0F;&#xFF08;factory pattern&#xFF09;</a></p>
 
 
@@ -270,6 +272,10 @@
                 
 
                 <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2021/09/14/门面与调停者模式/" data-toggle="tooltip" data-placement="top" title="">&larr; Previous Post</a>
+                        </li>
                     
                     
                         <li class="next">
