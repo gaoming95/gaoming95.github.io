@@ -170,7 +170,7 @@ static {
 }
 private static void initFreeLogin() {
     // 获取所有的注解
-    Set<Class<?>> classSet = ClassUtil.getClasses("com.bilibili.mgk.platform.portal.webapi");
+    Set<Class<?>> classSet = ClassUtil.getClasses("com.test.a.b.portal.webapi");
     for (Class<?> clazz : classSet) {
         FreeLogin classFreeLogin = clazz.getDeclaredAnnotation(FreeLogin.class);
         if (null == classFreeLogin) {
@@ -231,22 +231,8 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-/**
- * @file: ClassUtils
- * @author: gaoming
- * @date: 2021/09/15
- * @version: 1.0
- * @description:
- **/
 @Component
 public class ClassUtil {
-
-    /**
-     * 从包package中获取所有的Class
-     *
-     * @param pack
-     * @return
-     */
     public static Set<Class<?>> getClasses(String pack) {
 
         Set<Class<?>> classes = new LinkedHashSet<>();
