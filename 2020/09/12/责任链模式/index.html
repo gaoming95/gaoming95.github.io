@@ -13,11 +13,11 @@
 
     <title>
         
-          高明的博客 | GaoMing&#39;s Blog
+          责任链模式 - 高明的博客 | GaoMing&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="http://example.com/2021/09/14/责任链模式/">
+    <link rel="canonical" href="http://example.com/2020/09/12/责任链模式/">
 
     <!-- Bootstrap Core CSS -->
     
@@ -101,7 +101,7 @@
 
                         
                         <li>
-                            <a href="/archives/">Archives</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -115,7 +115,7 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/archives/">Archives</a>
                         </li>
                         
                     
@@ -176,12 +176,14 @@
                 <div class="post-heading">
                     <div class="tags">
                         
+                          <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
                     </div>
-                    <h1></h1>
-                    <h2 class="subheading"></h2>
+                    <h1>责任链模式</h1>
+                    <h2 class="subheading">责任链模式（Chain of Responsibility Pattern）为请求创建了一个接收者对象的链。这种模式给予请求的类型，对请求的发送者和接收者进行解耦。这种类型的设计模式属于行为型模式</h2>
                     <span class="meta">
                         Posted by 高明 on
-                        2021-09-14
+                        2020-09-12
                     </span>
                 </div>
             </div>
@@ -204,7 +206,7 @@
 <p><code>javax.servlet.Filter</code></p>
 <p> &#x5728;&#x8BBA;&#x575B;&#x4E2D;&#x53D1;&#x8868;&#x6587;&#x7AE0;</p>
 <p>&#x540E;&#x53F0;&#x8981;&#x7ECF;&#x8FC7;&#x4FE1;&#x606F;&#x5904;&#x7406;&#x624D;&#x53EF;&#x4EE5;&#x53D1;&#x8868;&#x6216;&#x8005;&#x8FDB;&#x5165;&#x6570;&#x636E;&#x5E93;</p>
-<p> <img src="/2021/09/14/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/image-20210914150037944-16316028394904.png" alt="image-20210914150037944"></p>
+<p> <img src="/2020/09/12/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/image-20210914150037944-16316028394904.png" alt="image-20210914150037944"></p>
 <p>&#x4F20;&#x7EDF;&#x8FC7;&#x6EE4;</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RespoMain</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>{</span><br><span class="line">        Msg msg = <span class="keyword">new</span> Msg();</span><br><span class="line">        msg.setMsg(<span class="string">&quot;&#x5927;&#x5BB6;&#x597D;&#xFF0C;:)&#xFF0C;&#x6B22;&#x8FCE;&#x8BBF;&#x95EE;www.baidu.com&quot;</span>);</span><br><span class="line"></span><br><span class="line">        msg.setMsg(msg.getMsg().replace(<span class="string">&quot;:)&quot;</span>,<span class="string">&quot;&#x563B;&#x563B;&quot;</span>));</span><br><span class="line">        msg.setMsg(msg.getMsg().replace(<span class="string">&quot;www.baidu.com&quot;</span>,<span class="string">&quot; https://www.baidu.com&quot;</span>));</span><br><span class="line">        System.out.println(msg.getMsg());</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 
@@ -239,7 +241,7 @@
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x5927;&#x5BB6;&#x597D;&#xFF0C;&#x563B;&#x563B;&#xFF0C;&#x6B22;&#x8FCE;&#x8BBF;&#x95EE;www<span class="selector-class">.baidu</span>.com</span><br></pre></td></tr></table></figure>
 
 <p>&#x5B9E;&#x73B0;<code>Filter</code></p>
-<p><img src="/2021/09/14/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/image-20210914161233452-16316071558835.png" alt="image-20210914161233452"></p>
+<p><img src="/2020/09/12/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/image-20210914161233452-16316071558835.png" alt="image-20210914161233452"></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Request</span> </span>{</span><br><span class="line">    <span class="keyword">private</span> String info;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getInfo</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> info;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setInfo</span><span class="params">(String info)</span> </span>{</span><br><span class="line">        <span class="keyword">this</span>.info = info;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Response</span> </span>{</span><br><span class="line">    <span class="keyword">private</span> String info;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getInfo</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> info;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setInfo</span><span class="params">(String info)</span> </span>{</span><br><span class="line">        <span class="keyword">this</span>.info = info;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
@@ -264,9 +266,13 @@
 
                 <ul class="pager">
                     
+                        <li class="previous">
+                            <a href="/2020/09/16/Filter指定UrI免登录/" data-toggle="tooltip" data-placement="top" title="Filter指定UrI免登录">&larr; Previous Post</a>
+                        </li>
+                    
                     
                         <li class="next">
-                            <a href="/2021/09/14/装饰器模式/" data-toggle="tooltip" data-placement="top" title="">Next Post &rarr;</a>
+                            <a href="/2020/09/11/装饰器模式/" data-toggle="tooltip" data-placement="top" title="装饰器模式">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
@@ -311,6 +317,8 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
+                          <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
                     </div>
                 </section>
                 
@@ -339,8 +347,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "hexo-theme-huxblog";
-    var disqus_identifier = "http://example.com/2021/09/14/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/";
-    var disqus_url = "http://example.com/2021/09/14/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/";
+    var disqus_identifier = "http://example.com/2020/09/12/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/";
+    var disqus_url = "http://example.com/2020/09/12/%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

@@ -13,11 +13,11 @@
 
     <title>
         
-          高明的博客 | GaoMing&#39;s Blog
+          装饰器模式 - 高明的博客 | GaoMing&#39;s Blog
         
     </title>
 
-    <link rel="canonical" href="http://example.com/2021/09/14/装饰器模式/">
+    <link rel="canonical" href="http://example.com/2020/09/11/装饰器模式/">
 
     <!-- Bootstrap Core CSS -->
     
@@ -101,7 +101,7 @@
 
                         
                         <li>
-                            <a href="/archives/">Archives</a>
+                            <a href="/tags/">Tags</a>
                         </li>
                         
                     
@@ -115,7 +115,7 @@
 
                         
                         <li>
-                            <a href="/tags/">Tags</a>
+                            <a href="/archives/">Archives</a>
                         </li>
                         
                     
@@ -176,12 +176,14 @@
                 <div class="post-heading">
                     <div class="tags">
                         
+                          <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
                     </div>
-                    <h1></h1>
-                    <h2 class="subheading"></h2>
+                    <h1>装饰器模式</h1>
+                    <h2 class="subheading">装饰器的价值在于装饰，他并不影响被装饰类本身的核心功能。在一个继承的体系中，子类通常是互斥的。比如一辆车，品牌只能要么是奥迪、要么是宝马，不可能同时属于奥迪和宝马，而品牌也是一辆车本身的重要属性特征。但当你想要给汽车喷漆，换坐垫，或者更换音响时，这些功能是互相可能兼容的，并且他们的存在不会影响车的核心属性：那就是他是一辆什么车。这时你就可以定义一个装饰器：喷了漆的车。不管他装饰的车是宝马还是奥迪，他的喷漆效果都可以实现</h2>
                     <span class="meta">
                         Posted by 高明 on
-                        2021-09-14
+                        2020-09-11
                     </span>
                 </div>
             </div>
@@ -209,7 +211,7 @@
 </ol>
 </li>
 </ol>
-<p><img src="/2021/09/14/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTAyOTU3MzU=,size_16,color_FFFFFF,t_70.png" alt="img"></p>
+<p><img src="/2020/09/11/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTAyOTU3MzU=,size_16,color_FFFFFF,t_70.png" alt="img"></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//&#x57FA;&#x7840;&#x63A5;&#x53E3;</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Component</span> </span>{</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">biu</span><span class="params">()</span></span>;</span><br><span class="line">}</span><br><span class="line"><span class="comment">//&#x5177;&#x4F53;&#x5B9E;&#x73B0;&#x7C7B;</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcretComponent</span> <span class="keyword">implements</span> <span class="title">Component</span> </span>{</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">biu</span><span class="params">()</span> </span>{</span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">&quot;biubiubiu&quot;</span>);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"><span class="comment">//&#x88C5;&#x9970;&#x7C7B;</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Decorator</span> <span class="keyword">implements</span> <span class="title">Component</span> </span>{</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">public</span> Component component;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Decorator</span><span class="params">(Component component)</span> </span>{</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">this</span>.component = component;</span><br><span class="line">    }</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">biu</span><span class="params">()</span> </span>{</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">this</span>.component.biu();</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"><span class="comment">//&#x5177;&#x4F53;&#x88C5;&#x9970;&#x7C7B;</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ConcreteDecorator</span> <span class="keyword">extends</span> <span class="title">Decorator</span> </span>{</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ConcreteDecorator</span><span class="params">(Component component)</span> </span>{</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">super</span>(component);</span><br><span class="line">    }</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">biu</span><span class="params">()</span> </span>{</span><br><span class="line">        </span><br><span class="line">        System.out.println(<span class="string">&quot;ready?go!&quot;</span>);</span><br><span class="line">        <span class="keyword">this</span>.component.biu();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//&#x4F7F;&#x7528;&#x88C5;&#x9970;&#x5668;</span></span><br><span class="line">Component component = <span class="keyword">new</span> ConcreteDecorator(<span class="keyword">new</span> ConcretComponent());</span><br><span class="line">component.biu();</span><br><span class="line"> </span><br><span class="line"><span class="comment">//console&#xFF1A;</span></span><br><span class="line">ready?go!</span><br><span class="line">biubiubiu</span><br></pre></td></tr></table></figure>
@@ -225,12 +227,12 @@
                 <ul class="pager">
                     
                         <li class="previous">
-                            <a href="/2021/09/14/责任链模式/" data-toggle="tooltip" data-placement="top" title="">&larr; Previous Post</a>
+                            <a href="/2020/09/12/责任链模式/" data-toggle="tooltip" data-placement="top" title="责任链模式">&larr; Previous Post</a>
                         </li>
                     
                     
                         <li class="next">
-                            <a href="/2021/09/14/门面与调停者模式/" data-toggle="tooltip" data-placement="top" title="">Next Post &rarr;</a>
+                            <a href="/2020/09/10/门面与调停者模式/" data-toggle="tooltip" data-placement="top" title="门面与调停者模式">Next Post &rarr;</a>
                         </li>
                     
                 </ul>
@@ -275,6 +277,8 @@
                     <h5><a href="/tags/">FEATURED TAGS</a></h5>
                     <div class="tags">
                        
+                          <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
                     </div>
                 </section>
                 
@@ -303,8 +307,8 @@
 <script type="text/javascript">
     /* * * CONFIGURATION VARIABLES * * */
     var disqus_shortname = "hexo-theme-huxblog";
-    var disqus_identifier = "http://example.com/2021/09/14/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/";
-    var disqus_url = "http://example.com/2021/09/14/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/";
+    var disqus_identifier = "http://example.com/2020/09/11/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/";
+    var disqus_url = "http://example.com/2020/09/11/%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F/";
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
