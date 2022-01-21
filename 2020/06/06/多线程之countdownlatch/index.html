@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          CountDownLatch - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/06/06/多线程之countdownlatch/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
+                        
+                    </div>
+                    <h1>CountDownLatch</h1>
+                    <h2 class="subheading">CountDownLatch</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-06-06
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="CountDownLatch"><a href="#CountDownLatch" class="headerlink" title="CountDownLatch"></a>CountDownLatch</h1><ol>
+<li>countDownLatch&#x662F;&#x5728;java1.5&#x88AB;&#x5F15;&#x5165;&#xFF0C;&#x8DDF;&#x5B83;&#x4E00;&#x8D77;&#x88AB;&#x5F15;&#x5165;&#x7684;&#x5DE5;&#x5177;&#x7C7B;&#x8FD8;&#x6709;CyclicBarrier&#x3001;Semaphore&#x3001;concurrentHashMap&#x548C;BlockingQueue</li>
+<li>&#x5B58;&#x5728;&#x4E8E;java.util.cucurrent&#x5305;&#x4E0B;</li>
+</ol>
+<h2 id="&#x6982;&#x5FF5;"><a href="#&#x6982;&#x5FF5;" class="headerlink" title="&#x6982;&#x5FF5;"></a>&#x6982;&#x5FF5;</h2><p>countDownLatch&#x8FD9;&#x4E2A;&#x7C7B;&#x4F7F;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x7B49;&#x5F85;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x5404;&#x81EA;&#x6267;&#x884C;&#x5B8C;&#x6BD5;&#x540E;&#x518D;&#x6267;&#x884C;</p>
+<p>&#x662F;&#x901A;&#x8FC7;&#x4E00;&#x4E2A;&#x8BA1;&#x6570;&#x5668;&#x6765;&#x5B9E;&#x73B0;&#x7684;&#xFF0C;&#x8BA1;&#x6570;&#x5668;&#x7684;&#x521D;&#x59CB;&#x503C;&#x662F;&#x7EBF;&#x7A0B;&#x7684;&#x6570;&#x91CF;&#x3002;&#x6BCF;&#x5F53;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x5B8C;&#x6BD5;&#x540E;&#xFF0C;&#x8BA1;&#x6570;&#x5668;&#x7684;&#x503C;&#x5C31;-1&#xFF0C;&#x5F53;&#x8BA1;&#x6570;&#x5668;&#x7684;&#x503C;&#x4E3A;0&#x65F6;&#xFF0C;&#x8868;&#x793A;&#x6240;&#x6709;&#x7EBF;&#x7A0B;&#x90FD;&#x6267;&#x884C;&#x5B8C;&#x6BD5;&#xFF0C;&#x7136;&#x540E;&#x5728;&#x95ED;&#x9501;&#x4E0A;&#x7B49;&#x5F85;&#x7684;&#x7EBF;&#x7A0B;&#x5C31;&#x53EF;&#x4EE5;&#x6062;&#x590D;&#x5DE5;&#x4F5C;&#x4E86;</p>
+<h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><h3 id="&#x7EBF;&#x7A0B;&#x6C60;&#x914D;&#x7F6E;"><a href="#&#x7EBF;&#x7A0B;&#x6C60;&#x914D;&#x7F6E;" class="headerlink" title="&#x7EBF;&#x7A0B;&#x6C60;&#x914D;&#x7F6E;"></a>&#x7EBF;&#x7A0B;&#x6C60;&#x914D;&#x7F6E;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadPoolConfig</span> </span>{</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ThreadPoolTaskExecutor <span class="title">taskExecutor</span><span class="params">()</span> </span>{</span><br><span class="line">        ThreadPoolTaskExecutor taskExecutor = <span class="keyword">new</span> ThreadPoolTaskExecutor();</span><br><span class="line">        taskExecutor.setCorePoolSize(<span class="number">8</span>);</span><br><span class="line">        taskExecutor.setMaxPoolSize(<span class="number">32</span>);</span><br><span class="line">        taskExecutor.setKeepAliveSeconds(<span class="number">300</span>);</span><br><span class="line">        taskExecutor.setQueueCapacity(<span class="number">128</span>);</span><br><span class="line">        taskExecutor.setRejectedExecutionHandler(<span class="keyword">new</span> ThreadPoolExecutor.AbortPolicy());</span><br><span class="line">        <span class="keyword">return</span> taskExecutor;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x591A;&#x7EBF;&#x7A0B;"><a href="#&#x591A;&#x7EBF;&#x7A0B;" class="headerlink" title="&#x591A;&#x7EBF;&#x7A0B;"></a>&#x591A;&#x7EBF;&#x7A0B;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> ThreadPoolTaskExecutor taskExecutor;</span><br><span class="line"></span><br><span class="line"><span class="keyword">final</span> CountDownLatch latch = <span class="keyword">new</span> CountDownLatch(<span class="number">3</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#x7B2C;&#x4E00;&#x4E2A;&#x4EFB;&#x52A1;</span></span><br><span class="line"> Future&lt;List&lt;ResultDto&gt;&gt; result1= taskExecutor.submit(() -&gt; {</span><br><span class="line">     <span class="keyword">try</span> {</span><br><span class="line">		<span class="keyword">return</span> doSomething(queryDto);</span><br><span class="line">     } <span class="keyword">finally</span> {</span><br><span class="line">         latch.countDown();</span><br><span class="line">     }</span><br><span class="line"> });</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#x7B2C;&#x4E8C;&#x4E2A;&#x4EFB;&#x52A1;</span></span><br><span class="line"> Future&lt;List&lt;ResultDto&gt;&gt; result2= taskExecutor.submit(() -&gt; {</span><br><span class="line">     <span class="keyword">try</span> {</span><br><span class="line">		<span class="keyword">return</span> doSomething(queryDto);</span><br><span class="line">     } <span class="keyword">finally</span> {</span><br><span class="line">         latch.countDown();</span><br><span class="line">     }</span><br><span class="line"> });</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#x7B2C;&#x4E09;&#x4E2A;&#x4EFB;&#x52A1;</span></span><br><span class="line"> Future&lt;List&lt;ResultDto&gt;&gt; result3= taskExecutor.submit(() -&gt; {</span><br><span class="line">     <span class="keyword">try</span> {</span><br><span class="line">		<span class="keyword">return</span> doSomething(queryDto);</span><br><span class="line">     } <span class="keyword">finally</span> {</span><br><span class="line">         latch.countDown();</span><br><span class="line">     }</span><br><span class="line"> });</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> {</span><br><span class="line">    <span class="comment">// &#x7B49;&#x5F85;&#x4E09;&#x4E2A;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x5B8C;&#x6BD5;</span></span><br><span class="line">    latch.await();</span><br><span class="line">} <span class="keyword">catch</span> (InterruptedException e) {</span><br><span class="line">    e.printStackTrace();</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#x83B7;&#x53D6;&#x7ED3;&#x679C;</span></span><br><span class="line">List&lt;ResultDto&gt; r1 = result1.get();</span><br><span class="line">List&lt;ResultDto&gt; r2 = result2.get();</span><br><span class="line">List&lt;ResultDto&gt; r3 = result3.get();</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#x5904;&#x7406;&#x7ED3;&#x679C;&#x8FD4;&#x56DE;</span></span><br><span class="line">handleResult(r1, r2, r3)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong>CountDownLatch&#x548C;CyclicBarrier&#x533A;&#x522B;&#xFF1A;</strong></p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1.</span>countDownLatch&#x662F;&#x4E00;&#x4E2A;&#x8BA1;&#x6570;&#x5668;&#xFF0C;&#x7EBF;&#x7A0B;&#x5B8C;&#x6210;&#x4E00;&#x4E2A;&#x8BB0;&#x5F55;&#x4E00;&#x4E2A;&#xFF0C;&#x8BA1;&#x6570;&#x5668;&#x9012;&#x51CF;&#xFF0C;&#x53EA;&#x80FD;&#x53EA;&#x7528;&#x4E00;&#x6B21;</span><br><span class="line"><span class="number">2.</span>CyclicBarrier&#x7684;&#x8BA1;&#x6570;&#x5668;&#x66F4;&#x50CF;&#x4E00;&#x4E2A;&#x9600;&#x95E8;&#xFF0C;&#x9700;&#x8981;&#x6240;&#x6709;&#x7EBF;&#x7A0B;&#x90FD;&#x5230;&#x8FBE;&#xFF0C;&#x7136;&#x540E;&#x7EE7;&#x7EED;&#x6267;&#x884C;&#xFF0C;&#x8BA1;&#x6570;&#x5668;&#x9012;&#x589E;&#xFF0C;&#x63D0;&#x4F9B;<span class="built_in">reset</span>&#x529F;&#x80FD;&#xFF0C;&#x53EF;&#x4EE5;&#x591A;&#x6B21;&#x4F7F;&#x7528;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ExecutorCompletionService"><a href="#ExecutorCompletionService" class="headerlink" title="ExecutorCompletionService"></a>ExecutorCompletionService</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> ThreadPoolTaskExecutor taskExecutor;</span><br><span class="line"></span><br><span class="line">CompletionService&lt;Tuple2&lt;Integer, String&gt;&gt; cService = <span class="keyword">new</span> ExecutorCompletionService&lt;&gt;(taskExecutor);</span><br><span class="line">IntStream.range(<span class="number">0</span>, pageCount).forEach(i -&gt; cService.submit(() -&gt; {</span><br><span class="line">    <span class="keyword">return</span> doSomething(i);</span><br><span class="line">}));</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; pageCount; i++) {</span><br><span class="line">    Future&lt;Tuple2&lt;Integer, String&gt;&gt; future = cService.take();</span><br><span class="line">    String r = future.get();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/06/06/Mockito/" data-toggle="tooltip" data-placement="top" title="Mockito 测试框架">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/06/04/Mysql设计规范/" data-toggle="tooltip" data-placement="top" title="数据库设计规范">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#CountDownLatch"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">CountDownLatch</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x6982;&#x5FF5;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x6982;&amp;#x5FF5;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Demo"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">Demo</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x7EBF;&#x7A0B;&#x6C60;&#x914D;&#x7F6E;"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">&amp;#x7EBF;&amp;#x7A0B;&amp;#x6C60;&amp;#x914D;&amp;#x7F6E;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x591A;&#x7EBF;&#x7A0B;"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">&amp;#x591A;&amp;#x7EBF;&amp;#x7A0B;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#ExecutorCompletionService"><span class="toc-nav-number">1.2.3.</span> <span class="toc-nav-text">ExecutorCompletionService</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/06/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8Bcountdownlatch/";
+    var disqus_url = "http://example.com/2020/06/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B%E4%B9%8Bcountdownlatch/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

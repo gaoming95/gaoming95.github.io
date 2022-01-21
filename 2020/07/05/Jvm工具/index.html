@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Jvm工具 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/07/05/Jvm工具/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                    <h1>Jvm工具</h1>
+                    <h2 class="subheading">Jps jstack jstat jinfo jmap jhat</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-07-05
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="Jvm-&#x5DE5;&#x5177;"><a href="#Jvm-&#x5DE5;&#x5177;" class="headerlink" title="Jvm &#x5DE5;&#x5177;"></a>Jvm &#x5DE5;&#x5177;</h1><h2 id="jps"><a href="#jps" class="headerlink" title="jps"></a>jps</h2><p><code>Java Virtual Machine Process Status Tool</code></p>
+<p><code>jps</code>&#x662F;<code>java</code>&#x63D0;&#x4F9B;&#x7684;&#x4E00;&#x4E2A;&#x663E;&#x793A;&#x5F53;&#x524D;&#x6240;&#x6709;<code>java</code>&#x8FDB;&#x7A0B;<code>pid</code>&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x9002;&#x5408;&#x5728;<code>linux/unix</code>&#x5E73;&#x53F0;&#x4E0A;&#x67E5;&#x770B;&#x5F53;&#x524D;<code>java</code>&#x8FDB;&#x7A0B;&#x7684;&#x4E00;&#x4E9B;&#x7B80;&#x5355;&#x60C5;&#x51B5;&#x3002;</p>
+<p>&#x5F88;&#x591A;&#x4EBA;&#x90FD;&#x662F;&#x7528;&#x8FC7;<code>unix</code>&#x7CFB;&#x7EDF;&#x91CC;&#x9762;&#x7684;<code>ps</code>&#x547D;&#x4EE4;&#xFF0C;&#x8FD9;&#x4E2A;&#x547D;&#x4EE4;&#x4E3B;&#x8981;&#x662F;&#x7528;&#x6765;&#x663E;&#x793A;&#x5F53;&#x524D;&#x7CFB;&#x7EDF;&#x7684;&#x8FDB;&#x7A0B;&#x60C5;&#x51B5;&#xFF0C;&#x6709;&#x54EA;&#x4E9B;&#x8FDB;&#x7A0B;&#x4EE5;&#x53CA;&#x8FDB;&#x7A0B;<code>id</code></p>
+<p><code>jps</code>&#x4E5F;&#x662F;&#x4E00;&#x6837;&#xFF0C;&#x5B83;&#x7684;&#x4F5C;&#x7528;&#x662F;&#x663E;&#x793A;&#x5F53;&#x524D;&#x7CFB;&#x7EDF;&#x7684;<code>java</code>&#x8FDB;&#x7A0B;&#x60C5;&#x51B5;&#x4EE5;&#x53CA;&#x8FDB;&#x7A0B;<code>id</code>&#xFF0C;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x5B83;&#x67E5;&#x770B;&#x5230;&#x5E95;&#x542F;&#x52A8;&#x4E86;&#x591A;&#x5C11;&#x4E2A;<code>java</code>&#x8FDB;&#x7A0B;&#xFF08;&#x56E0;&#x4E3A;&#x6BCF;&#x4E00;&#x4E2A;<code>java</code>&#x7A0B;&#x5E8F;&#x90FD;&#x4F1A;&#x72EC;&#x5360;&#x4E00;&#x4E2A;<code>java</code>&#x865A;&#x62DF;&#x673A;&#x5B9E;&#x4F8B;&#xFF09;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jps</span><br><span class="line">1664 Launcher</span><br><span class="line">17156</span><br><span class="line">21220 Jps</span><br><span class="line">21896 Launcher</span><br><span class="line"><span class="comment"># &#x663E;&#x793A;&#x8FDB;&#x7A0B;id&#x4EE5;&#x53CA;&#x8FDB;&#x7A0B;</span></span><br><span class="line"></span><br><span class="line">C:\Users\gaoming&gt;jps localhost</span><br><span class="line">1664 Launcher</span><br><span class="line">17156</span><br><span class="line">11512 Jps</span><br><span class="line">21896 Launcher</span><br><span class="line"><span class="comment"># &#x8FDC;&#x7A0B;</span></span><br><span class="line"></span><br><span class="line">C:\Users\gaoming&gt;jps 127.0.0.1</span><br><span class="line">RMI Registry not available at 127.0.0.1:1099</span><br><span class="line">Connection refused to host: 127.0.0.1; nested exception is:</span><br><span class="line">        java.net.ConnectException: Connection refused: connect</span><br><span class="line"><span class="comment"># &#x8FDC;&#x7A0B;&#x672A;&#x5F00;&#x542F;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x3010;&#x5E38;&#x7528;&#x53C2;&#x6570;&#x3011;</p>
+<p><strong><code>-q</code></strong> &#x53EA;&#x663E;&#x793A;<code>pid</code>&#xFF0C;&#x4E0D;&#x663E;&#x793A;<code>class</code>&#x540D;&#x79F0;&#xFF0C;<code>jar</code>&#x6587;&#x4EF6;&#x540D;&#x548C;&#x4F20;&#x9012;&#x7ED9;<code>main</code>&#x65B9;&#x6CD5;&#x7684;&#x53C2;&#x6570;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jps -q</span><br><span class="line">1664</span><br><span class="line">8416</span><br><span class="line">17156</span><br><span class="line">21896</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-m</code></strong> &#x8F93;&#x51FA;&#x4F20;&#x9012;&#x7ED9;<code>main</code>&#x65B9;&#x6CD5;&#x7684;&#x53C2;&#x6570;&#xFF0C;&#x5728;&#x5D4C;&#x5165;&#x5F0F;<code>jvm</code>&#x4E0A;&#x53EF;&#x80FD;&#x662F;<code>null</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jps -m</span><br><span class="line">23040</span><br><span class="line">760 MyMain</span><br><span class="line">6876 Jps -m</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-l</code></strong> &#x8F93;&#x51FA;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;<code>main class</code>&#x7684;&#x5B8C;&#x6574;<code>package</code>&#x540D;&#x6216;&#x8005;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;<code>jar</code>&#x6587;&#x4EF6;&#x5B8C;&#x6574;&#x8DEF;&#x5F84;&#x540D;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jps -l</span><br><span class="line">23040</span><br><span class="line">5332 org.jetbrains.jps.cmdline.Launcher</span><br><span class="line">12988 MyMain</span><br><span class="line">21580 sun.tools.jps.Jps</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-v</code></strong> &#x8F93;&#x51FA;&#x4F20;&#x9012;&#x7ED9;<code>JVM</code>&#x7684;&#x53C2;&#x6570;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jps -v</span><br><span class="line">22024 MyMain -Xms256m -javaagent:D:\IDEAJ\IntelliJ IDEA 2020.1.2\lib\idea_rt.jar=57090:D:\IDEAJ\IntelliJ IDEA 2020.1.2\bin -Dfile.encoding=UTF-8</span><br><span class="line">2020.1.2\bin -Dfile.encoding=UTF-8</span><br></pre></td></tr></table></figure>
+
+<p><strong><code>-V</code></strong> &#x9690;&#x85CF;&#x8F93;&#x51FA;&#x4F20;&#x9012;&#x7ED9;<code>JVM</code>&#x7684;&#x53C2;&#x6570;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jps -V</span><br><span class="line">23040</span><br><span class="line">19300 Jps</span><br><span class="line">3268 MyMain</span><br><span class="line">19720 Launcher</span><br></pre></td></tr></table></figure>
+
+<h2 id="jstack"><a href="#jstack" class="headerlink" title="jstack"></a>jstack</h2><p>&#x7528;&#x4E8E;&#x751F;&#x6210;<code>java</code>&#x865A;&#x62DF;&#x673A;&#x5F53;&#x524D;&#x65F6;&#x523B;&#x7684;&#x7EBF;&#x7A0B;&#x5FEB;&#x7167;&#xFF08;&#x4E00;&#x822C;&#x79F0;&#x4E3A;<code>threaddump</code>&#x6216;<code>javacore</code>&#x6587;&#x4EF6;&#xFF09;&#xFF0C;&#x7EBF;&#x7A0B;&#x5FEB;&#x7167;&#x5C31;&#x662F;&#x5F53;&#x524D;&#x865A;&#x62DF;&#x673A;&#x5185;&#x6BCF;&#x4E00;&#x6761;&#x7EBF;&#x7A0B;&#x6B63;&#x5728;&#x6267;&#x884C;&#x7684;&#x65B9;&#x6CD5;&#x5806;&#x6808;&#x7684;&#x96C6;&#x5408;&#xFF0C;&#x751F;&#x6210;&#x7EBF;&#x7A0B;&#x5FEB;&#x7167;&#x7684;&#x4E3B;&#x8981;&#x76EE;&#x7684;&#x5C31;&#x662F;&#x5B9A;&#x4F4D;&#x7EBF;&#x7A0B;&#x51FA;&#x73B0;&#x957F;&#x65F6;&#x95F4;&#x505C;&#x987F;&#x7684;&#x539F;&#x56E0;&#xFF0C;&#x5982;&#x7EBF;&#x7A0B;&#x95F4;&#x6B7B;&#x9501;&#xFF0C;&#x6B7B;&#x5FAA;&#x73AF;&#xFF0C;&#x8BF7;&#x6C42;&#x5916;&#x90E8;&#x8D44;&#x6E90;&#x5BFC;&#x81F4;&#x7684;&#x957F;&#x65F6;&#x95F4;&#x7B49;&#x5F85;&#x7B49;&#x90FD;&#x662F;&#x5BFC;&#x81F4;&#x7EBF;&#x7A0B;&#x957F;&#x65F6;&#x95F4;&#x505C;&#x987F;&#x7684;&#x539F;&#x56E0;&#x3002;</p>
+<p>&#x3010;&#x5E38;&#x7528;&#x53C2;&#x6570;&#x3011;</p>
+<p><strong><code>F</code></strong> : &#x5F53;&#x6B63;&#x5E38;&#x8F93;&#x51FA;&#x7684;&#x8BF7;&#x6C42;&#x4E0D;&#x88AB;&#x54CD;&#x5E94;&#x65F6;&#xFF0C;&#x5F3A;&#x5236;&#x8F93;&#x51FA;&#x7EBF;&#x7A0B;&#x5806;&#x6808;</p>
+<p><strong><code>-l</code></strong> &#xFF1A; &#x9664;&#x5806;&#x6808;&#x5916;&#xFF0C;&#x663E;&#x793A;&#x5173;&#x4E8E;&#x9501;&#x7684;&#x9644;&#x52A0;&#x4FE1;&#x606F;</p>
+<p>**<code>-m</code>**&#xFF1A;&#x5982;&#x679C;&#x8C03;&#x7528;&#x5230;&#x672C;&#x5730;&#x65B9;&#x6CD5;&#x7684;&#x8BDD;&#xFF0C;&#x53EF;&#x4EE5;&#x663E;&#x793A;C/C++&#x7684;&#x5806;&#x6808;</p>
+<p>&#x3010;<code>jstack</code>&#x4E3B;&#x8981;&#x7528;&#x6765;&#x67E5;&#x770B;&#x67D0;&#x4E2A;<code>java</code>&#x8FDB;&#x7A0B;&#x5185;&#x7684;&#x7EBF;&#x7A0B;&#x5806;&#x6808;&#x4FE1;&#x606F;&#x3011;</p>
+<ol>
+<li><code>jps</code> &#x67E5;&#x770B;<code>java</code>&#x8FDB;&#x7A0B;<code>pid</code>&#xFF08;&#x6216;&#x8005;&#x4F7F;&#x7528;<code>top</code>&#x547D;&#x4EE4;&#xFF09;&#xFF08;&#x67E5;&#x770B;cpu&#x5360;&#x7528;&#x9AD8;&#x8FDB;&#x7A0B;&#xFF09;</li>
+<li><code>top -Hp pid</code> &#x627E;&#x51FA;&#x8BE5;&#x8FDB;&#x7A0B;&#x5185;&#x6700;&#x8017;&#x8D39;<code>cpu</code>&#x7684;&#x7EBF;&#x7A0B;&#xFF08;<code>top -H -p 17850</code>&#xFF09;&#xFF08;&#x67E5;&#x770B;cpu&#x5360;&#x7528;&#x9AD8;&#x7EBF;&#x7A0B;&#xFF09;</li>
+<li><code>printf &quot;%x\n&quot; 1787</code> &#x5F97;&#x5230;&#x5341;&#x516D;&#x8FDB;&#x5236;&#x503C;&#x4E3A;<code>6fb</code></li>
+<li><code>jstack pid &gt; file.log</code> &#x901A;&#x8FC7;<code>jstack</code> &#x628A;&#x8BE5;&#x8FDB;&#x7A0B;&#x7684;&#x6240;&#x6709;&#x7EBF;&#x7A0B;&#x5806;&#x6808;&#x6253;&#x5370;&#x5230;<code>file.log</code>&#x4E2D;</li>
+<li><code>vi file.log</code> &#x6253;&#x5F00;&#x6587;&#x4EF6;&#x641C;&#x7D22; <code>6fb</code> &#x627E;&#x5230;&#x5177;&#x4F53;&#x51FA;&#x95EE;&#x9898;&#x7684;&#x4EE3;&#x7801;</li>
+</ol>
+<p>&#x3010;<code>jstack</code>&#x68C0;&#x6D4B;&#x6B7B;&#x9501;&#x3011;</p>
+<p>&#x6B7B;&#x9501;&#x4EE3;&#x7801;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.SneakyThrows;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.Lock;</span><br><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"><span class="keyword">import</span> <span class="keyword">static</span> java.lang.Thread.sleep;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@file</span>: LockExample</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: gaoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2021/04/29</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>:</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LockExample</span> </span>{</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Lock lock1 = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Lock lock2 = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">lockExample</span><span class="params">()</span> </span>{</span><br><span class="line">        Thread t1 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() {</span><br><span class="line">            <span class="meta">@SneakyThrows</span></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>{</span><br><span class="line">                lock1.lock();</span><br><span class="line">                sleep(<span class="number">1000</span>);</span><br><span class="line">                lock2.lock();</span><br><span class="line">            }</span><br><span class="line">        });</span><br><span class="line">        Thread t2 = <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() {</span><br><span class="line">            <span class="meta">@SneakyThrows</span></span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>{</span><br><span class="line">                lock2.lock();</span><br><span class="line">                sleep(<span class="number">1000</span>);</span><br><span class="line">                lock1.lock();</span><br><span class="line">            }</span><br><span class="line">        });</span><br><span class="line">        t1.start();</span><br><span class="line">        t2.start();</span><br><span class="line">    }</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>{</span><br><span class="line">        lockExample();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jps</span><br><span class="line">20256 Launcher</span><br><span class="line">21088 Launcher</span><br><span class="line">23040</span><br><span class="line">21796 LockExample</span><br><span class="line">23512 Jps</span><br><span class="line">21580 RemoteMavenServer36</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstack 21796</span><br><span class="line">2021-04-29 17:02:06</span><br><span class="line">Full thread dump Java HotSpot(TM) 64-Bit Server VM (25.60-b23 mixed mode):</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">Found one Java-level deadlock:</span><br><span class="line">=============================</span><br><span class="line"><span class="string">&quot;Thread-1&quot;</span>:</span><br><span class="line">  waiting <span class="keyword">for</span> ownable synchronizer <span class="number">0x00000000d68fa990</span>, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),</span><br><span class="line">  which is held by <span class="string">&quot;Thread-0&quot;</span></span><br><span class="line"><span class="string">&quot;Thread-0&quot;</span>:</span><br><span class="line">  waiting <span class="keyword">for</span> ownable synchronizer <span class="number">0x00000000d68fa9c0</span>, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),</span><br><span class="line">  which is held by <span class="string">&quot;Thread-1&quot;</span></span><br><span class="line">Java stack information <span class="keyword">for</span> the threads listed above:</span><br><span class="line">===================================================</span><br><span class="line"><span class="string">&quot;Thread-1&quot;</span>:</span><br><span class="line">        at sun.misc.Unsafe.park(Native Method)</span><br><span class="line">        - parking to wait <span class="keyword">for</span>  &lt;<span class="number">0x00000000d68fa990</span>&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)</span><br><span class="line">        at java.util.concurrent.locks.LockSupport.park(LockSupport.java:<span class="number">175</span>)</span><br><span class="line">        at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:<span class="number">836</span>)</span><br><span class="line">        at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:<span class="number">870</span>)</span><br><span class="line">        at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:<span class="number">1199</span>)</span><br><span class="line">        at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:<span class="number">209</span>)</span><br><span class="line">        at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:<span class="number">285</span>)</span><br><span class="line">        at LockExample$<span class="number">2.</span>run(LockExample.java:<span class="number">37</span>)</span><br><span class="line">        at java.lang.Thread.run(Thread.java:<span class="number">745</span>)</span><br><span class="line"><span class="string">&quot;Thread-0&quot;</span>:</span><br><span class="line">        at sun.misc.Unsafe.park(Native Method)</span><br><span class="line">        - parking to wait <span class="keyword">for</span>  &lt;<span class="number">0x00000000d68fa9c0</span>&gt; (a java.util.concurrent.locks.ReentrantLock$NonfairSync)</span><br><span class="line">        at java.util.concurrent.locks.LockSupport.park(LockSupport.java:<span class="number">175</span>)</span><br><span class="line">        at java.util.concurrent.locks.AbstractQueuedSynchronizer.parkAndCheckInterrupt(AbstractQueuedSynchronizer.java:<span class="number">836</span>)</span><br><span class="line">        at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquireQueued(AbstractQueuedSynchronizer.java:<span class="number">870</span>)</span><br><span class="line">        at java.util.concurrent.locks.AbstractQueuedSynchronizer.acquire(AbstractQueuedSynchronizer.java:<span class="number">1199</span>)</span><br><span class="line">        at java.util.concurrent.locks.ReentrantLock$NonfairSync.lock(ReentrantLock.java:<span class="number">209</span>)</span><br><span class="line">        at java.util.concurrent.locks.ReentrantLock.lock(ReentrantLock.java:<span class="number">285</span>)</span><br><span class="line">        at LockExample$<span class="number">1.</span>run(LockExample.java:<span class="number">27</span>)</span><br><span class="line">        at java.lang.Thread.run(Thread.java:<span class="number">745</span>)</span><br><span class="line">Found <span class="number">1</span> deadlock.</span><br></pre></td></tr></table></figure>
+
+<h2 id="jstat"><a href="#jstat" class="headerlink" title="jstat"></a>jstat</h2><p><code>jstat</code>&#x662F;<code>JDK</code>&#x81EA;&#x5E26;&#x7684;&#x4E00;&#x4E2A;&#x8F7B;&#x91CF;&#x7EA7;&#x5C0F;&#x5DE5;&#x5177;&#xFF0C;&#x5168;&#x79F0;<code>Java Virtual Machine statistics monitoring tool</code>&#xFF0C;&#x5B83;&#x4F4D;&#x4E8E;<code>java</code>&#x7684;<code>bin</code>&#x76EE;&#x5F55;&#x4E0B;&#xFF0C;&#x4E3B;&#x8981;&#x5229;&#x7528;<code>jvm</code>&#x5185;&#x5EFA;&#x7684;&#x6307;&#x4EE4;&#x5BF9;<code>java</code>&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x8D44;&#x6E90;&#x548C;&#x6027;&#x80FD;&#x8FDB;&#x884C;&#x5B9E;&#x65F6;&#x7684;&#x547D;&#x4EE4;&#x884C;&#x7684;&#x76D1;&#x63A7;&#xFF0C;&#x5305;&#x62EC;&#x4E86;&#x5BF9;<code>Heap Size</code>&#x548C;&#x5783;&#x573E;&#x56DE;&#x6536;&#x72B6;&#x51B5;&#x7684;&#x76D1;&#x63A7;&#x3002;&#x53EF;&#x89C1;&#xFF0C;<code>jstat</code>&#x662F;&#x8F7B;&#x91CF;&#x7EA7;&#x7684;&#xFF0C;&#x4E13;&#x95E8;&#x9488;&#x5BF9;<code>jvm</code>&#x7684;&#x5DE5;&#x5177;&#xFF0C;&#x975E;&#x5E38;&#x9002;&#x7528;</p>
+<p><code>jstat</code>&#x5DE5;&#x5177;&#x7279;&#x522B;&#x5F3A;&#x5927;&#xFF0C;&#x6709;&#x4F17;&#x591A;&#x7684;&#x53EF;&#x9009;&#x9879;&#xFF0C;&#x8BE6;&#x7EC6;&#x67E5;&#x770B;&#x5806;&#x5185;&#x5404;&#x4E2A;&#x90E8;&#x5206;&#x7684;&#x4F7F;&#x7528;&#x91CF;&#xFF0C;&#x4EE5;&#x53CA;&#x52A0;&#x8F7D;&#x7C7B;&#x7684;&#x6570;&#x91CF;&#x3002;&#x4F7F;&#x7528;&#x65F6;&#xFF0C;&#x9700;&#x52A0;&#x4E0A;&#x67E5;&#x770B;&#x8FDB;&#x7A0B;&#x7684;&#x8FDB;&#x7A0B;<code>id</code>&#xFF0C;&#x548C;&#x6240;&#x9009;&#x53C2;&#x6570;&#xFF0C;&#x5E38;&#x89C1;&#x7684;&#x53C2;&#x6570;&#x6709;&#xFF1A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -options</span><br><span class="line">-class</span><br><span class="line">-compiler</span><br><span class="line">-gc</span><br><span class="line">-gccapacity</span><br><span class="line">-gccause</span><br><span class="line">-gcmetacapacity</span><br><span class="line">-gcnew</span><br><span class="line">-gcnewcapacity</span><br><span class="line">-gcold</span><br><span class="line">-gcoldcapacity</span><br><span class="line">-gcutil</span><br><span class="line">-printcompilation</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">class&#xFF08;&#x7C7B;&#x52A0;&#x8F7D;&#x5668;&#xFF09;&#x76D1;&#x89C6;&#x7C7B;&#x88C5;&#x8F7D;&#x3001;&#x5378;&#x8F7D;&#x6570;&#x91CF;&#x3001;&#x603B;&#x7A7A;&#x95F4;&#x53CA;&#x7C7B;&#x88C5;&#x8F7D;&#x6240;&#x8017;&#x8D39;&#x7684;&#x65F6;&#x95F4;</span><br><span class="line">compiler&#xFF08;JIT&#xFF09;&#x8F93;&#x51FA;JIT&#x7F16;&#x8BD1;&#x5668;&#x7F16;&#x8BD1;&#x8FC7;&#x7684;&#x65B9;&#x6CD5;&#x3001;&#x8017;&#x65F6;&#x7B49;&#x4FE1;&#x606F;</span><br><span class="line">gc&#xFF08;GC&#x5806;&#x72B6;&#x6001;&#xFF09;&#x76D1;&#x89C6;Java&#x5806;&#x72B6;&#x51B5;&#xFF0C;&#x5305;&#x62EC;Eden&#x533A;&#x3001;2&#x4E2A;Survivor&#x533A;&#x3001;&#x8001;&#x5E74;&#x4EE3;&#x3001;&#x6C38;&#x4E45;&#x4EE3;&#x7B49;&#x7684;&#x5BB9;&#x91CF;</span><br><span class="line">gccapacity&#xFF08;&#x5404;&#x533A;&#x5927;&#x5C0F;&#xFF09;&#x76D1;&#x89C6;&#x5185;&#x5BB9;&#x4E0E;-gc&#x57FA;&#x672C;&#x76F8;&#x540C;&#xFF0C;&#x4F46;&#x8F93;&#x51FA;&#x4E3B;&#x8981;&#x5173;&#x6CE8;Java&#x5806;&#x5404;&#x4E2A;&#x533A;&#x57DF;&#x4F7F;&#x7528;&#x5230;&#x7684;&#x6700;&#x5927;&#x548C;&#x6700;&#x5C0F;&#x7A7A;&#x95F4;</span><br><span class="line">gccause&#xFF08;&#x6700;&#x8FD1;&#x4E00;&#x6B21;gc&#x7EDF;&#x8BA1;&#x548C;&#x539F;&#x56E0;&#xFF09;&#x4E0E;-gcutil&#x529F;&#x80FD;&#x4E00;&#x6837;&#xFF0C;&#x4F46;&#x662F;&#x4F1A;&#x989D;&#x5916;&#x8F93;&#x51FA;&#x5BFC;&#x81F4;&#x4E0A;&#x4E00;&#x6B21;GC&#x4EA7;&#x751F;&#x7684;&#x539F;&#x56E0;</span><br><span class="line">gcnew&#xFF08;&#x65B0;&#x533A;&#x7EDF;&#x8BA1;&#xFF09;&#x76D1;&#x89C6;&#x65B0;&#x751F;&#x4EE3;GC&#x7684;&#x72B6;&#x51B5;</span><br><span class="line">gcnewcapacity&#xFF08;&#x65B0;&#x533A;&#x5927;&#x5C0F;&#xFF09;&#x76D1;&#x89C6;&#x5185;&#x5BB9;&#x4E0E;-gcnew&#x57FA;&#x672C;&#x76F8;&#x540C;&#xFF0C;&#x8F93;&#x51FA;&#x4E3B;&#x8981;&#x5173;&#x6CE8;&#x4F7F;&#x7528;&#x5230;&#x7684;&#x6700;&#x5927;&#x548C;&#x6700;&#x5C0F;&#x7A7A;&#x95F4;</span><br><span class="line">gcold&#xFF08;&#x8001;&#x533A;&#x7EDF;&#x8BA1;&#xFF09;&#x76D1;&#x89C6;&#x8001;&#x5E74;&#x4EE3;GC&#x7684;&#x72B6;&#x51B5;</span><br><span class="line">gcoldcapacity&#xFF08;&#x8001;&#x533A;&#x5927;&#x5C0F;&#xFF09;&#x76D1;&#x89C6;&#x5185;&#x5BB9;&#x4E0E;&#x2014;&#x2014;gcold&#x57FA;&#x672C;&#x76F8;&#x540C;&#xFF0C;&#x8F93;&#x51FA;&#x4E3B;&#x8981;&#x5173;&#x6CE8;&#x4F7F;&#x7528;&#x5230;&#x7684;&#x6700;&#x5927;&#x548C;&#x6700;&#x5C0F;&#x7A7A;&#x95F4;</span><br><span class="line">gcmetacapacity&#xFF08;&#x539F;&#x7A7A;&#x95F4;&#x5927;&#x5C0F;&#xFF09;&#x8F93;&#x51FA;&#x5143;&#x7A7A;&#x95F4;&#x4F7F;&#x7528;&#x5230;&#x7684;&#x6700;&#x5927;&#x548C;&#x6700;&#x5C0F;&#x7A7A;&#x95F4;</span><br><span class="line">gcutil&#xFF08;gc&#x7EDF;&#x8BA1;&#x6C47;&#x603B;&#xFF09;&#x76D1;&#x89C6;&#x5185;&#x5BB9;&#x4E0E;-gc&#x57FA;&#x672C;&#x76F8;&#x540C;&#xFF0C;&#x4F46;&#x8F93;&#x51FA;&#x4E3B;&#x8981;&#x5173;&#x6CE8;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4;&#x5360;&#x603B;&#x7A7A;&#x95F4;&#x7684;&#x767E;&#x5206;&#x6BD4;</span><br><span class="line">printcompilation (HotSpot&#x7F16;&#x8BD1;&#x7EDF;&#x8BA1;)&#x8F93;&#x51FA;&#x5DF2;&#x7ECF;&#x88AB;JIT&#x7F16;&#x8BD1;&#x7684;&#x65B9;&#x6CD5;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>class</code></strong> &#x663E;&#x793A;&#x52A0;&#x8F7D;<code>class</code>&#x7684;&#x6570;&#x91CF;&#xFF0C;&#x53CA;&#x6240;&#x5360;&#x7A7A;&#x95F4;&#x7B49;&#x4FE1;&#x606F;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -class 5288</span><br><span class="line">Loaded  Bytes  Unloaded  Bytes     Time</span><br><span class="line">   619  1247.5        0     0.0       0.23</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Loaded</td>
+<td>&#x88C5;&#x8F7D;&#x7684;&#x7C7B;&#x7684;&#x6570;&#x91CF;</td>
+</tr>
+<tr>
+<td>Bytes</td>
+<td>&#x88C5;&#x8F7D;&#x7C7B;&#x6240;&#x5360;&#x7528;&#x7684;&#x5B57;&#x8282;&#x6570;</td>
+</tr>
+<tr>
+<td>Unloaded</td>
+<td>&#x5378;&#x8F7D;&#x7C7B;&#x7684;&#x6570;&#x91CF;</td>
+</tr>
+<tr>
+<td>Bytes</td>
+<td>&#x5378;&#x8F7D;&#x7C7B;&#x7684;&#x5B57;&#x8282;&#x6570;</td>
+</tr>
+<tr>
+<td>Time</td>
+<td>&#x88C5;&#x8F7D;&#x548C;&#x5378;&#x8F7D;&#x7C7B;&#x6240;&#x82B1;&#x8D39;&#x7684;&#x65F6;&#x95F4;</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>compiler</code></strong> &#x663E;&#x793A;<code>VM</code>&#x5B9E;&#x65F6;&#x7F16;&#x8BD1;&#x7684;&#x6570;&#x91CF;&#x7B49;&#x4FE1;&#x606F;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -compiler 17100</span><br><span class="line">Compiled Failed Invalid   Time   FailedType FailedMethod</span><br><span class="line">     107      0       0     0.08          0</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x660E;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Compiled</td>
+<td>&#x7F16;&#x8BD1;&#x4EFB;&#x52A1;&#x6267;&#x884C;&#x6570;&#x91CF;</td>
+</tr>
+<tr>
+<td>Failed</td>
+<td>&#x7F16;&#x8BD1;&#x4EFB;&#x52A1;&#x6267;&#x884C;&#x5931;&#x8D25;&#x6570;&#x91CF;</td>
+</tr>
+<tr>
+<td>Invalid</td>
+<td>&#x7F16;&#x8BD1;&#x4EFB;&#x52A1;&#x6267;&#x884C;&#x5931;&#x6548;&#x6570;&#x91CF;</td>
+</tr>
+<tr>
+<td>Time</td>
+<td>&#x7F16;&#x8BD1;&#x4EFB;&#x52A1;&#x6D88;&#x8017;&#x65F6;&#x95F4;</td>
+</tr>
+<tr>
+<td>FailedType</td>
+<td>&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x7F16;&#x8BD1;&#x5931;&#x8D25;&#x4EFB;&#x52A1;&#x7684;&#x7C7B;&#x578B;</td>
+</tr>
+<tr>
+<td>FailedMethod</td>
+<td>&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x7F16;&#x8BD1;&#x5931;&#x8D25;&#x4EFB;&#x52A1;&#x6240;&#x5728;&#x7684;&#x7C7B;&#x53CA;&#x65B9;&#x6CD5;</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>gc</code></strong> &#x53EF;&#x4EE5;&#x663E;&#x793A;<code>gc</code>&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x67E5;&#x770B;<code>gc</code>&#x7684;&#x6B21;&#x6570;&#xFF0C;&#x53CA;&#x65F6;&#x95F4;</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">C</span>:\Users\gaoming&gt;jstat -gc <span class="number">23612</span> <span class="number">1000</span></span><br><span class="line"> <span class="attribute">S0C</span>    S<span class="number">1</span>C    S<span class="number">0</span>U    S<span class="number">1</span>U      EC       EU        OC         OU       MC     MU    CCSC   CCSU   YGC     YGCT    FGC    FGCT     GCT</span><br><span class="line"> </span><br><span class="line"> <span class="attribute">45568</span>.<span class="number">0</span> <span class="number">5120</span>.<span class="number">0</span>  <span class="number">0</span>.<span class="number">0</span>   <span class="number">5120</span>.<span class="number">0</span> <span class="number">65536</span>.<span class="number">0</span>  <span class="number">54010</span>.<span class="number">4</span>   <span class="number">72192</span>.<span class="number">0</span>    <span class="number">30145</span>.<span class="number">3</span>   <span class="number">4864</span>.<span class="number">0</span> <span class="number">3788</span>.<span class="number">5</span> <span class="number">512</span>.<span class="number">0</span>  <span class="number">417</span>.<span class="number">5</span>       <span class="number">5</span>    <span class="number">0</span>.<span class="number">382</span>   <span class="number">1</span>      <span class="number">0</span>.<span class="number">009</span>    <span class="number">0</span>.<span class="number">391</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/07/05/Jvm%E5%B7%A5%E5%85%B7/image-20210429181734742.png" alt="image-20210429181734742"></p>
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S0C</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S1C</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E8C;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S0U</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x76EE;&#x524D;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S1U</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E8C;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x76EE;&#x524D;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>EC</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;Eden&#xFF08;&#x4F0A;&#x7538;&#x56ED;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>EU</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;Eden&#xFF08;&#x4F0A;&#x7538;&#x56ED;&#xFF09;&#x76EE;&#x524D;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>OC</td>
+<td>Old&#x4EE3;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>OU</td>
+<td>Old&#x4EE3;&#x76EE;&#x524D;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>MC</td>
+<td>&#x65B9;&#x6CD5;&#x533A;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>MU</td>
+<td>&#x65B9;&#x6CD5;&#x533A;&#x76EE;&#x524D;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>CCSC</td>
+<td>&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>CCSU</td>
+<td>&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x4F7F;&#x7528;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>YGC</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x5783;&#x573E;&#x56DE;&#x6536;&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>YGCT</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x5783;&#x573E;&#x56DE;&#x6536;&#x6D88;&#x8017;&#x65F6;&#x95F4;</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6240;&#x7528;&#x65F6;&#x95F4;(s)</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;gc&#x7528;&#x7684;&#x603B;&#x65F6;&#x95F4;(s)</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>gccapacity</code></strong> &#x53EF;&#x4EE5;&#x663E;&#x793A;&#xFF0C;<code>VM</code>&#x5185;&#x5B58;&#x4E2D;&#x4E09;&#x4EE3;<code>&#xFF08;young,old,perm&#xFF09;</code>&#x5BF9;&#x8C61;&#x7684;&#x4F7F;&#x7528;&#x548C;&#x5360;&#x7528;&#x5927;&#x5C0F;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -gccapacity 21532 1000</span><br><span class="line"> NGCMN    NGCMX     NGC     S0C   S1C       EC      OGCMN      OGCMX       OGC         OC       MCMN     MCMX      MC     CCSMN    CCSMX     CCSC    YGC    FGC</span><br><span class="line"> </span><br><span class="line"> 43008.0 685056.0 685056.0 228352.0 228352.0 228352.0    86016.0  1371136.0   495104.0   495104.0      0.0 1056768.0   4864.0      0.0 1048576.0    512.0     15     6</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/07/05/Jvm%E5%B7%A5%E5%85%B7/image-20210429213240876.png" alt="image-20210429213240876"></p>
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NGCMN</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;(young)&#x4E2D;&#x521D;&#x59CB;&#x5316;(&#x6700;&#x5C0F;)&#x7684;&#x5927;&#x5C0F;(&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>NGCMX</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;(young)&#x7684;&#x6700;&#x5927;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>NGC</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;(young)&#x4E2D;&#x5F53;&#x524D;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S0C</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S1C</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E8C;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>EC</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;Eden&#xFF08;&#x4F0A;&#x7538;&#x56ED;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>OGCMN</td>
+<td>old&#x4EE3;&#x4E2D;&#x521D;&#x59CB;&#x5316;(&#x6700;&#x5C0F;)&#x7684;&#x5927;&#x5C0F; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>OGCMX</td>
+<td>old&#x4EE3;&#x7684;&#x6700;&#x5927;&#x5BB9;&#x91CF;(&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>OGC</td>
+<td>old&#x4EE3;&#x5F53;&#x524D;&#x65B0;&#x751F;&#x6210;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>OC</td>
+<td>Old&#x4EE3;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>MCMN</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x6700;&#x5C0F;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>MCMX</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x6700;&#x5927;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>MC</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>CCSMN</td>
+<td>&#x6700;&#x5C0F;&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>CCSMX</td>
+<td>&#x6700;&#x5927;&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>CCSC</td>
+<td>&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>YGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6B21;&#x6570;</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>gcutil</code></strong> &#x7EDF;&#x8BA1;<code>gc</code>&#x4FE1;&#x606F;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -gcutil 14940 1000</span><br><span class="line">  S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT</span><br><span class="line">100.00   0.00 100.00  95.04  77.91  81.54     12    1.616     4    0.284    1.900</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S0</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x5DF2;&#x4F7F;&#x7528;&#x7684;&#x5360;&#x5F53;&#x524D;&#x5BB9;&#x91CF;&#x767E;&#x5206;&#x6BD4;</td>
+</tr>
+<tr>
+<td>S1</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E8C;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x5DF2;&#x4F7F;&#x7528;&#x7684;&#x5360;&#x5F53;&#x524D;&#x5BB9;&#x91CF;&#x767E;&#x5206;&#x6BD4;</td>
+</tr>
+<tr>
+<td>E</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;Eden&#xFF08;&#x4F0A;&#x7538;&#x56ED;&#xFF09;&#x5DF2;&#x4F7F;&#x7528;&#x7684;&#x5360;&#x5F53;&#x524D;&#x5BB9;&#x91CF;&#x767E;&#x5206;&#x6BD4;</td>
+</tr>
+<tr>
+<td>O</td>
+<td>old&#x4EE3;&#x5DF2;&#x4F7F;&#x7528;&#x7684;&#x5360;&#x5F53;&#x524D;&#x5BB9;&#x91CF;&#x767E;&#x5206;&#x6BD4;</td>
+</tr>
+<tr>
+<td>M</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x5DF2;&#x4F7F;&#x7528;&#x7684;&#x5360;&#x5F53;&#x524D;&#x5BB9;&#x91CF;&#x767E;&#x5206;&#x6BD4;</td>
+</tr>
+<tr>
+<td>CCS</td>
+<td>&#xFF08;Compressed Class Space&#xFF09;&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x5DF2;&#x4F7F;&#x7528;&#x7684;&#x5360;&#x5F53;&#x524D;&#x5BB9;&#x91CF;&#x767E;&#x5206;&#x6BD4;</td>
+</tr>
+<tr>
+<td>YGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>YGCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6240;&#x7528;&#x65F6;&#x95F4;(s)</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6240;&#x7528;&#x65F6;&#x95F4;(s)</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;gc&#x7528;&#x7684;&#x603B;&#x65F6;&#x95F4;(s)</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>gcnew</code></strong> &#x5E74;&#x8F7B;&#x4EE3;&#x5BF9;&#x8C61;&#x7684;&#x4FE1;&#x606F;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -gcnew 17696</span><br><span class="line">S0C    S1C    S0U    S1U   TT MTT  DSS      EC       EU     YGC     YGCT</span><br><span class="line">45568.0 5120.0    0.0 5120.0  6  15 45568.0  65536.0  54010.4      5    0.377</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>S0C</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S1C</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E8C;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S0U</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x76EE;&#x524D;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S1U</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E8C;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x76EE;&#x524D;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>TT</td>
+<td>&#x6301;&#x6709;&#x6B21;&#x6570;&#x9650;&#x5236;</td>
+</tr>
+<tr>
+<td>MTT</td>
+<td>&#x6700;&#x5927;&#x6301;&#x6709;&#x6B21;&#x6570;&#x9650;&#x5236;</td>
+</tr>
+<tr>
+<td>DSS</td>
+<td>&#x5F53;&#x524D;&#x9700;&#x8981;survivor(&#x5E78;&#x5B58;&#x533A;)&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>EC</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;Eden&#xFF08;&#x4F0A;&#x7538;&#x56ED;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>EU</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;Eden&#xFF08;&#x4F0A;&#x7538;&#x56ED;&#xFF09;&#x76EE;&#x524D;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>YGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>YGCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6240;&#x7528;&#x65F6;&#x95F4;(s)</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>gcnewcapacity</code></strong>  &#x5E74;&#x8F7B;&#x4EE3;&#x5BF9;&#x8C61;&#x7684;&#x4FE1;&#x606F;&#x53CA;&#x5176;&#x5360;&#x7528;&#x91CF;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -gcnewcapacity 8016</span><br><span class="line">NGCMN      NGCMX       NGC      S0CMX     S0C     S1CMX     S1C       ECMX        EC      YGC   FGC</span><br><span class="line">43008.0   685056.0   562176.0 228352.0 138240.0 228352.0 120832.0   684032.0   186880.0     9     3</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NGCMN</td>
+<td>&#x65B0;&#x751F;&#x4EE3;&#x6700;&#x5C0F;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>NGCMX</td>
+<td>&#x65B0;&#x751F;&#x4EE3;&#x6700;&#x5927;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>NGC</td>
+<td>&#x65B0;&#x751F;&#x4EE3;&#x5F53;&#x524D;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>S0CMX</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x6700;&#x5927;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S0C</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S1CMX</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E8C;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x6700;&#x5927;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>S1C</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;&#x7B2C;&#x4E8C;&#x4E2A;survivor&#xFF08;&#x5E78;&#x5B58;&#x533A;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>ECMX</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;Eden&#xFF08;&#x4F0A;&#x7538;&#x56ED;&#xFF09;&#x7684;&#x6700;&#x5927;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>EC</td>
+<td>&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;Eden&#xFF08;&#x4F0A;&#x7538;&#x56ED;&#xFF09;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>YGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6B21;&#x6570;</td>
+</tr>
+</tbody></table>
+<p><strong><code>gcold</code></strong> <code>old</code>&#x4EE3;&#x5BF9;&#x8C61;&#x7684;&#x4FE1;&#x606F;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -gcold 19428</span><br><span class="line">MC       MU      CCSC     CCSU       OC          OU       YGC    FGC    FGCT     GCT</span><br><span class="line">4864.0   3789.7    512.0    417.5    325632.0    162083.3     11     4    2.215    4.275</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MC</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>MU</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x5DF2;&#x7ECF;&#x4F7F;&#x7528;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>CCSC</td>
+<td>&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>CCSU</td>
+<td>&#x538B;&#x7F29;&#x7C7B;&#x5DF2;&#x4F7F;&#x7528;&#x7A7A;&#x95F4;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>OC</td>
+<td>Old&#x4EE3;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>OU</td>
+<td>Old&#x4EE3;&#x5DF2;&#x7ECF;&#x4F7F;&#x7528;&#x7684;&#x5BB9;&#x91CF; (&#x5B57;&#x8282;)</td>
+</tr>
+<tr>
+<td>YGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6240;&#x7528;&#x65F6;&#x95F4;(s)</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;gc&#x7528;&#x7684;&#x603B;&#x65F6;&#x95F4;(s)</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>gcoldcapacity</code></strong>  <code>old</code>&#x4EE3;&#x5BF9;&#x8C61;&#x7684;&#x4FE1;&#x606F;&#x53CA;&#x5176;&#x5360;&#x7528;&#x91CF;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -gcoldcapacity 2596</span><br><span class="line">OGCMN       OGCMX        OGC         OC       YGC   FGC    FGCT     GCT</span><br><span class="line">86016.0   1371136.0    301056.0    301056.0    12     5    2.763    5.146</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OGCMN</td>
+<td>&#x8001;&#x5E74;&#x4EE3;&#x6700;&#x5C0F;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>OGCMX</td>
+<td>&#x8001;&#x5E74;&#x4EE3;&#x6700;&#x5927;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>OGC</td>
+<td>&#x5F53;&#x524D;&#x8001;&#x5E74;&#x4EE3;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>OC</td>
+<td>&#x5F53;&#x524D;&#x8001;&#x5E74;&#x4EE3;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>YGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6240;&#x7528;&#x65F6;&#x95F4;(s)</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;gc&#x7528;&#x7684;&#x603B;&#x65F6;&#x95F4;(s)</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>gcmetacapacity</code></strong> &#x5143;&#x7A7A;&#x95F4;&#x7684;&#x4FE1;&#x606F;&#x53CA;&#x5176;&#x5360;&#x7528;&#x91CF;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -gcmetacapacity 17644</span><br><span class="line">MCMN       MCMX        MC       CCSMN      CCSMX       CCSC     YGC   FGC    FGCT     GCT</span><br><span class="line">0.0  1056768.0     4864.0        0.0  1048576.0      512.0     7     2    0.019    0.783</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MCMN</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x6700;&#x5C0F;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>MCMX</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x6700;&#x5927;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>MC</td>
+<td>&#x5143;&#x7A7A;&#x95F4;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>CCSMN</td>
+<td>&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x6700;&#x5C0F;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>CCSMX</td>
+<td>&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x6700;&#x5927;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>CCSC</td>
+<td>&#x538B;&#x7F29;&#x7C7B;&#x7A7A;&#x95F4;&#x5BB9;&#x91CF;</td>
+</tr>
+<tr>
+<td>YGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;&#x5E74;&#x8F7B;&#x4EE3;&#x4E2D;gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGC</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6B21;&#x6570;</td>
+</tr>
+<tr>
+<td>FGCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;old&#x4EE3;(&#x5168;gc)gc&#x6240;&#x7528;&#x65F6;&#x95F4;(s)</td>
+</tr>
+<tr>
+<td>GCT</td>
+<td>&#x4ECE;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x542F;&#x52A8;&#x5230;&#x91C7;&#x6837;&#x65F6;gc&#x7528;&#x7684;&#x603B;&#x65F6;&#x95F4;(s)</td>
+</tr>
+</tbody></table>
+<hr>
+<p><strong><code>printcompilation</code></strong> &#x5F53;&#x524D;<code>VM</code>&#x6267;&#x884C;&#x7684;&#x4FE1;&#x606F;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jstat -printcompilation 19768 1000</span><br><span class="line">Compiled  Size  Type Method</span><br><span class="line">106     84    1    java/util/ArrayList grow</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x663E;&#x793A;&#x5217;&#x540D;</th>
+<th>&#x5177;&#x4F53;&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Compiled</td>
+<td>&#x7F16;&#x8BD1;&#x4EFB;&#x52A1;&#x7684;&#x6570;&#x76EE;</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>&#x65B9;&#x6CD5;&#x751F;&#x6210;&#x7684;&#x5B57;&#x8282;&#x7801;&#x7684;&#x5927;&#x5C0F;</td>
+</tr>
+<tr>
+<td>Type</td>
+<td>&#x7F16;&#x8BD1;&#x7C7B;&#x578B;</td>
+</tr>
+<tr>
+<td>Method</td>
+<td>&#x7C7B;&#x540D;&#x548C;&#x65B9;&#x6CD5;&#x540D;&#x7528;&#x6765;&#x6807;&#x8BC6;&#x7F16;&#x8BD1;&#x7684;&#x65B9;&#x6CD5;&#x3002;&#x7C7B;&#x540D;&#x4F7F;&#x7528;/&#x505A;&#x4E3A;&#x4E00;&#x4E2A;&#x547D;&#x540D;&#x7A7A;&#x95F4;&#x5206;&#x9694;&#x7B26;&#x3002;&#x65B9;&#x6CD5;&#x540D;&#x662F;&#x7ED9;&#x5B9A;&#x7C7B;&#x4E2D;&#x7684;&#x65B9;&#x6CD5;&#x3002;&#x4E0A;&#x8FF0;&#x683C;&#x5F0F;&#x662F;&#x7531;-XX:+PrintComplation&#x9009;&#x9879;&#x8FDB;&#x884C;&#x8BBE;&#x7F6E;&#x7684;</td>
+</tr>
+</tbody></table>
+<h2 id="jinfo"><a href="#jinfo" class="headerlink" title="jinfo"></a>jinfo</h2><p><code>jinfo</code>&#x4E3B;&#x8981;&#x7528;&#x4E8E;&#x6253;&#x5370;&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#xFF0C;&#x5305;&#x62EC;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;&#x3001;&#x7CFB;&#x7EDF;&#x53D8;&#x91CF;&#x3002;&#x6781;&#x5C11;&#x6570;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x7528;&#x5176;&#x6765;&#x4FEE;&#x6539;&#x547D;&#x4EE4;&#x884C;&#x53C2;&#x6570;&#x3002;</p>
+<p><code>jinfo</code>&#x53EF;&#x7528;&#x4E8E;&#x6253;&#x5370;&#x548C;&#x52A8;&#x6001;&#x4FEE;&#x6539;&#x865A;&#x62DF;&#x673A;&#x53C2;&#x6570;&#xFF0C;&#x4E5F;&#x53EF;&#x4EE5;&#x6253;&#x5370;&#x7CFB;&#x7EDF;&#x53C2;&#x6570;&#x3002;&#x529F;&#x80FD;&#x5F3A;&#x5927;&#xFF0C;&#x4F46;&#x4F7F;&#x7528;&#x65B9;&#x5F0F;&#x5374;&#x5F88;&#x7B80;&#x5355;&#x3002;&#x53E6;&#x5916;&#xFF0C;&#x76F8;&#x5BF9;&#x4E8E;<code>jstat</code>&#x3001;<code>jstack</code>&#x6765;&#x8BF4;&#xFF0C;<code>jinfo</code>&#x7684;&#x7528;&#x6CD5;&#x8981;&#x7B80;&#x5355;&#x5F88;&#x591A;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">jinfo -options</span><br><span class="line">-flag &lt;name&gt;         &#x7528;&#x4E8E;&#x6253;&#x5370;&#x865A;&#x62DF;&#x673A;&#x6807;&#x8BB0;&#x53C2;&#x6570;&#x7684;&#x503C;&#xFF0C;name&#x8868;&#x793A;&#x865A;&#x62DF;&#x673A;&#x6807;&#x8BB0;&#x53C2;&#x6570;&#x7684;&#x540D;&#x79F0;</span><br><span class="line">-flag [+|-]&lt;name&gt;    to <span class="built_in">enable</span> or <span class="built_in">disable</span> the named VM flag</span><br><span class="line">-flag &lt;name&gt;=&lt;value&gt; to <span class="built_in">set</span> the named VM flag to the given value</span><br><span class="line">-flags               to <span class="built_in">print</span> VM flags</span><br><span class="line">-sysprops            to <span class="built_in">print</span> Java system properties</span><br><span class="line">&lt;no option&gt;          to <span class="built_in">print</span> both of the above</span><br><span class="line">-h | -<span class="built_in">help</span>           to <span class="built_in">print</span> this <span class="built_in">help</span> message</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line">C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming&gt;jinfo 24812</span><br><span class="line">Attaching to process ID 24812, please wait...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 25.60-b23</span><br><span class="line">Java System Properties:</span><br><span class="line"></span><br><span class="line">java.runtime.name = Java(TM) SE Runtime Environment</span><br><span class="line">java.vm.version = 25.60-b23</span><br><span class="line">sun.boot.library.path = D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\b</span>in</span><br><span class="line">java.vendor.url = http://java.oracle.com/</span><br><span class="line">java.vm.vendor = Oracle Corporation</span><br><span class="line">path.separator = ;</span><br><span class="line">file.encoding.pkg = sun.io</span><br><span class="line">java.vm.name = Java HotSpot(TM) 64-Bit Server VM</span><br><span class="line">sun.os.patch.level =</span><br><span class="line">sun.java.launcher = SUN_STANDARD</span><br><span class="line">user.script =</span><br><span class="line">user.country = CN</span><br><span class="line">user.dir = D:<span class="symbol">\P</span>roject<span class="symbol">\m</span>ymavenproject</span><br><span class="line">java.vm.specification.name = Java Virtual Machine Specification</span><br><span class="line">java.runtime.version = 1.8.0_60-b27</span><br><span class="line">java.awt.graphicsenv = sun.awt.Win32GraphicsEnvironment</span><br><span class="line">os.arch = amd64</span><br><span class="line">java.endorsed.dirs = D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>ndorsed</span><br><span class="line">line.separator =</span><br><span class="line"></span><br><span class="line">java.io.tmpdir = C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\A</span>ppData<span class="symbol">\L</span>ocal<span class="symbol">\T</span>emp\</span><br><span class="line">java.vm.specification.vendor = Oracle Corporation</span><br><span class="line">user.variant =</span><br><span class="line">os.name = Windows 10</span><br><span class="line">sun.jnu.encoding = GBK</span><br><span class="line">java.library.path = D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\b</span>in;C:<span class="symbol">\W</span>INDOWS<span class="symbol">\S</span>un<span class="symbol">\J</span>ava<span class="symbol">\b</span>in;C:<span class="symbol">\W</span>INDOWS<span class="symbol">\s</span>ystem32;C:<span class="symbol">\W</span>INDOWS;D:<span class="symbol">\A</span>naconda;D:<span class="symbol">\A</span>naconda<span class="symbol">\L</span>ibrary<span class="symbol">\m</span>ingw-w64<span class="symbol">\b</span>in;D:<span class="symbol">\A</span>naconda<span class="symbol">\L</span>ibrary<span class="symbol">\u</span>sr<span class="symbol">\b</span>in;D:<span class="symbol">\A</span>naconda<span class="symbol">\L</span>ibrary<span class="symbol">\b</span>in;D:<span class="symbol">\A</span>naconda<span class="symbol">\S</span>cripts;C:<span class="symbol">\W</span>INDOWS<span class="symbol">\s</span>ystem32;C:<span class="symbol">\W</span>INDOWS;C:<span class="symbol">\W</span>INDOWS<span class="symbol">\S</span>ystem32<span class="symbol">\W</span>bem;C:<span class="symbol">\W</span>INDOWS<span class="symbol">\S</span>ystem32<span class="symbol">\W</span>indowsPowerShell<span class="symbol">\v</span>1.0<span class="symbol">\;</span>C:<span class="symbol">\W</span>INDOWS<span class="symbol">\S</span>ystem32<span class="symbol">\O</span>penSSH<span class="symbol">\;</span>C:<span class="symbol">\P</span>rogram Files<span class="symbol">\d</span>otnet<span class="symbol">\;</span>D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\b</span>in;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\b</span>in;D:<span class="symbol">\M</span>aven<span class="symbol">\b</span>in;D:<span class="symbol">\a</span>pache-tomcat-8.5.55<span class="symbol">\l</span>ib;D:<span class="symbol">\a</span>pache-tomcat-8.5.55<span class="symbol">\b</span>in;C:<span class="symbol">\P</span>rogram Files<span class="symbol">\M</span>icrosoft SQL Server<span class="symbol">\1</span>30<span class="symbol">\T</span>ools<span class="symbol">\B</span>inn<span class="symbol">\;</span>C:<span class="symbol">\P</span>rogram Files<span class="symbol">\M</span>icrosoft SQL Server<span class="symbol">\C</span>lient SDK<span class="symbol">\O</span>DBC<span class="symbol">\1</span>70<span class="symbol">\T</span>ools<span class="symbol">\B</span>inn<span class="symbol">\;</span>C:<span class="symbol">\P</span>rogram Files<span class="symbol">\M</span>ySQL<span class="symbol">\M</span>ySQL Server 8.0<span class="symbol">\b</span>in;D:<span class="symbol">\T</span>ortoiseGit<span class="symbol">\b</span>in;D:<span class="symbol">\E</span>rlang<span class="symbol">\e</span>rl-23.0<span class="symbol">\b</span>in;D:<span class="symbol">\R</span>abbitMQ<span class="symbol">\r</span>abbitmq_server-3.8.6<span class="symbol">\s</span>bin;D:<span class="symbol">\R</span>edis;D:<span class="symbol">\A</span>apt;D:<span class="symbol">\N</span>odeJs<span class="symbol">\;</span>C:<span class="symbol">\P</span>rogramData<span class="symbol">\c</span>hocolatey<span class="symbol">\b</span>in;D:<span class="symbol">\G</span>o<span class="symbol">\b</span>in;D:<span class="symbol">\G</span>it<span class="symbol">\c</span>md;D:<span class="symbol">\G</span>it<span class="symbol">\b</span>in;C:<span class="symbol">\P</span>rogram Files<span class="symbol">\M</span>ySQL<span class="symbol">\M</span>ySQL Shell 8.0<span class="symbol">\b</span>in<span class="symbol">\;</span>C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\A</span>ppData<span class="symbol">\L</span>ocal<span class="symbol">\M</span>icrosoft<span class="symbol">\W</span>indowsApps;;D:<span class="symbol">\P</span>ycharm<span class="symbol">\P</span>yCharm 2020.1.2<span class="symbol">\b</span>in;;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\A</span>ppData<span class="symbol">\R</span>oaming<span class="symbol">\n</span>pm;D:<span class="symbol">\V</span>Scode<span class="symbol">\M</span>icrosoft VS Code<span class="symbol">\b</span>in;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\g</span>o<span class="symbol">\b</span>in;D:<span class="symbol">\I</span>DEAgo<span class="symbol">\G</span>oLand 2020.2.3<span class="symbol">\b</span>in;;.</span><br><span class="line">java.specification.name = Java Platform API Specification</span><br><span class="line">java.class.version = 52.0</span><br><span class="line">sun.management.compiler = HotSpot 64-Bit Tiered Compilers</span><br><span class="line">os.version = 10.0</span><br><span class="line">user.home = C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming</span><br><span class="line">user.timezone = Asia/Shanghai</span><br><span class="line">java.awt.printerjob = sun.awt.windows.WPrinterJob</span><br><span class="line">file.encoding = UTF-8</span><br><span class="line">java.specification.version = 1.8</span><br><span class="line">user.name = gaoming</span><br><span class="line">java.class.path = D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\c</span>harsets.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\d</span>eploy.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\a</span>ccess-bridge-64.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\c</span>ldrdata.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\d</span>nsns.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\j</span>access.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\j</span>fxrt.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\l</span>ocaledata.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\n</span>ashorn.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\s</span>unec.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\s</span>unjce_provider.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\s</span>unmscapi.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\s</span>unpkcs11.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt<span class="symbol">\z</span>ipfs.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\j</span>avaws.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\j</span>ce.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\j</span>fr.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\j</span>fxswt.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\j</span>sse.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\m</span>anagement-agent.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\p</span>lugin.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\r</span>esources.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\r</span>t.jar;D:<span class="symbol">\P</span>roject<span class="symbol">\m</span>ymavenproject<span class="symbol">\t</span>arget<span class="symbol">\c</span>lasses;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\p</span>rojectlombok<span class="symbol">\l</span>ombok<span class="symbol">\1</span>.16.16<span class="symbol">\l</span>ombok-1.16.16.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\m</span>ongodb<span class="symbol">\m</span>ongo-java-driver<span class="symbol">\3</span>.1.0<span class="symbol">\m</span>ongo-java-driver-3.1.0.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>om<span class="symbol">\k</span>ennycason<span class="symbol">\k</span>umo-core<span class="symbol">\1</span>.22<span class="symbol">\k</span>umo-core-1.22.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>om<span class="symbol">\k</span>ennycason<span class="symbol">\k</span>umo-api<span class="symbol">\1</span>.22<span class="symbol">\k</span>umo-api-1.22.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\s</span>lf4j<span class="symbol">\s</span>lf4j-api<span class="symbol">\1</span>.7.25<span class="symbol">\s</span>lf4j-api-1.7.25.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\j</span>soup<span class="symbol">\j</span>soup<span class="symbol">\1</span>.11.3<span class="symbol">\j</span>soup-1.11.3.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>ommons-io<span class="symbol">\c</span>ommons-io<span class="symbol">\2</span>.4<span class="symbol">\c</span>ommons-io-2.4.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\a</span>pache<span class="symbol">\c</span>ommons<span class="symbol">\c</span>ommons-lang3<span class="symbol">\3</span>.4<span class="symbol">\c</span>ommons-lang3-3.4.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>om<span class="symbol">\g</span>ithub<span class="symbol">\d</span>avidmoten<span class="symbol">\r</span>tree<span class="symbol">\0</span>.8.6<span class="symbol">\r</span>tree-0.8.6.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>om<span class="symbol">\g</span>ithub<span class="symbol">\d</span>avidmoten<span class="symbol">\g</span>uava-mini<span class="symbol">\0</span>.1.1<span class="symbol">\g</span>uava-mini-0.1.1.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\i</span>o<span class="symbol">\r</span>eactivex<span class="symbol">\r</span>xjava<span class="symbol">\1</span>.3.8<span class="symbol">\r</span>xjava-1.3.8.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>om<span class="symbol">\k</span>ennycason<span class="symbol">\k</span>umo-tokenizers<span class="symbol">\1</span>.22<span class="symbol">\k</span>umo-tokenizers-1.22.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\l</span>anguagetool<span class="symbol">\l</span>anguage-en<span class="symbol">\2</span>.5<span class="symbol">\l</span>anguage-en-2.5.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\l</span>anguagetool<span class="symbol">\l</span>anguagetool-core<span class="symbol">\2</span>.5<span class="symbol">\l</span>anguagetool-core-2.5.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>ommons-lang<span class="symbol">\c</span>ommons-lang<span class="symbol">\2</span>.6<span class="symbol">\c</span>ommons-lang-2.6.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\n</span>et<span class="symbol">\j</span>ava<span class="symbol">\d</span>ev<span class="symbol">\j</span>na<span class="symbol">\j</span>na<span class="symbol">\4</span>.0.0<span class="symbol">\j</span>na-4.0.0.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\c</span>arrot2<span class="symbol">\m</span>orfologik-fsa<span class="symbol">\1</span>.9.0<span class="symbol">\m</span>orfologik-fsa-1.9.0.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\c</span>arrot2<span class="symbol">\m</span>orfologik-speller<span class="symbol">\1</span>.9.0<span class="symbol">\m</span>orfologik-speller-1.9.0.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\c</span>arrot2<span class="symbol">\m</span>orfologik-stemming<span class="symbol">\1</span>.9.0<span class="symbol">\m</span>orfologik-stemming-1.9.0.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\n</span>et<span class="symbol">\s</span>ourceforge<span class="symbol">\s</span>egment<span class="symbol">\s</span>egment<span class="symbol">\1</span>.4.2<span class="symbol">\s</span>egment-1.4.2.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\a</span>pache<span class="symbol">\t</span>ika<span class="symbol">\t</span>ika-core<span class="symbol">\1</span>.4<span class="symbol">\t</span>ika-core-1.4.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\a</span>pache<span class="symbol">\o</span>pennlp<span class="symbol">\o</span>pennlp-tools<span class="symbol">\1</span>.5.3<span class="symbol">\o</span>pennlp-tools-1.5.3.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\a</span>pache<span class="symbol">\o</span>pennlp<span class="symbol">\o</span>pennlp-maxent<span class="symbol">\3</span>.0.3<span class="symbol">\o</span>pennlp-maxent-3.0.3.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\e</span>du<span class="symbol">\w</span>ashington<span class="symbol">\c</span>s<span class="symbol">\k</span>nowitall<span class="symbol">\o</span>pennlp-tokenize-models<span class="symbol">\1</span>.5<span class="symbol">\o</span>pennlp-tokenize-models-1.5.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\e</span>du<span class="symbol">\w</span>ashington<span class="symbol">\c</span>s<span class="symbol">\k</span>nowitall<span class="symbol">\o</span>pennlp-postag-models<span class="symbol">\1</span>.5<span class="symbol">\o</span>pennlp-postag-models-1.5.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\e</span>du<span class="symbol">\w</span>ashington<span class="symbol">\c</span>s<span class="symbol">\k</span>nowitall<span class="symbol">\o</span>pennlp-chunk-models<span class="symbol">\1</span>.5<span class="symbol">\o</span>pennlp-chunk-models-1.5.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\l</span>anguagetool<span class="symbol">\l</span>anguage-zh<span class="symbol">\2</span>.5<span class="symbol">\l</span>anguage-zh-2.5.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>om<span class="symbol">\g</span>ooglecode<span class="symbol">\i</span>ctclas4j<span class="symbol">\i</span>ctclas4j<span class="symbol">\1</span>.0.1<span class="symbol">\i</span>ctclas4j-1.0.1.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>om<span class="symbol">\g</span>oogle<span class="symbol">\c</span>ode<span class="symbol">\c</span>jftransform<span class="symbol">\1</span>.0.1<span class="symbol">\c</span>jftransform-1.0.1.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\i</span>cepdf<span class="symbol">\o</span>s<span class="symbol">\i</span>cepdf-core<span class="symbol">\6</span>.2.2<span class="symbol">\i</span>cepdf-core-6.2.2.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\b</span>ouncycastle<span class="symbol">\b</span>cprov-jdk15on<span class="symbol">\1</span>.54<span class="symbol">\b</span>cprov-jdk15on-1.54.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\b</span>ouncycastle<span class="symbol">\b</span>cprov-ext-jdk15on<span class="symbol">\1</span>.54<span class="symbol">\b</span>cprov-ext-jdk15on-1.54.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\b</span>ouncycastle<span class="symbol">\b</span>cpkix-jdk15on<span class="symbol">\1</span>.54<span class="symbol">\b</span>cpkix-jdk15on-1.54.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\a</span>pache<span class="symbol">\p</span>dfbox<span class="symbol">\p</span>dfbox<span class="symbol">\2</span>.0.22<span class="symbol">\p</span>dfbox-2.0.22.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\o</span>rg<span class="symbol">\a</span>pache<span class="symbol">\p</span>dfbox<span class="symbol">\f</span>ontbox<span class="symbol">\2</span>.0.22<span class="symbol">\f</span>ontbox-2.0.22.jar;C:<span class="symbol">\U</span>sers<span class="symbol">\g</span>aoming<span class="symbol">\.</span>m2<span class="symbol">\r</span>epository<span class="symbol">\c</span>ommons-logging<span class="symbol">\c</span>ommons-logging<span class="symbol">\1</span>.2<span class="symbol">\c</span>ommons-logging-1.2.jar;D:<span class="symbol">\I</span>DEAJ<span class="symbol">\I</span>ntelliJ IDEA 2020.1.2<span class="symbol">\l</span>ib<span class="symbol">\i</span>dea_rt.jar</span><br><span class="line">java.vm.specification.version = 1.8</span><br><span class="line">sun.arch.data.model = 64</span><br><span class="line">sun.java.command = MyMain</span><br><span class="line">java.home = D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re</span><br><span class="line">user.language = zh</span><br><span class="line">java.specification.vendor = Oracle Corporation</span><br><span class="line">awt.toolkit = sun.awt.windows.WToolkit</span><br><span class="line">java.vm.info = mixed mode</span><br><span class="line">java.version = 1.8.0_60</span><br><span class="line">java.ext.dirs = D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt;C:<span class="symbol">\W</span>INDOWS<span class="symbol">\S</span>un<span class="symbol">\J</span>ava<span class="symbol">\l</span>ib<span class="symbol">\e</span>xt</span><br><span class="line">sun.boot.class.path = D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\r</span>esources.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\r</span>t.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\s</span>unrsasign.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\j</span>sse.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\j</span>ce.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\c</span>harsets.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\l</span>ib<span class="symbol">\j</span>fr.jar;D:<span class="symbol">\J</span>ava<span class="symbol">\j</span>dk1.8<span class="symbol">\j</span>re<span class="symbol">\c</span>lasses</span><br><span class="line">java.vendor = Oracle Corporation</span><br><span class="line">file.separator = \</span><br><span class="line">java.vendor.url.bug = http://bugreport.sun.com/bugreport/</span><br><span class="line">sun.io.unicode.encoding = UnicodeLittle</span><br><span class="line">sun.cpu.endian = little</span><br><span class="line">sun.desktop = windows</span><br><span class="line">sun.cpu.isalist = amd64</span><br><span class="line"></span><br><span class="line">VM Flags:</span><br><span class="line">Non-default VM flags: -XX:CICompilerCount=4 -XX:InitialHeapSize=132120576 -XX:MaxHeapSize=2105540608 -XX:MaxNewSize=701497344 -XX:MinHeapDeltaBytes=524288 -XX:NewSize=44040192 -XX:OldSize=88080384 -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseFastUnorderedTimeStamps -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC</span><br><span class="line">Command line:  -javaagent:D:<span class="symbol">\I</span>DEAJ<span class="symbol">\I</span>ntelliJ IDEA 2020.1.2<span class="symbol">\l</span>ib<span class="symbol">\i</span>dea_rt.jar=60148:D:<span class="symbol">\I</span>DEAJ<span class="symbol">\I</span>ntelliJ IDEA 2020.1.2<span class="symbol">\b</span>in -Dfile.encoding=UTF-8</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>flag</code></strong> &#x7528;&#x4E8E;&#x6253;&#x5370;&#x865A;&#x62DF;&#x673A;&#x6807;&#x8BB0;&#x53C2;&#x6570;&#x7684;&#x503C;&#xFF0C;<code>name</code>&#x8868;&#x793A;&#x865A;&#x62DF;&#x673A;&#x6807;&#x8BB0;&#x53C2;&#x6570;&#x7684;&#x540D;&#x79F0;</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">C:\Users\gaoming&gt;jinfo -flag PrintGC 15188</span></span><br><span class="line"><span class="section">-XX:-PrintGC</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>-flag [+|-] &lt;name&gt;</code></strong> &#x7528;&#x4E8E;&#x5F00;&#x542F;&#x6216;&#x5173;&#x95ED;&#x865A;&#x62DF;&#x673A;&#x6807;&#x8BB0;&#x53C2;&#x6570;&#x3002;<code>+</code>&#x8868;&#x793A;&#x5F00;&#x542F;&#xFF0C;<code>-</code>&#x8868;&#x793A;&#x5173;&#x95ED;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jinfo -flag PrintGC 24776</span><br><span class="line">-XX:-PrintGC</span><br><span class="line"></span><br><span class="line">C:\Users\gaoming&gt;jinfo -flag +PrintGC 24776</span><br><span class="line"></span><br><span class="line">C:\Users\gaoming&gt;jinfo -flag -PrintGC 24776</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> [GC (Allocation Failure)  1119463K-&gt;1120174K(1563136K), 0.7722217 secs]</span><br><span class="line">[Full GC (Ergonomics)  1120174K-&gt;1119462K(1827840K), 7.1903174 secs]</span><br><span class="line">[Full GC (Ergonomics)  1599214K-&gt;1599214K(1827840K), 4.9806748 secs]</span><br><span class="line">[Full GC (Ergonomics)  1599216K-&gt;1599216K(1827840K), 4.9033626 secs]</span><br><span class="line">[Full GC (Ergonomics)  1599217K-&gt;1599217K(1827840K), 4.7496258 secs]</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>-flag &lt;name&gt;=&lt;value&gt;</code></strong> &#x7528;&#x4E8E;&#x8BBE;&#x7F6E;&#x865A;&#x62DF;&#x673A;&#x6807;&#x8BB0;&#x53C2;&#x6570;&#xFF0C;&#x4F46;&#x5E76;&#x4E0D;&#x662F;&#x6BCF;&#x4E2A;&#x53C2;&#x6570;&#x90FD;&#x53EF;&#x4EE5;&#x88AB;&#x52A8;&#x6001;&#x4FEE;&#x6539;&#x7684;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jinfo -flag HeapDumpPath 24776</span><br><span class="line">-XX:HeapDumpPath=</span><br><span class="line"></span><br><span class="line">C:\Users\gaoming&gt;jinfo -flag HeapDumpPath=C:\error.hprof 24776</span><br><span class="line"></span><br><span class="line">C:\Users\gaoming&gt;jinfo -flag HeapDumpPath 24776</span><br><span class="line">-XX:HeapDumpPath=C:\error.hprof</span><br><span class="line"></span><br><span class="line">C:\Users\gaoming&gt;jinfo -flag loggc=gc2.log 15888</span><br><span class="line">Exception <span class="keyword">in</span> thread <span class="string">&quot;main&quot;</span> com.sun.tools.attach.AttachOperationFailedException: flag <span class="string">&apos;loggc&apos;</span> cannot be changed</span><br><span class="line"></span><br><span class="line">        at sun.tools.attach.WindowsVirtualMachine.execute(WindowsVirtualMachine.java:117)</span><br><span class="line">        at sun.tools.attach.HotSpotVirtualMachine.executeCommand(HotSpotVirtualMachine.java:261)</span><br><span class="line">        at sun.tools.attach.HotSpotVirtualMachine.setFlag(HotSpotVirtualMachine.java:234)</span><br><span class="line">        at sun.tools.jinfo.JInfo.flag(JInfo.java:134)</span><br><span class="line">        at sun.tools.jinfo.JInfo.main(JInfo.java:81)</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>-flags</code></strong> &#x6253;&#x5370;&#x865A;&#x62DF;&#x673A;&#x53C2;&#x6570;&#x3002;&#x4EC0;&#x4E48;&#x662F;&#x865A;&#x62DF;&#x673A;&#x53C2;&#x6570;&#x5462;&#xFF1F;&#x5982;<code>-XX:NewSize,-XX:OldSize</code>&#x7B49;&#x5C31;&#x662F;&#x865A;&#x62DF;&#x673A;&#x53C2;&#x6570;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jinfo -flags 24612</span><br><span class="line">Attaching to process ID 24612, please <span class="built_in">wait</span>...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 25.60-b23</span><br><span class="line">Non-default VM flags: -XX:CICompilerCount=4 -XX:InitialHeapSize=132120576 -XX:MaxHeapSize=2105540608 -XX:MaxNewSize=701497344 -XX:MinHeapDeltaBytes=524288 -XX:NewSize=44040192 -XX:OldSize=88080384 -XX:+UseCompressedClassPointers -XX:+UseCompressedOops -XX:+UseFastUnorderedTimeStamps -XX:-UseLargePagesIndividualAllocation -XX:+UseParallelGC</span><br><span class="line">Command line:  -javaagent:D:\IDEAJ\IntelliJ IDEA 2020.1.2\lib\idea_rt.jar=54627:D:\IDEAJ\IntelliJ IDEA 2020.1.2\bin -Dfile.encoding=UTF-8</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>-sysprops</code></strong>  &#x6253;&#x5370;&#x7CFB;&#x7EDF;&#x53C2;&#x6570;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jinfo -sysprops 24612</span><br><span class="line">Attaching to process ID 24612, please <span class="built_in">wait</span>...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 25.60-b23</span><br><span class="line">java.runtime.name = Java(TM) SE Runtime Environment</span><br><span class="line">java.vm.version = 25.60-b23</span><br><span class="line">sun.boot.library.path = D:\Java\jdk1.8\jre\bin</span><br><span class="line">java.vendor.url = http://java.oracle.com/</span><br><span class="line">java.vm.vendor = Oracle Corporation</span><br><span class="line">path.separator = ;</span><br><span class="line">file.encoding.pkg = sun.io</span><br><span class="line">java.vm.name = Java HotSpot(TM) 64-Bit Server VM</span><br><span class="line">sun.os.patch.level =</span><br><span class="line">sun.java.launcher = SUN_STANDARD</span><br><span class="line">user.script =</span><br><span class="line">user.country = CN</span><br><span class="line">user.dir = D:\Project\mymavenproject</span><br><span class="line">java.vm.specification.name = Java Virtual Machine Specification</span><br><span class="line">java.runtime.version = 1.8.0_60-b27</span><br><span class="line">java.awt.graphicsenv = sun.awt.Win32GraphicsEnvironment</span><br><span class="line">os.arch = amd64</span><br><span class="line">java.endorsed.dirs = D:\Java\jdk1.8\jre\lib\endorsed</span><br><span class="line">line.separator =</span><br><span class="line"></span><br><span class="line">java.io.tmpdir = C:\Users\gaoming\AppData\Local\Temp\</span><br><span class="line">java.vm.specification.vendor = Oracle Corporation</span><br><span class="line">user.variant =</span><br><span class="line">os.name = Windows 10</span><br><span class="line">sun.jnu.encoding = GBK</span><br><span class="line">java.library.path = D:\Java\jdk1.8\bin...</span><br><span class="line">java.specification.name = Java Platform API Specification</span><br><span class="line">java.class.version = 52.0</span><br><span class="line">sun.management.compiler = HotSpot 64-Bit Tiered Compilers</span><br><span class="line">os.version = 10.0</span><br><span class="line">user.home = C:\Users\gaoming</span><br><span class="line">user.timezone = Asia/Shanghai</span><br><span class="line">java.awt.printerjob = sun.awt.windows.WPrinterJob</span><br><span class="line">file.encoding = UTF-8</span><br><span class="line">java.specification.version = 1.8</span><br><span class="line">user.name = gaoming</span><br><span class="line">java.class.path = D:\Java\jdk1.8\jre\lib\charsets.jar...</span><br><span class="line">java.vm.specification.version = 1.8</span><br><span class="line">sun.arch.data.model = 64</span><br><span class="line">sun.java.command = MyMain</span><br><span class="line">java.home = D:\Java\jdk1.8\jre</span><br><span class="line">user.language = zh</span><br><span class="line">java.specification.vendor = Oracle Corporation</span><br><span class="line">awt.toolkit = sun.awt.windows.WToolkit</span><br><span class="line">java.vm.info = mixed mode</span><br><span class="line">java.version = 1.8.0_60</span><br><span class="line">java.ext.dirs = D:\Java\jdk1.8\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext</span><br><span class="line">sun.boot.class.path = D:\Java\jdk1.8\jre\lib\resources.jar...</span><br><span class="line">java.vendor = Oracle Corporation</span><br><span class="line">file.separator = \</span><br><span class="line">java.vendor.url.bug = http://bugreport.sun.com/bugreport/</span><br><span class="line">sun.io.unicode.encoding = UnicodeLittle</span><br><span class="line">sun.cpu.endian = little</span><br><span class="line">sun.desktop = windows</span><br><span class="line">sun.cpu.isalist = amd64</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="jmap"><a href="#jmap" class="headerlink" title="jmap"></a>jmap</h2><p>&#x547D;&#x4EE4;<code>jmap</code>&#x662F;&#x4E00;&#x4E2A;&#x591A;&#x529F;&#x80FD;&#x7684;&#x547D;&#x4EE4;&#x3002;&#x5B83;&#x53EF;&#x4EE5;&#x751F;&#x6210; <code>java</code> &#x7A0B;&#x5E8F;&#x7684; <code>dump</code> &#x6587;&#x4EF6;&#xFF0C; &#x4E5F;&#x53EF;&#x4EE5;&#x67E5;&#x770B;&#x5806;&#x5185;&#x5BF9;&#x8C61;&#x793A;&#x4F8B;&#x7684;&#x7EDF;&#x8BA1;&#x4FE1;&#x606F;&#x3001;&#x67E5;&#x770B; <code>ClassLoader</code> &#x7684;&#x4FE1;&#x606F;&#x4EE5;&#x53CA; <code>finalizer</code> &#x961F;&#x5217;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap -<span class="built_in">help</span></span><br><span class="line">Usage:</span><br><span class="line">    jmap [option] &lt;pid&gt;</span><br><span class="line">        (to connect to running process)</span><br><span class="line">    jmap [option] &lt;executable &lt;core&gt;</span><br><span class="line">        (to connect to a core file)</span><br><span class="line">    jmap [option] [server_id@]&lt;remote server IP or hostname&gt;</span><br><span class="line">        (to connect to remote debug server)</span><br><span class="line"></span><br><span class="line"><span class="built_in">where</span> &lt;option&gt; is one of:</span><br><span class="line">    &lt;none&gt;               to <span class="built_in">print</span> same info as Solaris pmap</span><br><span class="line">    -heap                to <span class="built_in">print</span> java heap summary</span><br><span class="line">    -histo[:live]        to <span class="built_in">print</span> histogram of java object heap; <span class="keyword">if</span> the <span class="string">&quot;live&quot;</span></span><br><span class="line">                         suboption is specified, only count live objects</span><br><span class="line">    -clstats             to <span class="built_in">print</span> class loader statistics</span><br><span class="line">    -finalizerinfo       to <span class="built_in">print</span> information on objects awaiting finalization</span><br><span class="line">    -dump:&lt;dump-options&gt; to dump java heap <span class="keyword">in</span> hprof binary format</span><br><span class="line">                         dump-options:</span><br><span class="line">                           live         dump only live objects; <span class="keyword">if</span> not specified,</span><br><span class="line">                                        all objects <span class="keyword">in</span> the heap are dumped.</span><br><span class="line">                           format=b     binary format</span><br><span class="line">                           file=&lt;file&gt;  dump heap to &lt;file&gt;</span><br><span class="line">                         Example: jmap -dump:live,format=b,file=heap.bin &lt;pid&gt;</span><br><span class="line">    -F                   force. Use with -dump:&lt;dump-options&gt; &lt;pid&gt; or -histo</span><br><span class="line">                         to force a heap dump or histogram when &lt;pid&gt; does not</span><br><span class="line">                         respond. The <span class="string">&quot;live&quot;</span> suboption is not supported</span><br><span class="line">                         <span class="keyword">in</span> this mode.</span><br><span class="line">    -h | -<span class="built_in">help</span>           to <span class="built_in">print</span> this <span class="built_in">help</span> message</span><br><span class="line">    -J&lt;flag&gt;             to pass &lt;flag&gt; directly to the runtime system</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>&#x540D;&#x79F0;</th>
+<th>&#x63CF;&#x8FF0;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>option</td>
+<td>&#x9009;&#x9879;&#x53C2;&#x6570;</td>
+</tr>
+<tr>
+<td>pid</td>
+<td>&#x9700;&#x8981;&#x6253;&#x5370;&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#x7684;&#x8FDB;&#x7A0B;ID</td>
+</tr>
+<tr>
+<td>executable</td>
+<td>&#x4EA7;&#x751F;&#x6838;&#x5FC3;dump&#x7684;Java&#x53EF;&#x6267;&#x884C;&#x6587;&#x4EF6;</td>
+</tr>
+<tr>
+<td>core</td>
+<td>&#x9700;&#x8981;&#x6253;&#x5370;&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#x7684;&#x6838;&#x5FC3;&#x6587;&#x4EF6;</td>
+</tr>
+<tr>
+<td>server-id</td>
+<td>&#x53EF;&#x9009;&#x7684;&#x552F;&#x4E00;id&#xFF0C;&#x5982;&#x679C;&#x76F8;&#x540C;&#x7684;&#x8FDC;&#x7A0B;&#x4E3B;&#x673A;&#x4E0A;&#x8FD0;&#x884C;&#x4E86;&#x591A;&#x53F0;&#x8C03;&#x8BD5;&#x670D;&#x52A1;&#x5668;&#xFF0C;&#x7528;&#x6B64;&#x9009;&#x9879;&#x53C2;&#x6570;&#x6807;&#x8BC6;&#x670D;&#x52A1;&#x5668;</td>
+</tr>
+<tr>
+<td>remote server IP or hostname</td>
+<td>&#x8FDC;&#x7A0B;&#x8C03;&#x8BD5;&#x670D;&#x52A1;&#x5668;&#x7684;IP&#x5730;&#x5740;&#x6216;&#x4E3B;&#x673A;&#x540D;</td>
+</tr>
+</tbody></table>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">no option:           &#x67E5;&#x770B;&#x8FDB;&#x7A0B;&#x7684;&#x5185;&#x5B58;&#x6620;&#x50CF;&#x4FE1;&#x606F;,&#x7C7B;&#x4F3C; Solaris pmap &#x547D;&#x4EE4;</span><br><span class="line">heap:                &#x663E;&#x793A;Java&#x5806;&#x8BE6;&#x7EC6;&#x4FE1;&#x606F;</span><br><span class="line">histo[:live]&#xFF1A;       &#x663E;&#x793A;&#x5806;&#x4E2D;&#x5BF9;&#x8C61;&#x7684;&#x7EDF;&#x8BA1;&#x4FE1;&#x606F;</span><br><span class="line">clstats&#xFF1A;            &#x6253;&#x5370;&#x7C7B;&#x52A0;&#x8F7D;&#x5668;&#x4FE1;&#x606F;</span><br><span class="line">finalizerinfo&#xFF1A;      &#x663E;&#x793A;&#x5728;F-Queue&#x961F;&#x5217;&#x7B49;&#x5F85;Finalizer&#x7EBF;&#x7A0B;&#x6267;&#x884C;finalizer&#x65B9;&#x6CD5;&#x7684;&#x5BF9;&#x8C61;</span><br><span class="line">dump:&lt;dump-options&gt;&#xFF1A;&#x751F;&#x6210;&#x5806;&#x8F6C;&#x50A8;&#x5FEB;&#x7167;</span><br><span class="line">F&#xFF1A;                  &#x5F53;-dump&#x6CA1;&#x6709;&#x54CD;&#x5E94;&#x65F6;&#xFF0C;&#x4F7F;&#x7528;-dump&#x6216;&#x8005;-histo&#x53C2;&#x6570;. &#x5728;&#x8FD9;&#x4E2A;&#x6A21;&#x5F0F;&#x4E0B;,live&#x5B50;&#x53C2;&#x6570;&#x65E0;&#x6548;.</span><br><span class="line"><span class="built_in">help</span>&#xFF1A;               &#x6253;&#x5370;&#x5E2E;&#x52A9;&#x4FE1;&#x606F;</span><br><span class="line">J&lt;flag&gt;&#xFF1A;            &#x6307;&#x5B9A;&#x4F20;&#x9012;&#x7ED9;&#x8FD0;&#x884C;jmap&#x7684;JVM&#x7684;&#x53C2;&#x6570;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>no option</code></strong> &#x67E5;&#x770B;&#x8FDB;&#x7A0B;&#x7684;&#x5185;&#x5B58;&#x6620;&#x50CF;&#x4FE1;&#x606F;,&#x7C7B;&#x4F3C; <code>Solaris pmap</code> &#x547D;&#x4EE4;</p>
+<p>&#x4F7F;&#x7528;&#x4E0D;&#x5E26;&#x9009;&#x9879;&#x53C2;&#x6570;&#x7684;<code>jmap</code>&#x6253;&#x5370;&#x5171;&#x4EAB;&#x5BF9;&#x8C61;&#x6620;&#x5C04;&#xFF0C;&#x5C06;&#x4F1A;&#x6253;&#x5370;&#x76EE;&#x6807;&#x865A;&#x62DF;&#x673A;&#x4E2D;&#x52A0;&#x8F7D;&#x7684;&#x6BCF;&#x4E2A;&#x5171;&#x4EAB;&#x5BF9;&#x8C61;&#x7684;&#x8D77;&#x59CB;&#x5730;&#x5740;&#x3001;&#x6620;&#x5C04;&#x5927;&#x5C0F;&#x4EE5;&#x53CA;&#x5171;&#x4EAB;&#x5BF9;&#x8C61;&#x6587;&#x4EF6;&#x7684;&#x8DEF;&#x5F84;&#x5168;&#x79F0;&#x3002;&#x8FD9;&#x4E0E;<code>Solaris</code>&#x7684;<code>pmap</code>&#x5DE5;&#x5177;&#x6BD4;&#x8F83;&#x76F8;&#x4F3C;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap 19052</span><br><span class="line">Attaching to process ID 19052, please <span class="built_in">wait</span>...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 25.60-b23</span><br><span class="line">0x00000000739f0000      140K    D:\Java\jdk1.8\jre\bin\instrument.dll</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>heap</code></strong> &#x663E;&#x793A;Java&#x5806;&#x8BE6;&#x7EC6;&#x4FE1;&#x606F;</p>
+<p>&#x6253;&#x5370;&#x4E00;&#x4E2A;&#x5806;&#x7684;&#x6458;&#x8981;&#x4FE1;&#x606F;&#xFF0C;&#x5305;&#x62EC;&#x4F7F;&#x7528;&#x7684;<code>GC</code>&#x7B97;&#x6CD5;&#x3001;&#x5806;&#x914D;&#x7F6E;&#x4FE1;&#x606F;&#x548C;&#x5404;&#x5185;&#x5B58;&#x533A;&#x57DF;&#x5185;&#x5B58;&#x4F7F;&#x7528;&#x4FE1;&#x606F;</p>
+<p>&#x663E;&#x793A;<code>Java</code>&#x5806;&#x8BE6;&#x7EC6;&#x4FE1;&#x606F;&#xFF0C;&#x5982;&#x4F7F;&#x7528;&#x54EA;&#x79CD;&#x56DE;&#x6536;&#x5668;&#x3001;&#x53C2;&#x6570;&#x914D;&#x7F6E;&#x3001;&#x5206;&#x4EE3;&#x72B6;&#x51B5;&#x7B49;&#x3002;&#x53EA;&#x5728;<code>Linux/Solaris</code>&#x5E73;&#x53F0;&#x4E0B;&#x6709;&#x6548;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap -heap 25372</span><br><span class="line">Attaching to process ID 25372, please <span class="built_in">wait</span>...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 25.60-b23</span><br><span class="line"></span><br><span class="line">using thread-local object allocation.</span><br><span class="line">Parallel GC with 8 thread(s)</span><br><span class="line"></span><br><span class="line">Heap Configuration:</span><br><span class="line">   MinHeapFreeRatio         = 0</span><br><span class="line">   MaxHeapFreeRatio         = 100</span><br><span class="line">   MaxHeapSize              = 2105540608 (2008.0MB)</span><br><span class="line">   NewSize                  = 44040192 (42.0MB)</span><br><span class="line">   MaxNewSize               = 701497344 (669.0MB)</span><br><span class="line">   OldSize                  = 88080384 (84.0MB)</span><br><span class="line">   NewRatio                 = 2</span><br><span class="line">   SurvivorRatio            = 8</span><br><span class="line">   MetaspaceSize            = 21807104 (20.796875MB)</span><br><span class="line">   CompressedClassSpaceSize = 1073741824 (1024.0MB)</span><br><span class="line">   MaxMetaspaceSize         = 17592186044415 MB</span><br><span class="line">   G1HeapRegionSize         = 0 (0.0MB)</span><br><span class="line"></span><br><span class="line">Heap Usage:</span><br><span class="line">PS Young Generation</span><br><span class="line">Eden Space:</span><br><span class="line">   capacity = 33554432 (32.0MB)</span><br><span class="line">   used     = 8213512 (7.833015441894531MB)</span><br><span class="line">   free     = 25340920 (24.16698455810547MB)</span><br><span class="line">   24.47817325592041% used</span><br><span class="line">From Space:</span><br><span class="line">   capacity = 5242880 (5.0MB)</span><br><span class="line">   used     = 0 (0.0MB)</span><br><span class="line">   free     = 5242880 (5.0MB)</span><br><span class="line">   0.0% used</span><br><span class="line">To Space:</span><br><span class="line">   capacity = 5242880 (5.0MB)</span><br><span class="line">   used     = 0 (0.0MB)</span><br><span class="line">   free     = 5242880 (5.0MB)</span><br><span class="line">   0.0% used</span><br><span class="line">PS Old Generation</span><br><span class="line">   capacity = 88080384 (84.0MB)</span><br><span class="line">   used     = 0 (0.0MB)</span><br><span class="line">   free     = 88080384 (84.0MB)</span><br><span class="line">   0.0% used</span><br><span class="line"></span><br><span class="line">3169 interned Strings occupying 259840 bytes.</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>histo:live</code></strong> &#x663E;&#x793A;&#x5806;&#x4E2D;&#x5BF9;&#x8C61;&#x7684;&#x7EDF;&#x8BA1;&#x4FE1;&#x606F;</p>
+<p>&#x663E;&#x793A;&#x5806;&#x4E2D;&#x5BF9;&#x8C61;&#x7EDF;&#x8BA1;&#x4FE1;&#x606F;&#xFF0C;&#x5305;&#x62EC;&#x7C7B;&#x3001;&#x5B9E;&#x4F8B;&#x6570;&#x91CF;&#x548C;&#x5408;&#x8BA1;&#x5BB9;&#x91CF;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap -histo 24660</span><br><span class="line"></span><br><span class="line"> num     <span class="comment">#instances         #bytes  class name</span></span><br><span class="line">----------------------------------------------</span><br><span class="line">   1:          2021        3689112  [B</span><br><span class="line">   2:           688        2726488  [I</span><br><span class="line">   3:          8904        1123648  [C</span><br><span class="line">   4:          6447         154728  java.lang.String</span><br><span class="line">   5:          1389          84392  [Ljava.lang.Object;</span><br><span class="line">   6:           701          79992  java.lang.Class</span><br><span class="line">   7:           848          33920  java.util.TreeMap<span class="variable">$Entry</span></span><br><span class="line">   8:           699          27960  java.util.LinkedHashMap<span class="variable">$Entry</span></span><br><span class="line">   9:          1119          26856  java.util.LinkedList<span class="variable">$Node</span></span><br><span class="line">  10:           456          22120  [Ljava.lang.String;</span><br><span class="line">  11:           497          15904  java.util.HashMap<span class="variable">$Node</span></span><br><span class="line">  12:            51          14736  [Ljava.util.HashMap<span class="variable">$Node</span>;</span><br><span class="line">  13:           457          14624  java.io.File</span><br><span class="line">  14:           494          11856  java.lang.StringBuilder</span><br><span class="line">  15:           183          11712  java.net.URL</span><br><span class="line">  16:           146          10512  java.lang.reflect.Field</span><br><span class="line">  17:           400           9600  java.lang.StringBuffer</span><br></pre></td></tr></table></figure>
+
+<p>&#x5176;&#x4E2D;&#x5305;&#x62EC;&#x6BCF;&#x4E2A;<code>Java</code>&#x7C7B;&#x3001;&#x5BF9;&#x8C61;&#x6570;&#x91CF;&#x3001;&#x5185;&#x5B58;&#x5927;&#x5C0F;(&#x5355;&#x4F4D;&#xFF1A;&#x5B57;&#x8282;)&#x3001;&#x5B8C;&#x5168;&#x9650;&#x5B9A;&#x7684;&#x7C7B;&#x540D;&#x3002;&#x6253;&#x5370;&#x7684;&#x865A;&#x62DF;&#x673A;&#x5185;&#x90E8;&#x7684;&#x7C7B;&#x540D;&#x79F0;&#x5C06;&#x4F1A;&#x5E26;&#x6709;&#x4E00;&#x4E2A;<code>*</code>&#x524D;&#x7F00;&#x3002;&#x5982;&#x679C;&#x6307;&#x5B9A;&#x4E86;<code>live</code>&#x5B50;&#x9009;&#x9879;&#xFF0C;&#x5219;&#x53EA;&#x8BA1;&#x7B97;&#x6D3B;&#x52A8;&#x7684;&#x5BF9;&#x8C61;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap -histo:live 880</span><br><span class="line"></span><br><span class="line"> num     <span class="comment">#instances         #bytes  class name</span></span><br><span class="line">----------------------------------------------</span><br><span class="line">   1:          5004         507264  [C</span><br><span class="line">   2:           576         244160  [B</span><br><span class="line">   3:         10009         240216  java.util.LinkedList<span class="variable">$Node</span></span><br><span class="line">   4:          4843         116232  java.lang.String</span><br><span class="line">   5:           667         100704  [Ljava.lang.Object;</span><br><span class="line">   6:           701          79992  java.lang.Class</span><br><span class="line">   7:           848          33920  java.util.TreeMap<span class="variable">$Entry</span></span><br><span class="line">   8:           699          27960  java.util.LinkedHashMap<span class="variable">$Entry</span></span><br><span class="line">   9:           427          19048  [Ljava.lang.String;</span><br><span class="line">  10:           495          15840  java.util.HashMap<span class="variable">$Node</span></span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>clastats</code></strong> &#x6253;&#x5370;&#x7C7B;&#x52A0;&#x8F7D;&#x5668;&#x4FE1;&#x606F;</p>
+<p><code>-clstats</code>&#x662F;<code>-permstat</code>&#x7684;&#x66FF;&#x4EE3;&#x65B9;&#x6848;&#xFF0C;&#x5728;<code>JDK8</code>&#x4E4B;&#x524D;&#xFF0C;<code>-permstat</code>&#x7528;&#x6765;&#x6253;&#x5370;&#x7C7B;&#x52A0;&#x8F7D;&#x5668;&#x7684;&#x6570;&#x636E;<br> &#x6253;&#x5370;<code>Java</code>&#x5806;&#x5185;&#x5B58;&#x7684;&#x6C38;&#x4E45;&#x4FDD;&#x5B58;&#x533A;&#x57DF;&#x7684;&#x7C7B;&#x52A0;&#x8F7D;&#x5668;&#x7684;&#x667A;&#x80FD;&#x7EDF;&#x8BA1;&#x4FE1;&#x606F;&#x3002;&#x5BF9;&#x4E8E;&#x6BCF;&#x4E2A;&#x7C7B;&#x52A0;&#x8F7D;&#x5668;&#x800C;&#x8A00;&#xFF0C;&#x5B83;&#x7684;&#x540D;&#x79F0;&#x3001;&#x6D3B;&#x8DC3;&#x5EA6;&#x3001;&#x5730;&#x5740;&#x3001;&#x7236;&#x7C7B;&#x52A0;&#x8F7D;&#x5668;&#x3001;&#x5B83;&#x6240;&#x52A0;&#x8F7D;&#x7684;&#x7C7B;&#x7684;&#x6570;&#x91CF;&#x548C;&#x5927;&#x5C0F;&#x90FD;&#x4F1A;&#x88AB;&#x6253;&#x5370;&#x3002;&#x6B64;&#x5916;&#xFF0C;&#x5305;&#x542B;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x6570;&#x91CF;&#x548C;&#x5927;&#x5C0F;&#x4E5F;&#x4F1A;&#x88AB;&#x6253;&#x5370;</p>
+<p>&#x4EE5;<code>ClassLoader</code>&#x4E3A;&#x7EDF;&#x8BA1;&#x53E3;&#x5F84;&#x663E;&#x793A;&#x6C38;&#x4E45;&#x4EE3;&#x5185;&#x5B58;&#x72B6;&#x6001;&#x3002;&#x53EA;&#x5728;<code>Linux/Solaris</code>&#x5E73;&#x53F0;&#x4E0B;&#x6709;&#x6548;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap -clstats 2656</span><br><span class="line">Attaching to process ID 2656, please <span class="built_in">wait</span>...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 25.60-b23</span><br><span class="line">finding class loader instances ..<span class="keyword">done</span>.</span><br><span class="line">computing per loader <span class="built_in">stat</span> ..<span class="keyword">done</span>.</span><br><span class="line">please <span class="built_in">wait</span>.. computing liveness.................................................................................................done.</span><br><span class="line">class_loader    classes bytes   parent_loader   alive?  <span class="built_in">type</span></span><br><span class="line"></span><br><span class="line">&lt;bootstrap&gt;     615     1147548   null          live    &lt;internal&gt;</span><br><span class="line">0x00000000d83d8378      0       0       0x00000000d8318498      live    java/util/ResourceBundle<span class="variable">$RBClassLoader</span>@0x00000001000667a0</span><br><span class="line">0x00000000d8318498      28      86958   0x00000000d83187c8      live    sun/misc/Launcher<span class="variable">$AppClassLoader</span>@0x000000010000f688</span><br><span class="line">0x00000000d83187c8      0       0         null          live    sun/misc/Launcher<span class="variable">$ExtClassLoader</span>@0x000000010000fa30</span><br><span class="line"></span><br><span class="line">total = 4       643     1234506     N/A         alive=4, dead=0     N/A</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><strong><code>finalizerinfo</code></strong> &#x6253;&#x5370;&#x7B49;&#x5F85;&#x7EC8;&#x7ED3;&#x7684;&#x5BF9;&#x8C61;&#x4FE1;&#x606F;</p>
+<p>&#x663E;&#x793A;&#x5728;<code>F-Queue</code>&#x4E2D;&#x7B49;&#x5F85;<code>Finalizer</code>&#x7EBF;&#x7A0B;&#x6267;&#x884C;<code>finalize()</code>&#x65B9;&#x6CD5;&#x7684;&#x5BF9;&#x8C61;&#x3002;&#x53EA;&#x5728;<code>Linux/Solaris</code>&#x5E73;&#x53F0;&#x4E0B;&#x6709;&#x6548;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap -finalizerinfo 4824</span><br><span class="line">Attaching to process ID 4824, please <span class="built_in">wait</span>...</span><br><span class="line">Debugger attached successfully.</span><br><span class="line">Server compiler detected.</span><br><span class="line">JVM version is 25.60-b23</span><br><span class="line">Number of objects pending <span class="keyword">for</span> finalization: 0</span><br></pre></td></tr></table></figure>
+
+<p><code>Number of objects pending for finalization: 0</code> &#x8BF4;&#x660E;&#x5F53;&#x524D;<code>F-QUEUE</code>&#x961F;&#x5217;&#x4E2D;&#x5E76;&#x6CA1;&#x6709;&#x7B49;&#x5F85;<code>Fializer</code>&#x7EBF;&#x7A0B;&#x6267;&#x884C;<code>final</code></p>
+<hr>
+<p><strong><code>dump:&lt;dump-options&gt;</code></strong> &#x751F;&#x6210;&#x5806;&#x8F6C;&#x50A8;&#x5FEB;&#x7167;dump&#x6587;&#x4EF6;</p>
+<p>&#x751F;&#x6210;<code>Java</code>&#x5806;&#x8F6C;&#x50A8;&#x5FEB;&#x7167;&#x3002;&#x683C;&#x5F0F;&#x4E3A;&#xFF1A;<code>-dump:[live,]format=b,file=&lt;filename&gt;</code>&#xFF0C;&#x5176;&#x4E2D;<code>live</code>&#x5B50;&#x53C2;&#x6570;&#x8BF4;&#x660E;&#x662F;&#x5426;&#x53EA;<code>dump</code>&#x51FA;&#x5B58;&#x6D3B;&#x7684;&#x5BF9;&#x8C61;</p>
+<p>&#x4EE5;<code>hprof</code>&#x4E8C;&#x8FDB;&#x5236;&#x683C;&#x5F0F;&#x8F6C;&#x50A8;<code>Java</code>&#x5806;&#x5230;&#x6307;&#x5B9A;<code>filename</code>&#x7684;&#x6587;&#x4EF6;&#x4E2D;&#x3002;<code>live</code>&#x5B50;&#x9009;&#x9879;&#x662F;&#x53EF;&#x9009;&#x7684;&#x3002;&#x5982;&#x679C;&#x6307;&#x5B9A;&#x4E86;<code>live</code>&#x5B50;&#x9009;&#x9879;&#xFF0C;&#x5806;&#x4E2D;&#x53EA;&#x6709;&#x6D3B;&#x52A8;&#x7684;&#x5BF9;&#x8C61;&#x4F1A;&#x88AB;&#x8F6C;&#x50A8;&#x3002;&#x60F3;&#x8981;&#x6D4F;&#x89C8;<code>heap dump</code>&#xFF0C;&#x4F60;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<code>jhat</code>(<code>Java</code>&#x5806;&#x5206;&#x6790;&#x5DE5;&#x5177;)&#x8BFB;&#x53D6;&#x751F;&#x6210;&#x7684;&#x6587;&#x4EF6;</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x8FD9;&#x4E2A;&#x547D;&#x4EE4;&#x6267;&#x884C;&#xFF0C;JVM&#x4F1A;&#x5C06;&#x6574;&#x4E2A;heap&#x7684;&#x4FE1;&#x606F;<span class="keyword">dump</span>&#x5199;&#x5165;&#x5230;&#x4E00;&#x4E2A;&#x6587;&#x4EF6;&#xFF0C;heap&#x5982;&#x679C;&#x6BD4;&#x8F83;&#x5927;&#x7684;&#x8BDD;&#xFF0C;&#x5C31;&#x4F1A;&#x5BFC;&#x81F4;&#x8FD9;&#x4E2A;&#x8FC7;&#x7A0B;&#x6BD4;&#x8F83;&#x8017;&#x65F6;&#xFF0C;&#x5E76;&#x4E14;&#x6267;&#x884C;&#x7684;&#x8FC7;&#x7A0B;&#x4E2D;&#x4E3A;&#x4E86;&#x4FDD;&#x8BC1;<span class="keyword">dump</span>&#x7684;&#x4FE1;&#x606F;&#x662F;&#x53EF;&#x9760;&#x7684;&#xFF0C;&#x6240;&#x4EE5;&#x4F1A;&#x6682;&#x505C;&#x5E94;&#x7528;&#xFF0C; &#x7EBF;&#x4E0A;&#x7CFB;&#x7EDF;&#x614E;&#x7528;&#x3002;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap -dump:format=b,file=heapdump.hprof 4824</span><br><span class="line">Dumping heap to C:\Users\gaoming\heapdump.hprof ...</span><br><span class="line">Heap dump file created</span><br></pre></td></tr></table></figure>
+
+<p>**<code>-F</code>**&#x5F53;&#x865A;&#x62DF;&#x673A;&#x8FDB;&#x7A0B;&#x5BF9;<code>-dump</code>&#x9009;&#x9879;&#x6CA1;&#x6709;&#x54CD;&#x5E94;&#x65F6;&#xFF0C;&#x53EF;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x9009;&#x9879;&#x5F3A;&#x5236;&#x751F;&#x6210;<code>dump</code>&#x5FEB;&#x7167;&#x3002;&#x53EA;&#x5728;<code>Linux/Solaris</code>&#x5E73;&#x53F0;&#x4E0B;&#x6709;&#x6548;</p>
+<h2 id="jhat"><a href="#jhat" class="headerlink" title="jhat"></a>jhat</h2><p><code>jhat</code>&#x4E5F;&#x662F;<code>jdk</code>&#x5185;&#x7F6E;&#x7684;&#x5DE5;&#x5177;&#x4E4B;&#x4E00;&#x3002;&#x4E3B;&#x8981;&#x662F;&#x7528;&#x6765;&#x5206;&#x6790;<code>java</code>&#x5806;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x53EF;&#x4EE5;&#x5C06;&#x5806;&#x4E2D;&#x7684;&#x5BF9;&#x8C61;&#x4EE5;<code>html</code>&#x7684;&#x5F62;&#x5F0F;&#x663E;&#x793A;&#x51FA;&#x6765;&#xFF0C;&#x5305;&#x62EC;&#x5BF9;&#x8C61;&#x7684;&#x6570;&#x91CF;&#xFF0C;&#x5927;&#x5C0F;&#x7B49;&#x7B49;&#xFF0C;&#x5E76;&#x652F;&#x6301;<strong>&#x5BF9;&#x8C61;&#x67E5;&#x8BE2;&#x8BED;&#x8A00;</strong></p>
+<p>&#x4F7F;&#x7528;<code>jmap</code>&#x7B49;&#x65B9;&#x6CD5;&#x751F;&#x6210;<code>java</code>&#x7684;&#x5806;&#x6587;&#x4EF6;&#x540E;&#xFF0C;&#x4F7F;&#x7528;&#x5176;&#x8FDB;&#x884C;&#x5206;&#x6790;</p>
+<h3 id="&#x751F;&#x6210;&#x5FEB;&#x7167;&#x6587;&#x4EF6;"><a href="#&#x751F;&#x6210;&#x5FEB;&#x7167;&#x6587;&#x4EF6;" class="headerlink" title="&#x751F;&#x6210;&#x5FEB;&#x7167;&#x6587;&#x4EF6;"></a>&#x751F;&#x6210;&#x5FEB;&#x7167;&#x6587;&#x4EF6;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jmap -dump:format=b,file=heapdump.hprof 7712</span><br><span class="line">Dumping heap to C:\Users\gaoming\heapdump.hprof ...</span><br><span class="line">Heap dump file created</span><br></pre></td></tr></table></figure>
+
+<h3 id="jhat-1"><a href="#jhat-1" class="headerlink" title="jhat"></a>jhat</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">C:\Users\gaoming&gt;jhat heapdump.hprof</span><br><span class="line">Reading from heapdump.hprof...</span><br><span class="line">Dump file created Sat May 01 13:56:33 CST 2021</span><br><span class="line">Snapshot <span class="built_in">read</span>, resolving...</span><br><span class="line">Resolving 28171 objects...</span><br><span class="line">Chasing references, expect 5 dots.....</span><br><span class="line">Eliminating duplicate references.....</span><br><span class="line">Snapshot resolved.</span><br><span class="line">Started HTTP server on port 7000</span><br><span class="line">Server is ready.</span><br></pre></td></tr></table></figure>
+
+<h3 id="http-localhost-7000"><a href="#http-localhost-7000" class="headerlink" title="http://localhost:7000/"></a><a target="_blank" rel="noopener" href="http://localhost:7000/">http://localhost:7000/</a></h3><p><img src="/2020/07/05/Jvm%E5%B7%A5%E5%85%B7/image-20210501135921538.png" alt="image-20210501135921538"></p>
+<p>&#x652F;&#x6301;<code>OQL</code>&#x8BED;&#x53E5;</p>
+<p><code>OQL</code>&#x662F;&#x7528;&#x4E8E;&#x67E5;&#x8BE2;<code>Java</code>&#x5806;&#x7684;&#x7C7B;<code>SQL</code>&#x67E5;&#x8BE2;&#x8BED;&#x8A00;&#x3002;<code>OQL</code>&#x5141;&#x8BB8;&#x8FC7;&#x6EE4;/&#x9009;&#x62E9;&#x4ECE;<code>Java</code>&#x5806;&#x4E2D;&#x83B7;&#x53D6;&#x7684;&#x4FE1;&#x606F;&#x3002;&#x867D;&#x7136;HAT&#x5DF2;&#x7ECF;&#x652F;&#x6301;&#x9884;&#x5B9A;&#x4E49;&#x7684;&#x67E5;&#x8BE2;&#xFF0C;&#x4F8B;&#x5982;&#x201C;&#x663E;&#x793A;&#x7C7B;<code>X</code>&#x7684;&#x6240;&#x6709;&#x5B9E;&#x4F8B;&#x201D;&#xFF0C;&#x4F46;<code>OQL</code>&#x589E;&#x52A0;&#x4E86;&#x66F4;&#x591A;&#x7684;&#x7075;&#x6D3B;&#x6027;&#x3002;<code>OQL</code>&#x57FA;&#x4E8E;<code>JavaScript</code>&#x8868;&#x8FBE;&#x5F0F;&#x8BED;&#x8A00;</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">&lt;</span>JavaScript expression <span class="keyword">to</span> <span class="keyword">select</span><span class="operator">&gt;</span></span><br><span class="line">[ <span class="keyword">from</span> [instanceof] <span class="operator">&lt;</span>class name<span class="operator">&gt;</span> <span class="operator">&lt;</span>identifier<span class="operator">&gt;</span></span><br><span class="line">[ <span class="keyword">where</span> <span class="operator">&lt;</span>JavaScript <span class="type">boolean</span> expression <span class="keyword">to</span> <span class="keyword">filter</span><span class="operator">&gt;</span> ] ]</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>(1)class name&#x662F;java&#x7C7B;&#x7684;&#x5B8C;&#x5168;&#x9650;&#x5B9A;&#x540D;&#xFF0C;&#x5982;&#xFF1A;java.lang.String, java.util.ArrayList, [C&#x662F;char&#x6570;&#x7EC4;, [Ljava.io.File&#x662F;java.io.File[]&#xFF0C;&#x4F9D;&#x6B64;&#x7C7B;&#x63A8;<br>(2)&#x7C7B;&#x7684;&#x5B8C;&#x5168;&#x9650;&#x5B9A;&#x540D;&#x4E0D;&#x8DB3;&#x4EE5;&#x552F;&#x4E00;&#x7684;&#x8FA8;&#x8BC6;&#x4E00;&#x4E2A;&#x7C7B;&#xFF0C;&#x56E0;&#x4E3A;&#x4E0D;&#x540C;&#x7684;ClassLoader&#x8F7D;&#x5165;&#x7684;&#x76F8;&#x540C;&#x7684;&#x7C7B;&#xFF0C;&#x5B83;&#x4EEC;&#x5728;JVM&#x4E2D;&#x662F;&#x4E0D;&#x540C;&#x7C7B;&#x578B;&#x7684;<br>(3)instanceof&#x8868;&#x793A;&#x4E5F;&#x67E5;&#x8BE2;&#x67D0;&#x4E00;&#x4E2A;&#x7C7B;&#x7684;&#x5B50;&#x7C7B;&#xFF0C;&#x5982;&#x679C;&#x4E0D;&#x660E;&#x786E;instanceof&#xFF0C;&#x5219;&#x53EA;&#x7CBE;&#x786E;&#x67E5;&#x8BE2;class name&#x6307;&#x5B9A;&#x7684;&#x7C7B;<br>(4)from&#x548C;where&#x5B50;&#x53E5;&#x90FD;&#x662F;&#x53EF;&#x9009;&#x7684;<br>(5)&#x53EF;&#x4EE5;&#x4F7F;&#x7528;obj.field_name&#x8BED;&#x6CD5;&#x8BBF;&#x95EE;Java&#x5B57;&#x6BB5;&#xFF0C;&#x5E76;&#x4E14;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;array [index]&#x8BED;&#x6CD5;&#x8BBF;&#x95EE;&#x6570;&#x7EC4;&#x5143;&#x7D20;</p>
+</blockquote>
+<p>&#x3010;Example&#x3011;</p>
+<p>&#x67E5;&#x8BE2;&#x957F;&#x5EA6;&#x5927;&#x4E8E;&#x7B49;&#x4E8E;<code>100</code>&#x7684;&#x5B57;&#x7B26;&#x4E32;</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> s <span class="keyword">from</span> java.lang.String s <span class="keyword">where</span> s.value.length <span class="operator">&gt;=</span> <span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x67E5;&#x8BE2;&#x957F;&#x5EA6;&#x5927;&#x4E8E;&#x7B49;&#x4E8E;<code>256</code>&#x7684;<code>int</code>&#x6570;&#x7EC4;</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> a <span class="keyword">from</span> [I a <span class="keyword">where</span> a.length <span class="operator">&gt;=</span> <span class="number">256</span></span><br><span class="line"><span class="keyword">select</span> a <span class="keyword">from</span> <span class="type">int</span>[] a <span class="keyword">where</span> a.length <span class="operator">&gt;=</span> <span class="number">256</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x663E;&#x793A;&#x4E0E;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;&#x5339;&#x914D;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x5185;&#x5BB9;</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> s.value.toString() <span class="keyword">from</span> java.lang.String s </span><br><span class="line"><span class="keyword">where</span> <span class="operator">/</span>java<span class="operator">/</span>.test(s.value.toString())</span><br><span class="line"># <span class="operator">/</span>java<span class="operator">/</span> &#x4FEE;&#x6539;&#x6210;&#x4F60;&#x7684;&#x6B63;&#x5219;&#x8868;&#x8FBE;&#x5F0F;&#xFF0C;&#x5982;<span class="operator">/</span><span class="operator">^</span>MyClass$<span class="operator">/</span> &#x5C31;&#x4F1A;&#x5339;&#x914D;MyClass&#x8FD9;&#x4E2A;&#x5B57;&#x7B26;&#x4E32;</span><br></pre></td></tr></table></figure>
+
+<p>&#x663E;&#x793A;&#x6240;&#x6709;<code>ClassLoader</code>&#x7C7B;&#x7684;&#x540D;&#x79F0;</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> classof(cl).name <span class="keyword">from</span> instanceof java.lang.ClassLoader cl</span><br></pre></td></tr></table></figure>
+
+<p>&#x663E;&#x793A;&#x7531;&#x7ED9;&#x5B9A;<code>id</code>&#x5B57;&#x7B26;&#x4E32;&#x6807;&#x8BC6;&#x7684;<code>Class</code>&#x7684;&#x5B9E;&#x4F8B;</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> o <span class="keyword">from</span> instanceof <span class="number">0x741012748</span> o</span><br><span class="line"># &#x8BF7;&#x6CE8;&#x610F;&#xFF0C;<span class="number">0x741012748</span>&#x662F;&#x7C7B;&#x7684;ID&#xFF08;&#x5728;&#x4F1A;&#x8BDD;&#x4E2D;&#xFF09;&#x3002;&#x901A;&#x8FC7;&#x67E5;&#x770B;&#x8BE5;&#x7C7B;&#x9875;&#x9762;&#x4E2D;&#x663E;&#x200B;&#x200B;&#x793A;&#x7684;id&#x53EF;&#x4EE5;&#x627E;&#x5230;&#x5B83;</span><br></pre></td></tr></table></figure>
+
+<p>&#x3010;&#x95EE;&#x7B54;&#x3011;</p>
+<p><strong>&#x5B9E;&#x9645;&#x751F;&#x6D3B;&#x4E2D;&#x4E0D;&#x5E38;&#x7528;&#x3002;&#x539F;&#x56E0;&#x5982;&#x4E0B;&#xFF1A;</strong></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span> &#x4E00;&#x662F;&#x4E00;&#x822C;&#x4E0D;&#x4F1A;&#x5728;&#x90E8;&#x7F72;&#x5E94;&#x7528;&#x7A0B;&#x5E8F;&#x7684;&#x670D;&#x52A1;&#x5668;&#x4E0A;&#x76F4;&#x63A5;&#x5206;&#x6790;</span><br><span class="line">&#x5806;&#x8F6C;&#x50A8;&#x5FEB;&#x7167;&#xFF0C; &#x5373;&#x4F7F;&#x53EF;&#x4EE5;&#x8FD9;&#x6837;&#x505A;&#xFF0C; &#x4E5F;&#x4F1A;&#x5C3D;&#x91CF;&#x5C06;&#x5806;&#x8F6C;&#x50A8;&#x5FEB;&#x7167;&#x6587;&#x4EF6;&#x590D;&#x5236;&#x5230;&#x5176;&#x4ED6;&#x673A;&#x5668;<span class="selector-attr">[1]</span>&#x4E0A;&#x8FDB;&#x884C;&#x5206;&#x6790;&#xFF0C; &#x56E0;&#x4E3A;&#x5206;&#x6790;&#x5DE5;&#x4F5C;&#x662F;&#x4E00;&#x4E2A;&#x8017;&#x65F6;&#x800C;&#x4E14;&#x6781;&#x4E3A;&#x8017;&#x8D39;&#x786C;&#x4EF6;&#x8D44;&#x6E90;&#x7684;&#x8FC7;&#x7A0B;&#xFF0C; &#x65E2;&#x7136;&#x90FD;&#x8981;&#x5728;&#x5176;&#x4ED6;&#x673A;&#x5668;&#x4E0A;&#x8FDB;&#x884C;&#xFF0C; &#x5C31;&#x6CA1;&#x6709;&#x5FC5;&#x8981;&#x518D;&#x53D7;&#x547D;&#x4EE4;&#x884C;&#x5DE5;&#x5177;&#x7684;&#x9650;&#x5236;&#x4E86;</span><br><span class="line"><span class="number">2</span> &#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x539F;&#x56E0;&#x662F;jhat&#x7684;&#x5206;&#x6790;&#x529F;&#x80FD;&#x76F8;&#x5BF9;&#x6765;&#x8BF4;&#x6BD4;&#x8F83;&#x7B80;&#x964B;&#xFF0C; &#x540E;&#x6587;&#x5C06;&#x4F1A;&#x4ECB;&#x7ECD;&#x5230;&#x7684;VisualVM&#xFF0C; &#x4EE5;&#x53CA;&#x4E13;&#x4E1A;&#x7528;&#x4E8E;&#x5206;&#x6790;&#x5806;&#x8F6C;&#x50A8;&#x5FEB;&#x7167;&#x6587;&#x4EF6;&#x7684;Eclipse Memory Analyzer&#x3001; IBM HeapAnalyzer<span class="selector-attr">[2]</span>&#x7B49;&#x5DE5;&#x5177;&#xFF0C; &#x90FD;&#x80FD;&#x5B9E;&#x73B0;&#x6BD4;jhat&#x66F4;&#x5F3A;&#x5927;&#x4E13;&#x4E1A;&#x7684;&#x5206;&#x6790;&#x529F;&#x80FD;</span><br></pre></td></tr></table></figure>
+
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/07/14/Nexus/" data-toggle="tooltip" data-placement="top" title="Nexus">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/07/01/QueryDSL/" data-toggle="tooltip" data-placement="top" title="QueryDSL">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Jvm-&#x5DE5;&#x5177;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Jvm &amp;#x5DE5;&amp;#x5177;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#jps"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">jps</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#jstack"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">jstack</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#jstat"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">jstat</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#jinfo"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">jinfo</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#jmap"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text">jmap</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#jhat"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text">jhat</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x751F;&#x6210;&#x5FEB;&#x7167;&#x6587;&#x4EF6;"><span class="toc-nav-number">1.6.1.</span> <span class="toc-nav-text">&amp;#x751F;&amp;#x6210;&amp;#x5FEB;&amp;#x7167;&amp;#x6587;&amp;#x4EF6;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#jhat-1"><span class="toc-nav-number">1.6.2.</span> <span class="toc-nav-text">jhat</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#http-localhost-7000"><span class="toc-nav-number">1.6.3.</span> <span class="toc-nav-text">http:&#x2F;&#x2F;localhost:7000&#x2F;</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/07/05/Jvm%E5%B7%A5%E5%85%B7/";
+    var disqus_url = "http://example.com/2020/07/05/Jvm%E5%B7%A5%E5%85%B7/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

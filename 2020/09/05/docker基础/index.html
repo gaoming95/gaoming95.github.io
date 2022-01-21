@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Docker基础 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/09/05/docker基础/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#运维" title="运维">运维</a>
+                        
+                    </div>
+                    <h1>Docker基础</h1>
+                    <h2 class="subheading">Docker 是一个开源的应用容器引擎，基于 Go 语言 并遵从 Apache2.0 协议开源。Docker 可以让开发者打包他们的应用以及依赖包到一个轻量级、可移植的容器中，然后发布到任何流行的 Linux 机器上，也可以实现虚拟化</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-09-05
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="Docker&#x57FA;&#x7840;"><a href="#Docker&#x57FA;&#x7840;" class="headerlink" title="Docker&#x57FA;&#x7840;"></a>Docker&#x57FA;&#x7840;</h1><h2 id="Docker-&#x57FA;&#x7840;"><a href="#Docker-&#x57FA;&#x7840;" class="headerlink" title="Docker &#x57FA;&#x7840;"></a>Docker &#x57FA;&#x7840;</h2><h3 id="Ubuntu-Docker-&#x5B89;&#x88C5;"><a href="#Ubuntu-Docker-&#x5B89;&#x88C5;" class="headerlink" title="Ubuntu Docker &#x5B89;&#x88C5;"></a>Ubuntu Docker &#x5B89;&#x88C5;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -fsSL https://get.docker.com | bash -s docker --mirror Aliyun</span><br></pre></td></tr></table></figure>
+
+<h3 id="docker-&#x5207;&#x955C;&#x50CF;&#x6E90;"><a href="#docker-&#x5207;&#x955C;&#x50CF;&#x6E90;" class="headerlink" title="docker &#x5207;&#x955C;&#x50CF;&#x6E90;"></a>docker &#x5207;&#x955C;&#x50CF;&#x6E90;</h3><p>&#x53EF;&#x53C2;&#x8003;&#x963F;&#x91CC;&#x955C;&#x50CF;&#x52A0;&#x901F;</p>
+<ol>
+<li><p>&#x521B;&#x5EFA;&#x6587;&#x4EF6;&#x5939;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /etc/docker</span><br></pre></td></tr></table></figure></li>
+<li><p>&#x7F16;&#x8F91;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/docker/daemon.json</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">{</span><br><span class="line">  <span class="attr">&quot;registry-mirrors&quot;</span>: [<span class="string">&quot;https://registry.docker-cn.com&quot;</span>]</span><br><span class="line">}</span><br></pre></td></tr></table></figure></li>
+<li><p>&#x91CD;&#x542F;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="docker&#x514D;sudo"><a href="#docker&#x514D;sudo" class="headerlink" title="docker&#x514D;sudo"></a>docker&#x514D;sudo</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x542F;&#x52A8;docker&#x670D;&#x52A1;"><a href="#&#x542F;&#x52A8;docker&#x670D;&#x52A1;" class="headerlink" title="&#x542F;&#x52A8;docker&#x670D;&#x52A1;"></a>&#x542F;&#x52A8;docker&#x670D;&#x52A1;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># service &#x547D;&#x4EE4;&#x7684;&#x7528;&#x6CD5;</span></span><br><span class="line">sudo service docker start</span><br><span class="line"><span class="comment"># systemctl &#x547D;&#x4EE4;&#x7684;&#x7528;&#x6CD5;</span></span><br><span class="line">sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+
+<h2 id="Image&#x6587;&#x4EF6;"><a href="#Image&#x6587;&#x4EF6;" class="headerlink" title="Image&#x6587;&#x4EF6;"></a>Image&#x6587;&#x4EF6;</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x5217;&#x51FA;&#x672C;&#x673A;&#x7684;&#x6240;&#x6709; image &#x6587;&#x4EF6;&#x3002;</span></span><br><span class="line">docker image ls</span><br><span class="line"><span class="comment"># &#x5220;&#x9664; image &#x6587;&#x4EF6;</span></span><br><span class="line">docker image rm [imageName]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x8FD0;&#x884C;image&#x6587;&#x4EF6;</span></span><br><span class="line">docker container run hello-world</span><br><span class="line"><span class="comment"># &#x5982;&#x679C;&#x955C;&#x50CF;&#x4E0D;&#x5B58;&#x5728;&#xFF0C;&#x4F1A;&#x4ECE;&#x8FDC;&#x7A0B;&#x4ED3;&#x5E93;&#x6293;&#x53D6;</span></span><br><span class="line"><span class="comment"># &#x5BB9;&#x5668;&#x4F1A;&#x81EA;&#x52A8;&#x505C;&#x6B62;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x5BB9;&#x5668;&#x4E0D;&#x4F1A;&#x81EA;&#x52A8;&#x7EC8;&#x6B62;</span></span><br><span class="line">docker container run -it ubuntu bash</span><br><span class="line"><span class="comment"># &#x624B;&#x52A8;&#x505C;&#x6B62;&#x5BB9;&#x5668;</span></span><br><span class="line">docker container <span class="built_in">kill</span> [containID]</span><br></pre></td></tr></table></figure>
+
+<h2 id="&#x5BB9;&#x5668;&#x6587;&#x4EF6;"><a href="#&#x5BB9;&#x5668;&#x6587;&#x4EF6;" class="headerlink" title="&#x5BB9;&#x5668;&#x6587;&#x4EF6;"></a>&#x5BB9;&#x5668;&#x6587;&#x4EF6;</h2><p>&#x5BB9;&#x5668;&#x4E00;&#x65E6;&#x751F;&#x6210;&#xFF0C;&#x5C31;&#x4F1A;&#x540C;&#x65F6;&#x5B58;&#x5728;&#x4E24;&#x4E2A;&#x6587;&#x4EF6;&#xFF0C;Image&#x6587;&#x4EF6;&#x548C;&#x5BB9;&#x5668;&#x6587;&#x4EF6;&#x3002;</p>
+<p>&#x5173;&#x95ED;&#x5BB9;&#x5668;&#x5E76;&#x4E0D;&#x4F1A;&#x5220;&#x9664;&#x5BB9;&#x5668;&#x6587;&#x4EF6;&#xFF0C;&#x53EA;&#x662F;&#x5BB9;&#x5668;&#x505C;&#x6B62;&#x8FD0;&#x884C;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x5217;&#x51FA;&#x6B63;&#x5728;&#x8FD0;&#x884C;&#x7684;&#x5BB9;&#x5668;</span></span><br><span class="line">docker container ls</span><br><span class="line"><span class="comment"># &#x5217;&#x51FA;&#x672C;&#x673A;&#x6240;&#x6709;&#x5BB9;&#x5668;&#xFF0C;&#x5305;&#x62EC;&#x7EC8;&#x6B62;&#x8FD0;&#x884C;&#x7684;&#x5BB9;&#x5668;</span></span><br><span class="line">docker container ls -all</span><br><span class="line"><span class="comment"># &#x7EC8;&#x6B62;&#x5BB9;&#x5668;</span></span><br><span class="line">docker container <span class="built_in">kill</span></span><br><span class="line"><span class="comment"># &#x5220;&#x9664;&#x5BB9;&#x5668;</span></span><br><span class="line">docker cintainer rm [containerID]</span><br></pre></td></tr></table></figure>
+
+<h2 id="&#x5236;&#x4F5C;DockerFile&#x6587;&#x4EF6;"><a href="#&#x5236;&#x4F5C;DockerFile&#x6587;&#x4EF6;" class="headerlink" title="&#x5236;&#x4F5C;DockerFile&#x6587;&#x4EF6;"></a>&#x5236;&#x4F5C;DockerFile&#x6587;&#x4EF6;</h2><p>&#x3010;&#x793A;&#x4F8B;&#x3011;&#x5236;&#x4F5C;Dockerfile&#x6587;&#x4EF6;</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git clone https:<span class="regexp">//gi</span>thub.com<span class="regexp">/ruanyf/</span>koa-demos.git</span><br><span class="line">cd koa-demos</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x7F16;&#x5199;Dockerfile&#x6587;&#x4EF6;"><a href="#&#x7F16;&#x5199;Dockerfile&#x6587;&#x4EF6;" class="headerlink" title="&#x7F16;&#x5199;Dockerfile&#x6587;&#x4EF6;"></a>&#x7F16;&#x5199;Dockerfile&#x6587;&#x4EF6;</h3><ol>
+<li><p>&#x5728;&#x9879;&#x76EE;&#x7684;&#x6839;&#x76EE;&#x5F55;&#x4E0B;&#xFF0C;&#x65B0;&#x5EFA;&#x4E00;&#x4E2A;&#x6587;&#x672C;&#x6587;&#x4EF6;<code>.dockerignore</code>&#xFF0C;&#x5199;&#x5165;&#x5982;&#x4E0B;&#x5185;&#x5BB9;</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">.git</span><br><span class="line">node_modules</span><br><span class="line">npm-debug.log</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E0A;&#x8FF0;&#x6587;&#x4EF6;&#x8868;&#x793A;&#x4E09;&#x4E2A;&#x6587;&#x4EF6;&#x9700;&#x8981;&#x6392;&#x9664;&#xFF0C;&#x4E0D;&#x9700;&#x8981;&#x6253;&#x5305;&#x81F3;image&#x6587;&#x4EF6;</p>
+</li>
+<li><p>&#x5728;&#x9879;&#x76EE;&#x7684;&#x6839;&#x76EE;&#x5F55;&#x4E0B;&#xFF0C;&#x65B0;&#x5EFA;&#x4E00;&#x4E2A;&#x6587;&#x672C;&#x6587;&#x4EF6;Dockerfile</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">FROM <span class="keyword">node</span><span class="title">:8</span>.<span class="number">4</span></span><br><span class="line">COPY . /app</span><br><span class="line">WORKDIR /app</span><br><span class="line">RUN npm install --<span class="attr">registry=</span>https://registry.npm.taobao.org</span><br><span class="line">EXPOSE <span class="number">3000</span></span><br><span class="line"></span><br><span class="line">FROM <span class="keyword">node</span><span class="title">:8</span>.<span class="number">4</span>&#xFF1A;&#x8BE5; image &#x6587;&#x4EF6;&#x7EE7;&#x627F;&#x5B98;&#x65B9;&#x7684; <span class="keyword">node</span> <span class="title">image</span>&#xFF0C;&#x5192;&#x53F7;&#x8868;&#x793A;&#x6807;&#x7B7E;&#xFF0C;&#x8FD9;&#x91CC;&#x6807;&#x7B7E;&#x662F;<span class="number">8.4</span>&#xFF0C;&#x5373;<span class="number">8.4</span>&#x7248;&#x672C;&#x7684; <span class="keyword">node</span><span class="title">&#x3002;</span></span><br><span class="line"><span class="title">COPY</span> . /app&#xFF1A;&#x5C06;&#x5F53;&#x524D;&#x76EE;&#x5F55;&#x4E0B;&#x7684;&#x6240;&#x6709;&#x6587;&#x4EF6;&#xFF08;&#x9664;&#x4E86;.dockerignore&#x6392;&#x9664;&#x7684;&#x8DEF;&#x5F84;&#xFF09;&#xFF0C;&#x90FD;&#x62F7;&#x8D1D;&#x8FDB;&#x5165; image &#x6587;&#x4EF6;&#x7684;/app&#x76EE;&#x5F55;&#x3002;</span><br><span class="line">WORKDIR /app&#xFF1A;&#x6307;&#x5B9A;&#x63A5;&#x4E0B;&#x6765;&#x7684;&#x5DE5;&#x4F5C;&#x8DEF;&#x5F84;&#x4E3A;/app&#x3002;</span><br><span class="line">RUN npm install&#xFF1A;&#x5728;/app&#x76EE;&#x5F55;&#x4E0B;&#xFF0C;&#x8FD0;&#x884C;npm install&#x547D;&#x4EE4;&#x5B89;&#x88C5;&#x4F9D;&#x8D56;&#x3002;&#x6CE8;&#x610F;&#xFF0C;&#x5B89;&#x88C5;&#x540E;&#x6240;&#x6709;&#x7684;&#x4F9D;&#x8D56;&#xFF0C;&#x90FD;&#x5C06;&#x6253;&#x5305;&#x8FDB;&#x5165; image &#x6587;&#x4EF6;&#x3002;</span><br><span class="line">EXPOSE <span class="number">3000</span>&#xFF1A;&#x5C06;&#x5BB9;&#x5668; <span class="number">3000</span> &#x7AEF;&#x53E3;&#x66B4;&#x9732;&#x51FA;&#x6765;&#xFF0C; &#x5141;&#x8BB8;&#x5916;&#x90E8;&#x8FDE;&#x63A5;&#x8FD9;&#x4E2A;&#x7AEF;&#x53E3;&#x3002;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h3 id="&#x521B;&#x5EFA;image&#x6587;&#x4EF6;"><a href="#&#x521B;&#x5EFA;image&#x6587;&#x4EF6;" class="headerlink" title="&#x521B;&#x5EFA;image&#x6587;&#x4EF6;"></a>&#x521B;&#x5EFA;image&#x6587;&#x4EF6;</h3><p>&#x4F7F;&#x7528;docker image build&#x547D;&#x4EE4;&#x521B;&#x5EFA;image&#x6587;&#x4EF6;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker image build -t koa-demo .</span><br><span class="line"><span class="comment"># &#x6216;&#x8005;</span></span><br><span class="line">$ docker image build -t koa-demo:0.0.1 .</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E0A;&#x9762;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;<code>-t</code>&#x53C2;&#x6570;&#x7528;&#x6765;&#x6307;&#x5B9A; image &#x6587;&#x4EF6;&#x7684;&#x540D;&#x5B57;&#xFF0C;&#x540E;&#x9762;&#x8FD8;&#x53EF;&#x4EE5;&#x7528;&#x5192;&#x53F7;&#x6307;&#x5B9A;&#x6807;&#x7B7E;&#x3002;&#x5982;&#x679C;&#x4E0D;&#x6307;&#x5B9A;&#xFF0C;&#x9ED8;&#x8BA4;&#x7684;&#x6807;&#x7B7E;&#x5C31;&#x662F;<code>latest</code>&#x3002;&#x6700;&#x540E;&#x7684;&#x90A3;&#x4E2A;&#x70B9;&#x8868;&#x793A; Dockerfile &#x6587;&#x4EF6;&#x6240;&#x5728;&#x7684;&#x8DEF;&#x5F84;&#xFF0C;&#x4E0A;&#x4F8B;&#x662F;&#x5F53;&#x524D;&#x8DEF;&#x5F84;&#xFF0C;&#x6240;&#x4EE5;&#x662F;&#x4E00;&#x4E2A;&#x70B9;&#x3002;</p>
+<p>&#x5982;&#x679C;&#x8FD0;&#x884C;&#x6210;&#x529F;&#xFF0C;&#x5C31;&#x53EF;&#x4EE5;&#x770B;&#x5230;&#x65B0;&#x751F;&#x6210;&#x7684; image &#x6587;&#x4EF6;<code>koa-demo</code>&#x4E86;&#x3002;</p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="keyword">image</span> <span class="keyword">ls</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x751F;&#x6210;&#x5BB9;&#x5668;"><a href="#&#x751F;&#x6210;&#x5BB9;&#x5668;" class="headerlink" title="&#x751F;&#x6210;&#x5BB9;&#x5668;"></a>&#x751F;&#x6210;&#x5BB9;&#x5668;</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ docker container run -p 8000:3000 -it koa-demo /bin/bash</span><br><span class="line"><span class="comment"># &#x6216;&#x8005;</span></span><br><span class="line">$ docker container run -p 8000:3000 -it koa-demo:0.0.1 /bin/bash</span><br><span class="line"></span><br><span class="line">-p&#x53C2;&#x6570;&#xFF1A;&#x5BB9;&#x5668;&#x7684; 3000 &#x7AEF;&#x53E3;&#x6620;&#x5C04;&#x5230;&#x672C;&#x673A;&#x7684; 8000 &#x7AEF;&#x53E3;&#x3002;</span><br><span class="line">-it&#x53C2;&#x6570;&#xFF1A;&#x5BB9;&#x5668;&#x7684; Shell &#x6620;&#x5C04;&#x5230;&#x5F53;&#x524D;&#x7684; Shell&#xFF0C;&#x7136;&#x540E;&#x4F60;&#x5728;&#x672C;&#x673A;&#x7A97;&#x53E3;&#x8F93;&#x5165;&#x7684;&#x547D;&#x4EE4;&#xFF0C;&#x5C31;&#x4F1A;&#x4F20;&#x5165;&#x5BB9;&#x5668;&#x3002;</span><br><span class="line">koa-demo:0.0.1&#xFF1A;image &#x6587;&#x4EF6;&#x7684;&#x540D;&#x5B57;&#xFF08;&#x5982;&#x679C;&#x6709;&#x6807;&#x7B7E;&#xFF0C;&#x8FD8;&#x9700;&#x8981;&#x63D0;&#x4F9B;&#x6807;&#x7B7E;&#xFF0C;&#x9ED8;&#x8BA4;&#x662F; latest &#x6807;&#x7B7E;&#xFF09;&#x3002;</span><br><span class="line">/bin/bash&#xFF1A;&#x5BB9;&#x5668;&#x542F;&#x52A8;&#x4EE5;&#x540E;&#xFF0C;&#x5185;&#x90E8;&#x7B2C;&#x4E00;&#x4E2A;&#x6267;&#x884C;&#x7684;&#x547D;&#x4EE4;&#x3002;&#x8FD9;&#x91CC;&#x662F;&#x542F;&#x52A8; Bash&#xFF0C;&#x4FDD;&#x8BC1;&#x7528;&#x6237;&#x53EF;&#x4EE5;&#x4F7F;&#x7528; Shell&#x3002;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">root</span>@<span class="number">66</span>d<span class="number">80</span>f<span class="number">4</span>aaf<span class="number">1</span>e:/app# node demos/<span class="number">01</span>.js</span><br></pre></td></tr></table></figure>
+
+<h3 id="CMD&#x547D;&#x4EE4;"><a href="#CMD&#x547D;&#x4EE4;" class="headerlink" title="CMD&#x547D;&#x4EE4;"></a>CMD&#x547D;&#x4EE4;</h3><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x624B;&#x52A8;&#x8F93;&#x5165;&#x547D;&#x4EE4;<span class="keyword">node</span> <span class="title">demos</span>/<span class="number">01</span>.js&#x3002;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x628A;&#x8FD9;&#x4E2A;&#x547D;&#x4EE4;&#x5199;&#x5728; Dockerfile &#x91CC;&#x9762;</span><br></pre></td></tr></table></figure>
+
+<h2 id="portainer"><a href="#portainer" class="headerlink" title="portainer"></a>portainer</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p <span class="number">9000</span>:<span class="number">9000</span> -v <span class="regexp">/var/</span>run<span class="regexp">/docker.sock:/</span>var<span class="regexp">/run/</span>docker.sock portainer/portainer</span><br></pre></td></tr></table></figure>
+
+<h2 id="mysql"><a href="#mysql" class="headerlink" title="mysql"></a>mysql</h2><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="builtin-name">run</span> -itd --name mysql-test -p 3306:3306 -e <span class="attribute">MYSQL_ROOT_PASSWORD</span>=root mysql</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/09/10/门面与调停者模式/" data-toggle="tooltip" data-placement="top" title="门面与调停者模式">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/09/03/Spring HTTP Invoker/" data-toggle="tooltip" data-placement="top" title="Spring HTTP invoker(SOA)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Docker&#x57FA;&#x7840;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Docker&amp;#x57FA;&amp;#x7840;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Docker-&#x57FA;&#x7840;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">Docker &amp;#x57FA;&amp;#x7840;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Ubuntu-Docker-&#x5B89;&#x88C5;"><span class="toc-nav-number">1.1.1.</span> <span class="toc-nav-text">Ubuntu Docker &amp;#x5B89;&amp;#x88C5;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#docker-&#x5207;&#x955C;&#x50CF;&#x6E90;"><span class="toc-nav-number">1.1.2.</span> <span class="toc-nav-text">docker &amp;#x5207;&amp;#x955C;&amp;#x50CF;&amp;#x6E90;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#docker&#x514D;sudo"><span class="toc-nav-number">1.1.3.</span> <span class="toc-nav-text">docker&amp;#x514D;sudo</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x542F;&#x52A8;docker&#x670D;&#x52A1;"><span class="toc-nav-number">1.1.4.</span> <span class="toc-nav-text">&amp;#x542F;&amp;#x52A8;docker&amp;#x670D;&amp;#x52A1;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Image&#x6587;&#x4EF6;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">Image&amp;#x6587;&amp;#x4EF6;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x5BB9;&#x5668;&#x6587;&#x4EF6;"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">&amp;#x5BB9;&amp;#x5668;&amp;#x6587;&amp;#x4EF6;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x5236;&#x4F5C;DockerFile&#x6587;&#x4EF6;"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">&amp;#x5236;&amp;#x4F5C;DockerFile&amp;#x6587;&amp;#x4EF6;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x7F16;&#x5199;Dockerfile&#x6587;&#x4EF6;"><span class="toc-nav-number">1.4.1.</span> <span class="toc-nav-text">&amp;#x7F16;&amp;#x5199;Dockerfile&amp;#x6587;&amp;#x4EF6;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x521B;&#x5EFA;image&#x6587;&#x4EF6;"><span class="toc-nav-number">1.4.2.</span> <span class="toc-nav-text">&amp;#x521B;&amp;#x5EFA;image&amp;#x6587;&amp;#x4EF6;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x751F;&#x6210;&#x5BB9;&#x5668;"><span class="toc-nav-number">1.4.3.</span> <span class="toc-nav-text">&amp;#x751F;&amp;#x6210;&amp;#x5BB9;&amp;#x5668;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#CMD&#x547D;&#x4EE4;"><span class="toc-nav-number">1.4.4.</span> <span class="toc-nav-text">CMD&amp;#x547D;&amp;#x4EE4;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#portainer"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text">portainer</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#mysql"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text">mysql</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#运维" title="运维">运维</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/09/05/docker%E5%9F%BA%E7%A1%80/";
+    var disqus_url = "http://example.com/2020/09/05/docker%E5%9F%BA%E7%A1%80/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

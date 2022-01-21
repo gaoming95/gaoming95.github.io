@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          多线程-线程状态 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2021/01/18/多线程-线程状态/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
+                        
+                    </div>
+                    <h1>多线程-线程状态</h1>
+                    <h2 class="subheading">新建，运行，限期等待，无限期等待，阻塞，结束</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2021-01-18
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="&#x591A;&#x7EBF;&#x7A0B;-&#x7EBF;&#x7A0B;&#x72B6;&#x6001;"><a href="#&#x591A;&#x7EBF;&#x7A0B;-&#x7EBF;&#x7A0B;&#x72B6;&#x6001;" class="headerlink" title="&#x591A;&#x7EBF;&#x7A0B;-&#x7EBF;&#x7A0B;&#x72B6;&#x6001;"></a>&#x591A;&#x7EBF;&#x7A0B;-&#x7EBF;&#x7A0B;&#x72B6;&#x6001;</h1><h2 id="&#x7EBF;&#x7A0B;&#x7684;6&#x79CD;&#x72B6;&#x6001;"><a href="#&#x7EBF;&#x7A0B;&#x7684;6&#x79CD;&#x72B6;&#x6001;" class="headerlink" title="&#x7EBF;&#x7A0B;&#x7684;6&#x79CD;&#x72B6;&#x6001;"></a>&#x7EBF;&#x7A0B;&#x7684;6&#x79CD;&#x72B6;&#x6001;</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">enum</span> <span class="title">State</span> </span>{</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Thread state for a thread which has not yet started.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        NEW,</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Thread state for a runnable thread.  A thread in the runnable</span></span><br><span class="line"><span class="comment">         * state is executing in the Java virtual machine but it may</span></span><br><span class="line"><span class="comment">         * be waiting for other resources from the operating system</span></span><br><span class="line"><span class="comment">         * such as processor.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        RUNNABLE,</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Thread state for a thread blocked waiting for a monitor lock.</span></span><br><span class="line"><span class="comment">         * A thread in the blocked state is waiting for a monitor lock</span></span><br><span class="line"><span class="comment">         * to enter a synchronized block/method or</span></span><br><span class="line"><span class="comment">         * reenter a synchronized block/method after calling</span></span><br><span class="line"><span class="comment">         * {<span class="doctag">@link</span> Object#wait() Object.wait}.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        BLOCKED,</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Thread state for a waiting thread.</span></span><br><span class="line"><span class="comment">         * A thread is in the waiting state due to calling one of the</span></span><br><span class="line"><span class="comment">         * following methods:</span></span><br><span class="line"><span class="comment">         * &lt;ul&gt;</span></span><br><span class="line"><span class="comment">         *   &lt;li&gt;{<span class="doctag">@link</span> Object#wait() Object.wait} with no timeout&lt;/li&gt;</span></span><br><span class="line"><span class="comment">         *   &lt;li&gt;{<span class="doctag">@link</span> #join() Thread.join} with no timeout&lt;/li&gt;</span></span><br><span class="line"><span class="comment">         *   &lt;li&gt;{<span class="doctag">@link</span> LockSupport#park() LockSupport.park}&lt;/li&gt;</span></span><br><span class="line"><span class="comment">         * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * &lt;p&gt;A thread in the waiting state is waiting for another thread to</span></span><br><span class="line"><span class="comment">         * perform a particular action.</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * For example, a thread that has called &lt;tt&gt;Object.wait()&lt;/tt&gt;</span></span><br><span class="line"><span class="comment">         * on an object is waiting for another thread to call</span></span><br><span class="line"><span class="comment">         * &lt;tt&gt;Object.notify()&lt;/tt&gt; or &lt;tt&gt;Object.notifyAll()&lt;/tt&gt; on</span></span><br><span class="line"><span class="comment">         * that object. A thread that has called &lt;tt&gt;Thread.join()&lt;/tt&gt;</span></span><br><span class="line"><span class="comment">         * is waiting for a specified thread to terminate.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        WAITING,</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Thread state for a waiting thread with a specified waiting time.</span></span><br><span class="line"><span class="comment">         * A thread is in the timed waiting state due to calling one of</span></span><br><span class="line"><span class="comment">         * the following methods with a specified positive waiting time:</span></span><br><span class="line"><span class="comment">         * &lt;ul&gt;</span></span><br><span class="line"><span class="comment">         *   &lt;li&gt;{<span class="doctag">@link</span> #sleep Thread.sleep}&lt;/li&gt;</span></span><br><span class="line"><span class="comment">         *   &lt;li&gt;{<span class="doctag">@link</span> Object#wait(long) Object.wait} with timeout&lt;/li&gt;</span></span><br><span class="line"><span class="comment">         *   &lt;li&gt;{<span class="doctag">@link</span> #join(long) Thread.join} with timeout&lt;/li&gt;</span></span><br><span class="line"><span class="comment">         *   &lt;li&gt;{<span class="doctag">@link</span> LockSupport#parkNanos LockSupport.parkNanos}&lt;/li&gt;</span></span><br><span class="line"><span class="comment">         *   &lt;li&gt;{<span class="doctag">@link</span> LockSupport#parkUntil LockSupport.parkUntil}&lt;/li&gt;</span></span><br><span class="line"><span class="comment">         * &lt;/ul&gt;</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        TIMED_WAITING,</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Thread state for a terminated thread.</span></span><br><span class="line"><span class="comment">         * The thread has completed execution.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        TERMINATED;</span><br><span class="line">    }</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><code>NEW</code> &#x7EBF;&#x7A0B;&#x88AB;&#x521B;&#x5EFA;&#x51FA;&#x6765;&#x4E86;&#xFF0C;&#x4F46;&#x662F;&#x8FD8;&#x6CA1;&#x6709;<code>start()</code></li>
+<li><code>RUNNABLE</code> &#x53EF;&#x8FD0;&#x884C;&#x72B6;&#x6001;&#xFF0C;&#x8FD9;&#x4E2A;&#x72B6;&#x6001;&#x6BD4;&#x8F83;&#x7279;&#x6B8A;&#xFF0C;&#x6211;&#x5728;&#x56FE;&#x4E2D;&#x628A;&#x8FD9;&#x4E2A;&#x72B6;&#x6001;&#x62C6;&#x5206;&#x6210;&#x4E86;&#x4E24;&#x90E8;&#x5206;&#xFF1A;&#x4E00;&#x90E8;&#x5206;&#x662F;<code>READY</code>&#xFF0C;&#x987E;&#x540D;&#x601D;&#x4E49;&#x662F;&#x51C6;&#x5907;&#x72B6;&#x6001;&#xFF0C;&#x53E6;&#x4E00;&#x90E8;&#x5206;&#x662F;<code>RUNNING</code>&#xFF0C;&#x5373;&#x8FD0;&#x884C;&#x72B6;&#x6001;<ol>
+<li><code>READY</code> &#x51C6;&#x5907;&#x72B6;&#x6001;&#xFF0C;&#x53EA;&#x80FD;&#x8BF4;&#x660E;&#x4F60;&#x6709;&#x8D44;&#x683C;&#x8FD0;&#x884C;&#xFF0C;&#x5355;&#x53EA;&#x8981;&#x8C03;&#x5EA6;&#x7A0B;&#x5E8F;&#x6CA1;&#x6709;&#x8C03;&#x5EA6;&#x5230;&#x4F60;&#xFF0C;&#x4F60;&#x5C31;&#x6C38;&#x8FDC;&#x662F;&#x51C6;&#x5907;&#x72B6;&#x6001;</li>
+<li><code>RUNNING</code> &#x8FD0;&#x884C;&#x72B6;&#x6001;&#xFF0C;&#x7EBF;&#x7A0B;&#x8C03;&#x5EA6;&#x7A0B;&#x5E8F;&#x4ECE;&#x53EF;&#x8FD0;&#x884C;&#x6C60;&#x4E2D;&#x9009;&#x62E9;&#x4E00;&#x4E2A;&#x7EBF;&#x7A0B;&#x4F5C;&#x4E3A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x65F6;&#x7EBF;&#x7A0B;&#x6240;&#x5904;&#x7684;&#x72B6;&#x6001;</li>
+</ol>
+</li>
+<li><code>BLOCKED</code> &#x963B;&#x585E;&#x72B6;&#x6001;&#x662F;&#x7EBF;&#x7A0B;&#x963B;&#x585E;&#x5728;&#x8FDB;&#x5165;<code>synchronized</code>&#x5173;&#x952E;&#x5B57;&#x4FEE;&#x9970;&#x7684;&#x65B9;&#x6CD5;&#x6216;&#x4EE3;&#x7801;&#x5757;&#xFF08;&#x83B7;&#x53D6;&#x9501;&#xFF09;&#x65F6;&#x7684;&#x72B6;&#x6001;</li>
+<li><code>WAITING</code> &#x7B49;&#x5F85;&#x72B6;&#x6001;&#x7684;&#x7EBF;&#x7A0B;&#x4E0D;&#x4F1A;&#x88AB;&#x5206;&#x914D; <code>CPU</code> &#x6267;&#x884C;&#x65F6;&#x95F4;&#xFF0C;&#x5B83;&#x4EEC;&#x8981;&#x7B49;&#x5F85;&#x88AB;&#x663E;&#x5F0F;&#x5730;&#x5524;&#x9192;&#xFF0C;&#x5426;&#x5219;&#x4F1A;&#x5904;&#x4E8E;&#x65E0;&#x9650;&#x671F;&#x7B49;&#x5F85;&#x7684;&#x72B6;&#x6001;</li>
+<li><code>TIMED_WAITING</code> &#x8D85;&#x65F6;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#x7684;&#x7EBF;&#x7A0B;&#x4E0D;&#x4F1A;&#x88AB;&#x5206;&#x914D; <code>CPU</code> &#x6267;&#x884C;&#x65F6;&#x95F4;&#xFF0C;&#x4E0D;&#x8FC7;&#x65E0;&#x987B;&#x65E0;&#x9650;&#x671F;&#x7B49;&#x5F85;&#x88AB;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x663E;&#x793A;&#x5730;&#x5524;&#x9192;&#xFF0C;&#x5728;&#x8FBE;&#x5230;&#x4E00;&#x5B9A;&#x65F6;&#x95F4;&#x540E;&#x5B83;&#x4EEC;&#x4F1A;&#x81EA;&#x52A8;&#x5524;&#x9192;&#x3002;&#x8FD9;&#x662F;&#x548C;&#x4E0A;&#x9762;&#x7684; <code>WAITING</code> &#x72B6;&#x6001;&#x7684;&#x533A;&#x522B;</li>
+<li><code>TERMINATED</code> &#x7EC8;&#x6B62;&#x72B6;&#x6001;&#xFF0C;&#x987E;&#x540D;&#x601D;&#x4E49;&#xFF0C;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x7ED3;&#x675F;&#x4E86;</li>
+</ol>
+<h2 id="&#x7EBF;&#x7A0B;&#x72B6;&#x6001;&#x5207;&#x6362;&#x51FD;&#x6570;"><a href="#&#x7EBF;&#x7A0B;&#x72B6;&#x6001;&#x5207;&#x6362;&#x51FD;&#x6570;" class="headerlink" title="&#x7EBF;&#x7A0B;&#x72B6;&#x6001;&#x5207;&#x6362;&#x51FD;&#x6570;"></a>&#x7EBF;&#x7A0B;&#x72B6;&#x6001;&#x5207;&#x6362;&#x51FD;&#x6570;</h2><p><code>Thread.sleep</code>&#x3001;<code>Thread.yeild</code>&#x3001;<code>Object.wait</code>&#x3001;<code>Thread.join</code>&#x3001;<code>Object.notify/notifyAll</code>&#x3001;<code>LockSupport.park/unpark/parkNanos/parkUtil</code></p>
+<p><code>Thread.sleep(time)</code>&#xFF1A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8C03;&#x7528;&#x6B64;&#x65B9;&#x6CD5;&#xFF0C;&#x987E;&#x540D;&#x601D;&#x4E49;&#xFF0C;&#x5C31;&#x662F;&#x8BA9;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165;<code>TIMED_WAITING</code>&#x72B6;&#x6001;&#xFF0C;&#x7761;&#x7720;&#x56FA;&#x5B9A;&#x7684;&#x65F6;&#x95F4;&#xFF08;&#x4F46;&#x662F;&#x4E0D;&#x91CA;&#x653E;&#x5BF9;&#x8C61;&#x9501;&#xFF09;&#xFF0C;&#x5230;&#x70B9;&#x540E;&#x81EA;&#x52A8;&#x5524;&#x9192;&#xFF0C;&#x8FDB;&#x5165;&#x51C6;&#x5907;&#x72B6;&#x6001;&#x3002;&#x4E3B;&#x8981;&#x4F5C;&#x7528;&#x662F;&#x7ED9;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x6267;&#x884C;&#x673A;&#x4F1A;</p>
+<p><code>Thread.yield()</code>&#xFF1A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8C03;&#x7528;&#x6B64;&#x65B9;&#x6CD5;&#xFF0C;&#x653E;&#x5F03;&#x83B7;&#x53D6;&#x7684;<code>CPU</code>&#x65F6;&#x95F4;&#x7247;&#xFF0C;&#x4F46;&#x4E0D;&#x91CA;&#x653E;&#x9501;&#x8D44;&#x6E90;&#xFF0C;&#x7531;&#x8FD0;&#x884C;&#x72B6;&#x6001;&#x53D8;&#x4E3A;&#x51C6;&#x5907;&#x72B6;&#x6001;&#xFF0C;&#x8BA9;<code>OS</code>&#x518D;&#x6B21;&#x9009;&#x62E9;&#x7EBF;&#x7A0B;&#x3002;&#x5B9E;&#x9645;&#x4E2D;&#x65E0;&#x6CD5;&#x4FDD;&#x8BC1;<code>yield()</code>&#x8FBE;&#x5230;&#x8BA9;&#x6B65;&#x76EE;&#x7684;&#xFF0C;&#x56E0;&#x4E3A;&#x8BA9;&#x6B65;&#x7684;&#x7EBF;&#x7A0B;&#x8FD8;&#x6709;&#x53EF;&#x80FD;&#x88AB;&#x7EBF;&#x7A0B;&#x8C03;&#x5EA6;&#x7A0B;&#x5E8F;&#x518D;&#x6B21;&#x9009;&#x4E2D;&#x3002;&#x5B83;&#x8DDF; <code>sleep</code>&#x65B9;&#x6CD5;&#x7684;&#x533A;&#x522B;&#x5728;&#x4E8E;&#x4E0D;&#x80FD;&#x6307;&#x5B9A;&#x6682;&#x505C;&#x591A;&#x5C11;&#x65F6;&#x95F4;</p>
+<p><code>Object.wait()</code>&#xFF1A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8C03;&#x7528;&#x5BF9;&#x8C61;&#x7684;<code>wait()</code>&#x65B9;&#x6CD5;&#xFF0C;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x91CA;&#x653E;&#x5BF9;&#x8C61;&#x9501;&#xFF0C;&#x8FDB;&#x5165;<code>WAITING</code> &#x72B6;&#x6001;&#x3002;&#x4F9D;&#x9760;<code>notify()/notifyAll()</code>&#x6765;&#x5524;&#x9192;&#xFF1B;&#x800C;<code>wait(time)</code>&#x65B9;&#x6CD5;&#x7684;&#x4E3B;&#x8981;&#x533A;&#x522B;&#x662F;&#x8FDB;&#x5165; <code>TIMED_WAITING</code> &#x72B6;&#x6001;&#xFF0C;&#x5230;&#x8FBE;&#x65F6;&#x95F4;&#x540E;&#xFF0C;&#x81EA;&#x52A8;&#x5524;&#x9192;</p>
+<p><code>Object.notify/notifyAll</code>&#xFF1A;<code>notify()</code>&#x5524;&#x9192;&#x5728;&#x6B64;&#x5BF9;&#x8C61;&#x76D1;&#x89C6;&#x5668;&#x4E0A;&#x7B49;&#x5F85;&#x7684;&#x5355;&#x4E2A;&#x7EBF;&#x7A0B;&#xFF0C;&#x9009;&#x62E9;&#x662F;&#x4EFB;&#x610F;&#x6027;&#x7684;&#x3002;<code>notifyAll()</code>&#x5524;&#x9192;&#x5728;&#x6B64;&#x5BF9;&#x8C61;&#x76D1;&#x89C6;&#x5668;&#x4E0A;&#x7B49;&#x5F85;&#x7684;&#x6240;&#x6709;&#x7EBF;&#x7A0B;</p>
+<p><code>Thread.join()</code>&#xFF1A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x91CC;&#x8C03;&#x7528;&#x5176;&#x5B83;&#x7EBF;&#x7A0B;<code>t</code>&#x7684;<code>join()</code>&#x65B9;&#x6CD5;&#xFF0C;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165;<code>WAITING</code>&#x72B6;&#x6001;&#xFF0C;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x4E0D;&#x4F1A;&#x91CA;&#x653E;&#x5DF2;&#x7ECF;&#x6301;&#x6709;&#x7684;&#x5BF9;&#x8C61;&#x9501;&#x3002;&#x7EBF;&#x7A0B;<code>t</code>&#x6267;&#x884C;&#x5B8C;&#x6BD5;&#xFF0C;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165;<code>RUNNABLE</code>&#x72B6;&#x6001;&#x3002;&#x800C;<code>join(time)</code>&#x65B9;&#x6CD5;&#x7684;&#x4E3B;&#x8981;&#x533A;&#x522B;&#x662F;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165; <code>TIMED_WAITING</code> &#x72B6;&#x6001;&#xFF0C;&#x5230;&#x8FBE;&#x65F6;&#x95F4;&#x540E;&#xFF0C;&#x8FDB;&#x5165;<code>RUNNABLE</code>&#x72B6;&#x6001;</p>
+<p><code>LockSupport.park()</code>&#xFF1A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165; <code>WAITING</code> &#x72B6;&#x6001;&#xFF0C;&#x9700;&#x8981;&#x901A;&#x8FC7;<code>LockSupport.unpark(thread)</code>&#x6765;&#x5524;&#x9192;</p>
+<p><code>LockSupport.parkNanos(nanos)/parkUntil(deadlines)</code>&#xFF1A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165;<code>TIMED_WAITING</code>&#x72B6;&#x6001;&#xFF0C;&#x9700;&#x8981;&#x901A;&#x8FC7;``LockSupport.unpark(thread)`&#x6765;&#x5524;&#x9192;</p>
+<p>&#x76F8;&#x6BD4;&#x4E0E;<code>wait</code>&#x65B9;&#x6CD5;&#xFF0C;<code>LockSupport</code>&#x4E0D;&#x9700;&#x8981;&#x83B7;&#x5F97;&#x9501;&#x5C31;&#x53EF;&#x4EE5;&#x8BA9;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165; <code>WAITING</code> &#x6216;&#x8005; <code>TIMED_WAITING</code> &#x72B6;&#x6001;</p>
+<p>&#x5F53;&#x7136;&#x4E86;&#xFF0C;&#x8FD8;&#x6709;&#x4E2A; BLOCKED &#x72B6;&#x6001;&#xFF0C;&#x6D89;&#x53CA;&#x5230; <code>synchronized</code>&#x5173;&#x952E;&#x5B57;&#xFF0C;&#x7531;&#x4E8E;&#x8FD9;&#x5757;&#x4E5F;&#x662F;&#x9762;&#x8BD5;&#x7ECF;&#x5E38;&#x4F1A;&#x95EE;&#x5230;&#x7684;&#xFF0C;&#x4E0B;&#x4E00;&#x7BC7;&#x6211;&#x4F1A;&#x5168;&#x9762;&#x5256;&#x6790;&#x4E00;&#x4E0B;<code>synchronized</code></p>
+<p><img src="/2021/01/18/%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81/2020041810160437.png" alt="img"></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2021/02/11/BackdoorController/" data-toggle="tooltip" data-placement="top" title="BcakdoorController">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2021/01/17/代理模式/" data-toggle="tooltip" data-placement="top" title="代理模式">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#&#x591A;&#x7EBF;&#x7A0B;-&#x7EBF;&#x7A0B;&#x72B6;&#x6001;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&amp;#x591A;&amp;#x7EBF;&amp;#x7A0B;-&amp;#x7EBF;&amp;#x7A0B;&amp;#x72B6;&amp;#x6001;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x7EBF;&#x7A0B;&#x7684;6&#x79CD;&#x72B6;&#x6001;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x7EBF;&amp;#x7A0B;&amp;#x7684;6&amp;#x79CD;&amp;#x72B6;&amp;#x6001;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x7EBF;&#x7A0B;&#x72B6;&#x6001;&#x5207;&#x6362;&#x51FD;&#x6570;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">&amp;#x7EBF;&amp;#x7A0B;&amp;#x72B6;&amp;#x6001;&amp;#x5207;&amp;#x6362;&amp;#x51FD;&amp;#x6570;</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#多线程" title="多线程">多线程</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2021/01/18/%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81/";
+    var disqus_url = "http://example.com/2021/01/18/%E5%A4%9A%E7%BA%BF%E7%A8%8B-%E7%BA%BF%E7%A8%8B%E7%8A%B6%E6%80%81/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

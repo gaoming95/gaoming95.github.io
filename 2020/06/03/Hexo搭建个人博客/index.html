@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Hexo搭建个人博客 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/06/03/Hexo搭建个人博客/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#工具" title="工具">工具</a>
+                        
+                    </div>
+                    <h1>Hexo搭建个人博客</h1>
+                    <h2 class="subheading">利用 Hexo 快速生成个人博客网站更换主题，Typora 快速编辑文章，github.io 发布，百度统计网站访问</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-06-03
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="Hexo&#x642D;&#x5EFA;&#x4E2A;&#x4EBA;&#x535A;&#x5BA2;"><a href="#Hexo&#x642D;&#x5EFA;&#x4E2A;&#x4EBA;&#x535A;&#x5BA2;" class="headerlink" title="Hexo&#x642D;&#x5EFA;&#x4E2A;&#x4EBA;&#x535A;&#x5BA2;"></a>Hexo&#x642D;&#x5EFA;&#x4E2A;&#x4EBA;&#x535A;&#x5BA2;</h1><p><a target="_blank" rel="noopener" href="https://github.com/gaoming95/gaoming95.github.io/tree/origin">github&#x5730;&#x5740;</a></p>
+<p><a target="_blank" rel="noopener" href="https://gaoming95.github.io/">demo</a></p>
+<ol>
+<li>&#x5B89;&#x88C5;git</li>
+<li>&#x5B89;&#x88C5;nodeJs</li>
+<li>&#x5B89;&#x88C5;hexo</li>
+<li>&#x914D;&#x7F6E;Typora</li>
+<li>&#x914D;&#x7F6E;&#x767E;&#x5EA6;&#x7F51;&#x7AD9;&#x7EDF;&#x8BA1;</li>
+</ol>
+<hr>
+<h2 id="Hexo"><a href="#Hexo" class="headerlink" title="Hexo"></a>Hexo</h2><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># &#x5B89;&#x88C5; hexo</span></span><br><span class="line">npm install -g hexo-cli</span><br><span class="line"><span class="meta"># &#x67E5;&#x770B;&#x7248;&#x672C;&#x4FE1;&#x606F;</span></span><br><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x521D;&#x59CB;&#x5316;&#x9879;&#x76EE;</span></span><br><span class="line">hexo init <span class="keyword">blog </span><span class="comment"># blog&#x4E3A;&#x9879;&#x76EE;&#x540D;&#xFF0C;&#x53EF;&#x968F;&#x610F;&#x66F4;&#x6539;</span></span><br><span class="line"><span class="comment"># &#x8FDB;&#x5165;&#x9879;&#x76EE;</span></span><br><span class="line">cd <span class="keyword">blog</span></span><br><span class="line"><span class="keyword"># </span></span><br><span class="line">npm <span class="keyword">install</span></span><br><span class="line"><span class="keyword"># </span>hexo&#x542F;&#x52A8;</span><br><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server <span class="comment"># &#x672C;&#x5730;&#x542F;&#x52A8;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x8BBF;&#x95EE;<code>localhost:4000</code></p>
+<h2 id="&#x914D;&#x7F6E;github-io"><a href="#&#x914D;&#x7F6E;github-io" class="headerlink" title="&#x914D;&#x7F6E;github.io"></a>&#x914D;&#x7F6E;github.io</h2><figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># github&#x65B0;&#x5EFA;&#x4ED3;&#x5E93;</span></span><br><span class="line">gaoming95.github.io</span><br></pre></td></tr></table></figure>
+
+<img src="/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310132445768.png" alt="image-20210310132445768" style="zoom: 80%;">
+
+<p>&#x5176;&#x4E2D;<code>gaoming95</code>&#x4E3A;&#x7528;&#x6237;&#x540D;&#xFF0C;&#x5FC5;&#x987B;&#x914D;&#x7F6E;&#x4E3A;<code>***.github.io</code></p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># &#x8FDB;&#x5165;&#x9879;&#x76EE;&#x5730;&#x5740;</span></span><br><span class="line">cd blog</span><br><span class="line"><span class="meta"># &#x5173;&#x8054;git&#x4ED3;&#x5E93;</span></span><br><span class="line">git <span class="keyword">init</span></span><br><span class="line">git remote <span class="keyword">add</span> origin http:<span class="comment">//github.com/****.git</span></span><br><span class="line">git push -u origin master</span><br></pre></td></tr></table></figure>
+
+<p>&#x4FEE;&#x6539;&#x914D;&#x7F6E;&#x6587;&#x4EF6;<code>/blog/_config.yml</code></p>
+<figure class="highlight clean"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># Hexo Configuration</span><br><span class="line">## Docs: https:<span class="comment">//hexo.io/docs/configuration.html</span></span><br><span class="line">## Source: https:<span class="comment">//github.com/hexojs/hexo/</span></span><br><span class="line"></span><br><span class="line"># Site</span><br><span class="line">title: Ming Gao&#x2019;s Blog</span><br><span class="line">subtitle: Java&#x540E;&#x7AEF;&#x5F00;&#x53D1;&#xFF0C;Python&#x81EA;&#x7136;&#x8BED;&#x8A00;&#x5904;&#x7406;&#xFF0C;&#x722C;&#x866B;&#x7B49;&#x6280;&#x672F;&#x535A;&#x5BA2;</span><br><span class="line">author: &#x9AD8;&#x660E;</span><br><span class="line">language: zh-CN</span><br><span class="line">timezone: Asia/Shanghai</span><br><span class="line"></span><br><span class="line"># URL</span><br><span class="line">## If your site is put <span class="keyword">in</span> a subdirectory, set url <span class="keyword">as</span> <span class="string">&apos;http://yoursite.com/child&apos;</span> and root <span class="keyword">as</span> <span class="string">&apos;/child/&apos;</span></span><br><span class="line"># url: https:<span class="comment">//github.com/gaoming95/gaoming95.github.io/</span></span><br><span class="line"># root: /gaoming95.github.io/</span><br><span class="line">permalink: :year/:month/:day/:title/</span><br><span class="line">permalink_defaults:</span><br><span class="line"></span><br><span class="line"># Deployment</span><br><span class="line">## Docs: https:<span class="comment">//hexo.io/docs/deployment.html</span></span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: https:<span class="comment">//github.com/gaoming95/gaoming95.github.io.git</span></span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+
+<p>&#x6784;&#x5EFA;&#x53D1;&#x5E03;</p>
+<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo <span class="keyword">generate</span></span><br><span class="line">#npm install --save hexo-deployer-git</span><br><span class="line">hexo deploy # &#x53D1;&#x5E03;</span><br></pre></td></tr></table></figure>
+
+<p>&#x8BBF;&#x95EE; <code>https://github.com/gaoming95/gaoming95.github.io/</code></p>
+<h2 id="&#x589E;&#x52A0;&#x4E3B;&#x9898;"><a href="#&#x589E;&#x52A0;&#x4E3B;&#x9898;" class="headerlink" title="&#x589E;&#x52A0;&#x4E3B;&#x9898;"></a>&#x589E;&#x52A0;&#x4E3B;&#x9898;</h2><p><a target="_blank" rel="noopener" href="https://hexo.io/themes/">&#x4E3B;&#x9898;&#x5217;&#x8868;</a></p>
+<img src="/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310151233351.png" alt="image-20210310151233351" style="zoom:80%;">
+
+<p>&#x9009;&#x62E9;&#x81EA;&#x5DF1;&#x559C;&#x6B22;&#x7684;&#x4E3B;&#x9898;&#xFF0C;&#x70B9;&#x51FB;&#x8FDB;&#x5165;&#x4EE3;&#x7801;&#x4ED3;&#x5E93;&#xFF0C;&#x6309;&#x7167;<code>readme</code>&#x8FDB;&#x884C;&#x6784;&#x5EFA;&#xFF0C;&#x5C06;<code>themes</code>&#x6587;&#x4EF6;&#x5939;&#x4E0B;&#x9762;&#x7684;&#x6587;&#x4EF6;&#x590D;&#x5236;&#x5230;<code>blog</code>&#x4E2D;&#x7684;<code>themes</code></p>
+<p>&#x5728;<code>_config.xml</code>&#x4E2D;&#x914D;&#x7F6E;</p>
+<figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># Extensions</span></span><br><span class="line"><span class="symbol">theme:</span> huxblog</span><br></pre></td></tr></table></figure>
+
+<p>&#x8D70;&#x5230;&#x8FD9;&#x6B65;&#xFF0C;&#x53EF;&#x4EE5;&#x76F4;&#x63A5;<code>copy</code>&#x4E3B;&#x9898;&#x4ED3;&#x5E93;&#x4E2D;&#x7684;<code>_config.xml</code>&#x4EE3;&#x7801;&#xFF0C;&#x6216;&#x8005;&#x8BF4;&#x5982;&#x679C;&#x521A;&#x6784;&#x5EFA;&#x9879;&#x76EE;&#x800C;&#x4E0D;&#x662F;&#x5728;&#x5DF2;&#x6709;&#x6587;&#x7AE0;&#x548C;&#x4E3B;&#x9898;&#x4E0B;&#x66F4;&#x6362;&#x4E3B;&#x9898;&#xFF0C;&#x53EF;&#x4EE5;&#x8003;&#x8651;&#x76F4;&#x63A5;&#x4F7F;&#x7528;&#x4E3B;&#x9898;&#x4ED3;&#x5E93;&#x7684;&#x4EE3;&#x7801;</p>
+<p>&#x53EA;&#x9700;&#x8981;&#x66F4;&#x6539;<code>_config.xml</code>&#x4E2D;&#x5173;&#x4E8E;<code>github.io</code>&#x7684;&#x914D;&#x7F6E;</p>
+<h2 id="&#x589E;&#x52A0;&#x6587;&#x7AE0;"><a href="#&#x589E;&#x52A0;&#x6587;&#x7AE0;" class="headerlink" title="&#x589E;&#x52A0;&#x6587;&#x7AE0;"></a>&#x589E;&#x52A0;&#x6587;&#x7AE0;</h2><p>&#x5728;<code>blogs\source\_posts</code>&#x6587;&#x4EF6;&#x4E0B;&#x589E;&#x52A0;<code>**.md</code>&#x6587;&#x4EF6;&#x5373;&#x53EF;&#xFF0C;<code>md</code>&#x6587;&#x4EF6;&#x7684;&#x5934;&#x53EF;&#x5982;&#x4E0B;&#x7F16;&#x8F91;</p>
+<figure class="highlight subunit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">title: Java&#x865A;&#x62DF;&#x673A;</span><br><span class="line">subtitle: Java&#x865A;&#x62DF;&#x673A;&#x6709;&#x81EA;&#x5DF1;&#x5B8C;&#x5584;&#x7684;&#x786C;&#x4F53;&#x67B6;&#x6784;&#xFF0C;&#x5982;&#x5904;&#x7406;&#x5668;&#x3001;&#x5806;&#x6808;&#x3001;&#x5BC4;&#x5B58;&#x5668;&#x7B49;&#xFF0C;&#x8FD8;&#x5177;&#x6709;&#x76F8;&#x5E94;&#x7684;&#x6307;&#x4EE4;&#x7CFB;&#x7EDF;&#x3002;Java&#x865A;&#x62DF;&#x673A;&#x5C4F;&#x853D;&#x4E86;&#x4E0E;&#x5177;&#x4F53;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x5E73;&#x53F0;&#x76F8;&#x5173;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x4F7F;&#x5F97;Java&#x7A0B;&#x5E8F;&#x53EA;&#x9700;&#x751F;&#x6210;&#x5728;Java&#x865A;&#x62DF;&#x673A;&#x4E0A;&#x8FD0;&#x884C;&#x7684;&#x76EE;&#x6807;&#x4EE3;&#x7801;&#xFF08;&#x5B57;&#x8282;&#x7801;&#xFF09;&#xFF0C;&#x5C31;&#x53EF;&#x4EE5;&#x5728;&#x591A;&#x79CD;&#x5E73;&#x53F0;&#x4E0A;&#x4E0D;&#x52A0;&#x4FEE;&#x6539;&#x5730;&#x8FD0;&#x884C;</span><br><span class="line">date: 2020<span class="string">-06</span><span class="string">-02</span></span><br><span class="line">author: &#x9AD8;&#x660E;</span><br><span class="line"><span class="keyword">tags:</span></span><br><span class="line">	- Java&#x57FA;&#x7840;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310152320947.png" alt="image-20210310152320947"></p>
+<h2 id="&#x589E;&#x52A0;&#x56FE;&#x7247;"><a href="#&#x589E;&#x52A0;&#x56FE;&#x7247;" class="headerlink" title="&#x589E;&#x52A0;&#x56FE;&#x7247;"></a>&#x589E;&#x52A0;&#x56FE;&#x7247;</h2><p>&#x5728;<code>_config.yml</code>&#x8BBE;&#x7F6E;<code>post_asset_folder: true</code></p>
+<p>&#x5F00;&#x542F;&#x6B64;&#x914D;&#x7F6E;&#xFF0C;&#x5728;&#x6267;&#x884C;<code>hexo generate</code>&#x65F6;&#xFF0C;&#x4F1A;&#x5728;&#x540C;&#x7EA7;&#x76EE;&#x5F55;&#x4E0B;&#x751F;&#x6210;&#x8D44;&#x6E90;&#x6587;&#x4EF6;&#xFF0C;&#x5982;<code>hello.md</code>&#xFF0C;&#x4F1A;&#x5728;<code>public</code>&#x6587;&#x4EF6;&#x4E0B;&#x751F;&#x6210;<code>hello</code>&#x6587;&#x4EF6;&#x5939;&#xFF0C;&#x5E76;&#x5728;<code>hello</code>&#x6587;&#x4EF6;&#x5939;&#x4E0B;&#x9762;&#x751F;&#x6210;&#x5BF9;&#x5E94;&#x7684;<code>index.html</code>&#x548C;&#x8D44;&#x6E90;&#x6587;&#x4EF6;<code>example.jpg</code></p>
+<p>&#x4E3A;&#x4E86;&#x65B9;&#x4FBF;&#x6587;&#x7AE0;&#x7F16;&#x8F91;&#xFF0C;&#x4FEE;&#x6539;<code>Typora</code>&#x7684;&#x504F;&#x597D;&#x8BBE;&#x7F6E;&#xFF0C;&#x5728;&#x5BFC;&#x5165;&#x56FE;&#x7247;&#x65F6;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x540C;&#x7EA7;&#x76EE;&#x5F55;</p>
+<p><code>Typora</code>&#x5728;<code>md</code>&#x6587;&#x4EF6;&#x4E2D;&#x65B0;&#x589E;&#x56FE;&#x7247;&#x65F6;&#xFF0C;&#x53EF;&#x76F4;&#x63A5;&#x5728;&#x539F;&#x4F4D;&#x7F6E;&#x7C98;&#x8D34;&#xFF0C;&#x5728;&#x504F;&#x597D;&#x8BBE;&#x7F6E;&#x4E2D;&#x4FEE;&#x6539;&#x6587;&#x4EF6;&#x5B58;&#x50A8;&#x65B9;&#x5F0F;&#x3002;&#x8BE5;&#x65B9;&#x5F0F;&#x4F1A;&#x5728;&#x76EE;&#x5F55;&#x4E0B;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x548C;<code>**.md</code>&#x6587;&#x4EF6;&#x540C;&#x540D;&#x7684;&#x6587;&#x4EF6;&#x5939;&#xFF0C;&#x7528;&#x4EE5;&#x5B58;&#x50A8;&#x8D44;&#x6E90;&#x6587;&#x4EF6;</p>
+<img src="/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310152539681.png" alt="image-20210310152539681" style="zoom:80%;">
+
+<p>&#x6B64;&#x65F6;&#x8FD8;&#x4F1A;&#x5B58;&#x5728;&#x95EE;&#x9898;&#xFF0C;&#x7F16;&#x8BD1;&#x65F6;&#x5730;&#x5740;&#x4E3A;&#x51FA;&#x73B0;<code>http://**/hello/hello/example.jpg</code>&#xFF0C;&#x591A;&#x4E86;&#x4E00;&#x4E2A;&#x76F8;&#x5BF9;&#x7684;&#x8DEF;&#x5F84;&#xFF0C;&#x6B64;&#x65F6;&#x5B89;&#x88C5;&#x5982;&#x4E0B;&#x63D2;&#x4EF6;</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># &#x5B89;&#x88C5;&#x63D2;&#x4EF6;</span></span><br><span class="line"><span class="attribute">npm</span> install hexo-asset-image@<span class="number">0</span>.<span class="number">0</span>.<span class="number">1</span> --save</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310152730455.png" alt="image-20210310152730455"></p>
+<h2 id="&#x5F00;&#x542F;&#x767E;&#x5EA6;&#x7684;&#x6570;&#x636E;&#x7EDF;&#x8BA1;"><a href="#&#x5F00;&#x542F;&#x767E;&#x5EA6;&#x7684;&#x6570;&#x636E;&#x7EDF;&#x8BA1;" class="headerlink" title="&#x5F00;&#x542F;&#x767E;&#x5EA6;&#x7684;&#x6570;&#x636E;&#x7EDF;&#x8BA1;"></a>&#x5F00;&#x542F;&#x767E;&#x5EA6;&#x7684;&#x6570;&#x636E;&#x7EDF;&#x8BA1;</h2><p><a target="_blank" rel="noopener" href="https://tongji.baidu.com/sc-web">&#x767E;&#x5EA6;&#x7EDF;&#x8BA1;</a></p>
+<p><img src="/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310154058132.png" alt="image-20210310154058132"></p>
+<p>&#x5728;<code>_config.yml</code>&#x4E2D;&#x914D;&#x7F6E;</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Analytics settings</span></span><br><span class="line"><span class="comment"># Baidu Analytics</span></span><br><span class="line"><span class="attribute">ba_track_id</span>: <span class="number">87</span>fec<span class="number">1</span>e<span class="number">5</span>b<span class="number">2</span>bb<span class="number">914</span>ad<span class="number">19</span>c<span class="number">5</span>ba<span class="number">8</span>ca<span class="number">638</span>aad</span><br><span class="line"><span class="comment"># Google Analytics</span></span><br><span class="line"><span class="comment"># ga_track_id: &apos;UA-49627206-1&apos;            # Format: UA-xxxxxx-xx</span></span><br><span class="line"><span class="comment"># ga_domain: huangxuan.me</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x6548;&#x679C;&#x5982;&#x4E0B;</p>
+<p><img src="/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310154511229.png" alt="image-20210310154511229"></p>
+<h2 id="&#x6210;&#x54C1;&#x5982;&#x4E0B;"><a href="#&#x6210;&#x54C1;&#x5982;&#x4E0B;" class="headerlink" title="&#x6210;&#x54C1;&#x5982;&#x4E0B;"></a>&#x6210;&#x54C1;&#x5982;&#x4E0B;</h2><p><img src="/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/image-20210310154701061.png" alt="image-20210310154701061"></p>
+<hr>
+<p><strong>&#x3010;Tips&#x3011;</strong></p>
+<p>&#x4EE3;&#x7801;&#x4E3B;&#x9898;</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">themes/huxblog/_config.yml</span><br></pre></td></tr></table></figure>
+
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/06/04/Mysql设计规范/" data-toggle="tooltip" data-placement="top" title="数据库设计规范">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/06/02/Java虚拟机/" data-toggle="tooltip" data-placement="top" title="Java虚拟机">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Hexo&#x642D;&#x5EFA;&#x4E2A;&#x4EBA;&#x535A;&#x5BA2;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Hexo&amp;#x642D;&amp;#x5EFA;&amp;#x4E2A;&amp;#x4EBA;&amp;#x535A;&amp;#x5BA2;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Hexo"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">Hexo</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x914D;&#x7F6E;github-io"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">&amp;#x914D;&amp;#x7F6E;github.io</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x589E;&#x52A0;&#x4E3B;&#x9898;"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">&amp;#x589E;&amp;#x52A0;&amp;#x4E3B;&amp;#x9898;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x589E;&#x52A0;&#x6587;&#x7AE0;"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">&amp;#x589E;&amp;#x52A0;&amp;#x6587;&amp;#x7AE0;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x589E;&#x52A0;&#x56FE;&#x7247;"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text">&amp;#x589E;&amp;#x52A0;&amp;#x56FE;&amp;#x7247;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x5F00;&#x542F;&#x767E;&#x5EA6;&#x7684;&#x6570;&#x636E;&#x7EDF;&#x8BA1;"><span class="toc-nav-number">1.6.</span> <span class="toc-nav-text">&amp;#x5F00;&amp;#x542F;&amp;#x767E;&amp;#x5EA6;&amp;#x7684;&amp;#x6570;&amp;#x636E;&amp;#x7EDF;&amp;#x8BA1;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x6210;&#x54C1;&#x5982;&#x4E0B;"><span class="toc-nav-number">1.7.</span> <span class="toc-nav-text">&amp;#x6210;&amp;#x54C1;&amp;#x5982;&amp;#x4E0B;</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#工具" title="工具">工具</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/";
+    var disqus_url = "http://example.com/2020/06/03/Hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          门面与调停者模式 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/09/10/门面与调停者模式/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
+                    </div>
+                    <h1>门面与调停者模式</h1>
+                    <h2 class="subheading">门面模式是对象的结构模式，外部与一个子系统的通信必须通过一个统一的门面对象进行。门面模式提供一个高层次的接口，使得子系统更易于使用。调停者模式是对象的行为模式。调停者模式包装了一系列对象相互作用的方式，使得这些对象不必相互明显引用。从而使它们可以较松散地耦合。</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-09-10
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="&#x95E8;&#x9762;&#x4E0E;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;"><a href="#&#x95E8;&#x9762;&#x4E0E;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;" class="headerlink" title="&#x95E8;&#x9762;&#x4E0E;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;"></a>&#x95E8;&#x9762;&#x4E0E;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;</h1><h2 id="&#x95E8;&#x9762;&#x6A21;&#x5F0F;"><a href="#&#x95E8;&#x9762;&#x6A21;&#x5F0F;" class="headerlink" title="&#x95E8;&#x9762;&#x6A21;&#x5F0F;"></a>&#x95E8;&#x9762;&#x6A21;&#x5F0F;</h2><p><code>Facade</code></p>
+<p>&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x662F;&#x5BF9;&#x8C61;&#x7684;&#x7ED3;&#x6784;&#x6A21;&#x5F0F;&#xFF0C;&#x5916;&#x90E8;&#x4E0E;&#x4E00;&#x4E2A;&#x5B50;&#x7CFB;&#x7EDF;&#x7684;&#x901A;&#x4FE1;&#x5FC5;&#x987B;&#x901A;&#x8FC7;&#x4E00;&#x4E2A;&#x7EDF;&#x4E00;&#x7684;&#x95E8;&#x9762;&#x5BF9;&#x8C61;&#x8FDB;&#x884C;&#x3002;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x63D0;&#x4F9B;&#x4E00;&#x4E2A;&#x9AD8;&#x5C42;&#x6B21;&#x7684;&#x63A5;&#x53E3;&#xFF0C;&#x4F7F;&#x5F97;&#x5B50;&#x7CFB;&#x7EDF;&#x66F4;&#x6613;&#x4E8E;&#x4F7F;&#x7528;&#x3002;</p>
+<p>&#x5728;&#x8FD9;&#x4E2A;&#x5BF9;&#x8C61;&#x56FE;&#x4E2D;&#xFF0C;&#x51FA;&#x73B0;&#x4E86;&#x4E24;&#x4E2A;&#x89D2;&#x8272;&#xFF1A;</p>
+<ul>
+<li><strong>&#x95E8;&#x9762;(Facade)&#x89D2;&#x8272;</strong> &#xFF1A;&#x5BA2;&#x6237;&#x7AEF;&#x53EF;&#x4EE5;&#x8C03;&#x7528;&#x8FD9;&#x4E2A;&#x89D2;&#x8272;&#x7684;&#x65B9;&#x6CD5;&#x3002;&#x6B64;&#x89D2;&#x8272;&#x77E5;&#x6653;&#x76F8;&#x5173;&#x7684;&#xFF08;&#x4E00;&#x4E2A;&#x6216;&#x8005;&#x591A;&#x4E2A;&#xFF09;&#x5B50;&#x7CFB;&#x7EDF;&#x7684;&#x529F;&#x80FD;&#x548C;&#x8D23;&#x4EFB;&#x3002;&#x5728;&#x6B63;&#x5E38;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x672C;&#x89D2;&#x8272;&#x4F1A;&#x5C06;&#x6240;&#x6709;&#x4ECE;&#x5BA2;&#x6237;&#x7AEF;&#x53D1;&#x6765;&#x7684;&#x8BF7;&#x6C42;&#x59D4;&#x6D3E;&#x5230;&#x76F8;&#x5E94;&#x7684;&#x5B50;&#x7CFB;&#x7EDF;&#x53BB;&#x3002;</li>
+<li><strong>&#x5B50;&#x7CFB;&#x7EDF;(SubSystem)&#x89D2;&#x8272;</strong> &#xFF1A;&#x53EF;&#x4EE5;&#x540C;&#x65F6;&#x6709;&#x4E00;&#x4E2A;&#x6216;&#x8005;&#x591A;&#x4E2A;&#x5B50;&#x7CFB;&#x7EDF;&#x3002;&#x6BCF;&#x4E2A;&#x5B50;&#x7CFB;&#x7EDF;&#x90FD;&#x4E0D;&#x662F;&#x4E00;&#x4E2A;&#x5355;&#x72EC;&#x7684;&#x7C7B;&#xFF0C;&#x800C;&#x662F;&#x4E00;&#x4E2A;&#x7C7B;&#x7684;&#x96C6;&#x5408;&#xFF08;&#x5982;&#x4E0A;&#x9762;&#x7684;&#x5B50;&#x7CFB;&#x7EDF;&#x5C31;&#x662F;&#x7531;<code>ModuleA</code>&#x3001;<code>ModuleB</code>&#x3001;<code>ModuleC</code>&#x4E09;&#x4E2A;&#x7C7B;&#x7EC4;&#x5408;&#x800C;&#x6210;&#xFF09;&#x3002;&#x6BCF;&#x4E2A;&#x5B50;&#x7CFB;&#x7EDF;&#x90FD;&#x53EF;&#x4EE5;&#x88AB;&#x5BA2;&#x6237;&#x7AEF;&#x76F4;&#x63A5;&#x8C03;&#x7528;&#xFF0C;&#x6216;&#x8005;&#x88AB;&#x95E8;&#x9762;&#x89D2;&#x8272;&#x8C03;&#x7528;&#x3002;&#x5B50;&#x7CFB;&#x7EDF;&#x5E76;&#x4E0D;&#x77E5;&#x9053;&#x95E8;&#x9762;&#x7684;&#x5B58;&#x5728;&#xFF0C;&#x5BF9;&#x4E8E;&#x5B50;&#x7CFB;&#x7EDF;&#x800C;&#x8A00;&#xFF0C;&#x95E8;&#x9762;&#x4EC5;&#x4EC5;&#x662F;&#x53E6;&#x5916;&#x4E00;&#x4E2A;&#x5BA2;&#x6237;&#x7AEF;&#x800C;&#x5DF2;&#x3002;</li>
+</ul>
+<p>&#x4F7F;&#x7528;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x8FD8;&#x6709;&#x4E00;&#x4E2A;&#x9644;&#x5E26;&#x7684;&#x597D;&#x5904;&#xFF0C;&#x5C31;&#x662F;&#x80FD;&#x591F;&#x6709;&#x9009;&#x62E9;&#x6027;&#x5730;&#x66B4;&#x9732;&#x65B9;&#x6CD5;&#x3002;&#x4E00;&#x4E2A;&#x6A21;&#x5757;&#x4E2D;&#x5B9A;&#x4E49;&#x7684;&#x65B9;&#x6CD5;&#x53EF;&#x4EE5;&#x5206;&#x6210;&#x4E24;&#x90E8;&#x5206;&#xFF0C;&#x4E00;&#x90E8;&#x5206;&#x662F;&#x7ED9;&#x5B50;&#x7CFB;&#x7EDF;&#x5916;&#x90E8;&#x4F7F;&#x7528;&#x7684;&#xFF0C;&#x4E00;&#x90E8;&#x5206;&#x662F;&#x5B50;&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x6A21;&#x5757;&#x4E4B;&#x95F4;&#x76F8;&#x4E92;&#x8C03;&#x7528;&#x65F6;&#x4F7F;&#x7528;&#x7684;&#x3002;&#x6709;&#x4E86;<code>Facade</code>&#x7C7B;&#xFF0C;&#x90A3;&#x4E48;&#x7528;&#x4E8E;&#x5B50;&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x6A21;&#x5757;&#x4E4B;&#x95F4;&#x76F8;&#x4E92;&#x8C03;&#x7528;&#x7684;&#x65B9;&#x6CD5;&#x5C31;&#x4E0D;&#x7528;&#x66B4;&#x9732;&#x7ED9;&#x5B50;&#x7CFB;&#x7EDF;&#x5916;&#x90E8;&#x4E86;</p>
+<h3 id="&#x4E00;&#x4E2A;&#x7CFB;&#x7EDF;&#x53EF;&#x4EE5;&#x6709;&#x51E0;&#x4E2A;&#x95E8;&#x9762;"><a href="#&#x4E00;&#x4E2A;&#x7CFB;&#x7EDF;&#x53EF;&#x4EE5;&#x6709;&#x51E0;&#x4E2A;&#x95E8;&#x9762;" class="headerlink" title="&#x4E00;&#x4E2A;&#x7CFB;&#x7EDF;&#x53EF;&#x4EE5;&#x6709;&#x51E0;&#x4E2A;&#x95E8;&#x9762;"></a>&#x4E00;&#x4E2A;&#x7CFB;&#x7EDF;&#x53EF;&#x4EE5;&#x6709;&#x51E0;&#x4E2A;&#x95E8;&#x9762;</h3><p>&#x3000;&#x3000;&#x5728;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x4E2D;&#xFF0C;&#x901A;&#x5E38;&#x53EA;&#x9700;&#x8981;&#x4E00;&#x4E2A;&#x95E8;&#x9762;&#x7C7B;&#xFF0C;&#x5E76;&#x4E14;&#x6B64;&#x95E8;&#x9762;&#x7C7B;&#x53EA;&#x6709;&#x4E00;&#x4E2A;&#x5B9E;&#x4F8B;&#xFF0C;&#x6362;&#x8A00;&#x4E4B;&#x5B83;&#x662F;&#x4E00;&#x4E2A;&#x5355;&#x4F8B;&#x7C7B;&#x3002;&#x5F53;&#x7136;&#x8FD9;&#x5E76;&#x4E0D;&#x610F;&#x5473;&#x7740;&#x5728;&#x6574;&#x4E2A;&#x7CFB;&#x7EDF;&#x91CC;&#x53EA;&#x6709;&#x4E00;&#x4E2A;&#x95E8;&#x9762;&#x7C7B;&#xFF0C;&#x800C;&#x4EC5;&#x4EC5;&#x662F;&#x8BF4;&#x5BF9;&#x6BCF;&#x4E00;&#x4E2A;&#x5B50;&#x7CFB;&#x7EDF;&#x53EA;&#x6709;&#x4E00;&#x4E2A;&#x95E8;&#x9762;&#x7C7B;&#x3002;&#x6216;&#x8005;&#x8BF4;&#xFF0C;&#x5982;&#x679C;&#x4E00;&#x4E2A;&#x7CFB;&#x7EDF;&#x6709;&#x597D;&#x51E0;&#x4E2A;&#x5B50;&#x7CFB;&#x7EDF;&#x7684;&#x8BDD;&#xFF0C;&#x6BCF;&#x4E00;&#x4E2A;&#x5B50;&#x7CFB;&#x7EDF;&#x90FD;&#x6709;&#x4E00;&#x4E2A;&#x95E8;&#x9762;&#x7C7B;&#xFF0C;&#x6574;&#x4E2A;&#x7CFB;&#x7EDF;&#x53EF;&#x4EE5;&#x6709;&#x6570;&#x4E2A;&#x95E8;&#x9762;&#x7C7B;&#x3002;</p>
+<h3 id="&#x4E3A;&#x5B50;&#x7CFB;&#x7EDF;&#x589E;&#x52A0;&#x65B0;&#x884C;&#x4E3A;"><a href="#&#x4E3A;&#x5B50;&#x7CFB;&#x7EDF;&#x589E;&#x52A0;&#x65B0;&#x884C;&#x4E3A;" class="headerlink" title="&#x4E3A;&#x5B50;&#x7CFB;&#x7EDF;&#x589E;&#x52A0;&#x65B0;&#x884C;&#x4E3A;"></a>&#x4E3A;&#x5B50;&#x7CFB;&#x7EDF;&#x589E;&#x52A0;&#x65B0;&#x884C;&#x4E3A;</h3><p>&#x3000;&#x3000;&#x521D;&#x5B66;&#x8005;&#x5F80;&#x5F80;&#x4EE5;&#x4E3A;&#x901A;&#x8FC7;&#x7EE7;&#x627F;&#x4E00;&#x4E2A;&#x95E8;&#x9762;&#x7C7B;&#x4FBF;&#x53EF;&#x5728;&#x5B50;&#x7CFB;&#x7EDF;&#x4E2D;&#x52A0;&#x5165;&#x65B0;&#x7684;&#x884C;&#x4E3A;&#xFF0C;&#x8FD9;&#x662F;&#x9519;&#x8BEF;&#x7684;&#x3002;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x7684;&#x7528;&#x610F;&#x662F;&#x4E3A;&#x5B50;&#x7CFB;&#x7EDF;&#x63D0;&#x4F9B;&#x4E00;&#x4E2A;&#x96C6;&#x4E2D;&#x5316;&#x548C;&#x7B80;&#x5316;&#x7684;&#x6C9F;&#x901A;&#x7BA1;&#x9053;&#xFF0C;&#x800C;&#x4E0D;&#x80FD;&#x5411;&#x5B50;&#x7CFB;&#x7EDF;&#x52A0;&#x5165;&#x65B0;&#x7684;&#x884C;&#x4E3A;&#x3002;&#x6BD4;&#x5982;&#x533B;&#x9662;&#x4E2D;&#x7684;&#x63A5;&#x5F85;&#x5458;&#x5E76;&#x4E0D;&#x662F;&#x533B;&#x62A4;&#x4EBA;&#x5458;&#xFF0C;&#x63A5;&#x5F85;&#x5458;&#x5E76;&#x4E0D;&#x80FD;&#x4E3A;&#x75C5;&#x4EBA;&#x63D0;&#x4F9B;&#x533B;&#x7597;&#x670D;&#x52A1;&#x3002;</p>
+<p>&#x3000;&#x3000;&#x5982;&#x679C;&#x4E00;&#x4E2A;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x4E0D;&#x80FD;&#x5C06;&#x5B50;&#x7CFB;&#x7EDF;&#x7684;&#x6240;&#x6709;&#x7684;&#x884C;&#x4E3A;&#x63D0;&#x4F9B;&#x7ED9;&#x5916;&#x754C;,&#x90A3;&#x4E48;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x4FEE;&#x6539;&#x95E8;&#x9762;&#x7C7B;&#x6216;&#x7EE7;&#x627F;&#x95E8;&#x9762;&#x7C7B;&#x7684;&#x65B9;&#x6CD5;,&#x4F7F;&#x95E8;&#x9762;&#x7C7B;&#x6216;&#x5B50;&#x7C7B;&#x5C06;&#x5B50;&#x7CFB;&#x7EDF;&#x7684;&#x884C;&#x4E3A;&#x63D0;&#x4F9B;&#x7ED9;&#x5916;&#x754C;.&#x4F46;&#x662F;&#x5982;&#x679C;&#x4E00;&#x4E2A;&#x5B50;&#x7CFB;&#x7EDF;&#x6CA1;&#x6709;&#x67D0;&#x4E2A;&#x884C;&#x4E3A;,&#x60F3;&#x901A;&#x8FC7;&#x4FEE;&#x6539;&#x95E8;&#x9762;&#x7C7B;&#x6216;&#x7EE7;&#x627F;&#x95E8;&#x9762;&#x7C7B;&#x7684;&#x65B9;&#x6CD5;&#x6765;&#x63D0;&#x4F9B;&#x8FD9;&#x79CD;&#x65B0;&#x884C;&#x4E3A;&#x662F;&#x9519;&#x8BEF;&#x7684;&#x3002;</p>
+<h3 id="&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;&#xFF1A;"><a href="#&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;&#xFF1A;" class="headerlink" title="&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;&#xFF1A;"></a>&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;&#xFF1A;</h3><ul>
+<li>&#x677E;&#x6563;&#x8026;&#x5408;&#x3002;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x677E;&#x6563;&#x4E86;&#x5BA2;&#x6237;&#x7AEF;&#x4E0E;&#x5B50;&#x7CFB;&#x7EDF;&#x7684;&#x8026;&#x5408;&#x5173;&#x7CFB;&#xFF0C;&#x8BA9;&#x5B50;&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x7684;&#x6A21;&#x5757;&#x80FD;&#x66F4;&#x5BB9;&#x6613;&#x6269;&#x5C55;&#x548C;&#x7EF4;&#x62A4;&#x3002;</li>
+<li>&#x7B80;&#x5355;&#x6613;&#x7528;&#x3002;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x8BA9;&#x5B50;&#x7CFB;&#x7EDF;&#x66F4;&#x52A0;&#x6613;&#x7528;&#xFF0C;&#x5BA2;&#x6237;&#x7AEF;&#x4E0D;&#x518D;&#x9700;&#x8981;&#x4E86;&#x89E3;&#x5B50;&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x7684;&#x5B9E;&#x73B0;&#xFF0C;&#x4E5F;&#x4E0D;&#x9700;&#x8981;&#x8DDF;&#x4F17;&#x591A;&#x5B50;&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x7684;&#x6A21;&#x5757;&#x8FDB;&#x884C;&#x4EA4;&#x4E92;&#xFF0C;&#x53EA;&#x9700;&#x8981;&#x8DDF;&#x95E8;&#x9762;&#x7C7B;&#x4EA4;&#x4E92;&#x5C31;&#x53EF;&#x4EE5;&#x4E86;&#x3002;</li>
+<li>&#x66F4;&#x597D;&#x7684;&#x5212;&#x5206;&#x8BBF;&#x95EE;&#x5C42;&#x6B21;&#x3002;&#x901A;&#x8FC7;&#x5408;&#x7406;&#x4F7F;&#x7528;<code>Facade</code>&#xFF0C;&#x53EF;&#x4EE5;&#x5E2E;&#x52A9;&#x6211;&#x4EEC;&#x66F4;&#x597D;&#x5730;&#x5212;&#x5206;&#x8BBF;&#x95EE;&#x7684;&#x5C42;&#x6B21;&#x3002;&#x6709;&#x4E9B;&#x65B9;&#x6CD5;&#x662F;&#x5BF9;&#x7CFB;&#x7EDF;&#x5916;&#x7684;&#xFF0C;&#x6709;&#x4E9B;&#x65B9;&#x6CD5;&#x662F;&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x4F7F;&#x7528;&#x7684;&#x3002;&#x628A;&#x9700;&#x8981;&#x66B4;&#x9732;&#x7ED9;&#x5916;&#x90E8;&#x7684;&#x529F;&#x80FD;&#x96C6;&#x4E2D;&#x5230;&#x95E8;&#x9762;&#x4E2D;&#xFF0C;&#x8FD9;&#x6837;&#x65E2;&#x65B9;&#x4FBF;&#x5BA2;&#x6237;&#x7AEF;&#x4F7F;&#x7528;&#xFF0C;&#x4E5F;&#x5F88;&#x597D;&#x5730;&#x9690;&#x85CF;&#x4E86;&#x5185;&#x90E8;&#x7684;&#x7EC6;&#x8282;&#x3002;</li>
+</ul>
+<p><img src="/2020/09/10/%E9%97%A8%E9%9D%A2%E4%B8%8E%E8%B0%83%E5%81%9C%E8%80%85%E6%A8%A1%E5%BC%8F/image-20210914130221767-16315957434371.png" alt="image-20210914130221767"></p>
+<h2 id="&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;"><a href="#&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;" class="headerlink" title="&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;"></a>&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;</h2><p>&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x662F;&#x5BF9;&#x8C61;&#x7684;&#x884C;&#x4E3A;&#x6A21;&#x5F0F;&#x3002;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x5305;&#x88C5;&#x4E86;&#x4E00;&#x7CFB;&#x5217;&#x5BF9;&#x8C61;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#x7684;&#x65B9;&#x5F0F;&#xFF0C;&#x4F7F;&#x5F97;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;&#x4E0D;&#x5FC5;&#x76F8;&#x4E92;&#x660E;&#x663E;&#x5F15;&#x7528;&#x3002;&#x4ECE;&#x800C;&#x4F7F;&#x5B83;&#x4EEC;&#x53EF;&#x4EE5;&#x8F83;&#x677E;&#x6563;&#x5730;&#x8026;&#x5408;&#x3002;&#x5F53;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;&#x4E2D;&#x7684;&#x67D0;&#x4E9B;&#x5BF9;&#x8C61;&#x4E4B;&#x95F4;&#x7684;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#x53D1;&#x751F;&#x6539;&#x53D8;&#x65F6;&#xFF0C;&#x4E0D;&#x4F1A;&#x7ACB;&#x5373;&#x5F71;&#x54CD;&#x5230;&#x5176;&#x4ED6;&#x7684;&#x4E00;&#x4E9B;&#x5BF9;&#x8C61;&#x4E4B;&#x95F4;&#x7684;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#x3002;&#x4ECE;&#x800C;&#x4FDD;&#x8BC1;&#x8FD9;&#x4E9B;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#x53EF;&#x4EE5;&#x5F7C;&#x6B64;&#x72EC;&#x7ACB;&#x5730;&#x53D8;&#x5316;</p>
+<p>&#x6D88;&#x606F;&#x4E2D;&#x95F4;&#x4EF6;&#xFF08;MQ&#xFF09;</p>
+<p>&#x89E3;&#x8026;</p>
+<p>&#x5982;&#x4E0B;&#x56FE;&#x6240;&#x793A;&#xFF0C;&#x8FD9;&#x4E2A;&#x793A;&#x610F;&#x56FE;&#x4E2D;&#x6709;&#x5927;&#x91CF;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x8FD9;&#x4E9B;&#x5BF9;&#x8C61;&#x65E2;&#x4F1A;&#x5F71;&#x54CD;&#x522B;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x53C8;&#x4F1A;&#x88AB;&#x522B;&#x7684;&#x5BF9;&#x8C61;&#x6240;&#x5F71;&#x54CD;&#xFF0C;&#x56E0;&#x6B64;&#x5E38;&#x5E38;&#x53EB;&#x505A;&#x540C;&#x4E8B;(<code>Colleague</code>)&#x5BF9;&#x8C61;&#x3002;&#x8FD9;&#x4E9B;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x901A;&#x8FC7;&#x5F7C;&#x6B64;&#x7684;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#x5F62;&#x6210;&#x7CFB;&#x7EDF;&#x7684;&#x884C;&#x4E3A;&#x3002;&#x4ECE;&#x56FE;&#x4E2D;&#x53EF;&#x4EE5;&#x770B;&#x51FA;&#xFF0C;&#x51E0;&#x4E4E;&#x6BCF;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x90FD;&#x9700;&#x8981;&#x4E0E;&#x5176;&#x4ED6;&#x7684;&#x5BF9;&#x8C61;&#x53D1;&#x751F;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#xFF0C;&#x800C;&#x8FD9;&#x79CD;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#x8868;&#x73B0;&#x4E3A;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x4E0E;&#x53E6;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x7684;&#x76F4;&#x63A5;&#x8026;&#x5408;&#x3002;&#x8FD9;&#x5C31;&#x662F;&#x8FC7;&#x5EA6;&#x8026;&#x5408;&#x7684;&#x7CFB;&#x7EDF;</p>
+<p><img src="/2020/09/10/%E9%97%A8%E9%9D%A2%E4%B8%8E%E8%B0%83%E5%81%9C%E8%80%85%E6%A8%A1%E5%BC%8F/image-20210914130605346-16315959671822.png" alt="image-20210914130605346"></p>
+<p>&#x901A;&#x8FC7;&#x5F15;&#x5165;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;(<code>Mediator</code>)&#xFF0C;&#x53EF;&#x4EE5;&#x5C06;&#x7CFB;&#x7EDF;&#x7684;&#x7F51;&#x72B6;&#x7ED3;&#x6784;&#x53D8;&#x6210;&#x4EE5;&#x4E2D;&#x4ECB;&#x8005;&#x4E3A;&#x4E2D;&#x5FC3;&#x7684;&#x661F;&#x5F62;&#x7ED3;&#x6784;&#xFF0C;&#x5982;&#x4E0B;&#x56FE;&#x6240;&#x793A;&#x3002;&#x5728;&#x8FD9;&#x4E2A;&#x661F;&#x5F62;&#x7ED3;&#x6784;&#x4E2D;&#xFF0C;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x4E0D;&#x518D;&#x901A;&#x8FC7;&#x76F4;&#x63A5;&#x7684;&#x8054;&#x7CFB;&#x4E0E;&#x53E6;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x53D1;&#x751F;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#xFF1B;&#x76F8;&#x53CD;&#x7684;&#xFF0C;&#x5B83;&#x901A;&#x8FC7;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x4E0E;&#x53E6;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x53D1;&#x751F;&#x76F8;&#x4E92;&#x4F5C;&#x7528;&#x3002;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x7684;&#x5B58;&#x5728;&#x4FDD;&#x8BC1;&#x4E86;&#x5BF9;&#x8C61;&#x7ED3;&#x6784;&#x4E0A;&#x7684;&#x7A33;&#x5B9A;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x7CFB;&#x7EDF;&#x7684;&#x7ED3;&#x6784;&#x4E0D;&#x4F1A;&#x56E0;&#x4E3A;&#x65B0;&#x5BF9;&#x8C61;&#x7684;&#x5F15;&#x5165;&#x9020;&#x6210;&#x5927;&#x91CF;&#x7684;&#x4FEE;&#x6539;&#x5DE5;&#x4F5C;&#x3002;</p>
+<p>&#x4E00;&#x4E2A;&#x597D;&#x7684;&#x9762;&#x5411;&#x5BF9;&#x8C61;&#x7684;&#x8BBE;&#x8BA1;&#x53EF;&#x4EE5;&#x4F7F;&#x5BF9;&#x8C61;&#x4E4B;&#x95F4;&#x589E;&#x52A0;&#x534F;&#x4F5C;&#x6027;(<code>Collaboration</code>)&#xFF0C;&#x51CF;&#x5C11;&#x8026;&#x5408;&#x5EA6;(<code>Couping</code>)&#x3002;&#x4E00;&#x4E2A;&#x6DF1;&#x601D;&#x719F;&#x8651;&#x7684;&#x8BBE;&#x8BA1;&#x4F1A;&#x628A;&#x4E00;&#x4E2A;&#x7CFB;&#x7EDF;&#x5206;&#x89E3;&#x4E3A;&#x4E00;&#x7FA4;&#x76F8;&#x4E92;&#x534F;&#x4F5C;&#x7684;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#xFF0C;&#x7136;&#x540E;&#x7ED9;&#x6BCF;&#x4E00;&#x4E2A;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x4EE5;&#x72EC;&#x7279;&#x7684;&#x8D23;&#x4EFB;&#xFF0C;&#x6070;&#x5F53;&#x7684;&#x914D;&#x7F6E;&#x5B83;&#x4EEC;&#x4E4B;&#x95F4;&#x7684;&#x534F;&#x4F5C;&#x5173;&#x7CFB;&#xFF0C;&#x4F7F;&#x5B83;&#x4EEC;&#x53EF;&#x4EE5;&#x5728;&#x4E00;&#x8D77;&#x5DE5;&#x4F5C;&#x3002;</p>
+<p>&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x5305;&#x62EC;&#x4EE5;&#x4E0B;&#x89D2;&#x8272;&#xFF1A;</p>
+<ul>
+<li>&#x62BD;&#x8C61;&#x8C03;&#x505C;&#x8005;(<code>Mediator</code>)&#x89D2;&#x8272;&#xFF1A;&#x5B9A;&#x4E49;&#x51FA;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x5230;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x7684;&#x63A5;&#x53E3;&#xFF0C;&#x5176;&#x4E2D;&#x4E3B;&#x8981;&#x65B9;&#x6CD5;&#x662F;&#x4E00;&#x4E2A;&#xFF08;&#x6216;&#x591A;&#x4E2A;&#xFF09;&#x4E8B;&#x4EF6;&#x65B9;&#x6CD5;&#x3002;</li>
+<li>&#x5177;&#x4F53;&#x8C03;&#x505C;&#x8005;(<code>ConcreteMediator</code>)&#x89D2;&#x8272;&#xFF1A;&#x5B9E;&#x73B0;&#x4E86;&#x62BD;&#x8C61;&#x8C03;&#x505C;&#x8005;&#x6240;&#x58F0;&#x660E;&#x7684;&#x4E8B;&#x4EF6;&#x65B9;&#x6CD5;&#x3002;&#x5177;&#x4F53;&#x8C03;&#x505C;&#x8005;&#x77E5;&#x6653;&#x6240;&#x6709;&#x7684;&#x5177;&#x4F53;&#x540C;&#x4E8B;&#x7C7B;&#xFF0C;&#x5E76;&#x8D1F;&#x8D23;&#x5177;&#x4F53;&#x7684;&#x534F;&#x8C03;&#x5404;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x7684;&#x4EA4;&#x4E92;&#x5173;&#x7CFB;&#x3002;</li>
+<li>&#x62BD;&#x8C61;&#x540C;&#x4E8B;&#x7C7B;(<code>Colleague</code>)&#x89D2;&#x8272;&#xFF1A;&#x5B9A;&#x4E49;&#x51FA;&#x8C03;&#x505C;&#x8005;&#x5230;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x7684;&#x63A5;&#x53E3;&#x3002;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x53EA;&#x77E5;&#x9053;&#x8C03;&#x505C;&#x8005;&#x800C;&#x4E0D;&#x77E5;&#x9053;&#x5176;&#x4F59;&#x7684;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x3002;</li>
+<li>&#x5177;&#x4F53;&#x540C;&#x4E8B;&#x7C7B;(<code>ConcreteColleague</code>)&#x89D2;&#x8272;&#xFF1A;&#x6240;&#x6709;&#x7684;&#x5177;&#x4F53;&#x540C;&#x4E8B;&#x7C7B;&#x5747;&#x4ECE;&#x62BD;&#x8C61;&#x540C;&#x4E8B;&#x7C7B;&#x7EE7;&#x627F;&#x800C;&#x6765;&#x3002;&#x5B9E;&#x73B0;&#x81EA;&#x5DF1;&#x7684;&#x4E1A;&#x52A1;&#xFF0C;&#x5728;&#x9700;&#x8981;&#x4E0E;&#x5176;&#x4ED6;&#x540C;&#x4E8B;&#x901A;&#x4FE1;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5C31;&#x4E0E;&#x6301;&#x6709;&#x7684;&#x8C03;&#x505C;&#x8005;&#x901A;&#x4FE1;&#xFF0C;&#x8C03;&#x505C;&#x8005;&#x4F1A;&#x8D1F;&#x8D23;&#x4E0E;&#x5176;&#x4ED6;&#x7684;&#x540C;&#x4E8B;&#x4EA4;&#x4E92;&#x3002;</li>
+</ul>
+<h3 id="&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;"><a href="#&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;" class="headerlink" title="&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;"></a>&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;</h3><ul>
+<li>&#x677E;&#x6563;&#x8026;&#x5408;.&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x901A;&#x8FC7;&#x628A;&#x591A;&#x4E2A;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x4E4B;&#x95F4;&#x7684;&#x4EA4;&#x4E92;&#x5C01;&#x88C5;&#x5230;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x91CC;&#x9762;&#xFF0C;&#x4ECE;&#x800C;&#x4F7F;&#x5F97;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x4E4B;&#x95F4;&#x677E;&#x6563;&#x8026;&#x5408;&#xFF0C;&#x57FA;&#x672C;&#x4E0A;&#x53EF;&#x4EE5;&#x505A;&#x5230;&#x4E92;&#x8865;&#x4F9D;&#x8D56;&#x3002;&#x8FD9;&#x6837;&#x4E00;&#x6765;&#xFF0C;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x5C31;&#x53EF;&#x4EE5;&#x72EC;&#x7ACB;&#x5730;&#x53D8;&#x5316;&#x548C;&#x590D;&#x7528;&#xFF0C;&#x800C;&#x4E0D;&#x518D;&#x50CF;&#x4EE5;&#x524D;&#x90A3;&#x6837;&#x201C;&#x7275;&#x4E00;&#x5904;&#x800C;&#x52A8;&#x5168;&#x8EAB;&#x201D;&#x4E86;&#x3002;</li>
+<li>&#x96C6;&#x4E2D;&#x63A7;&#x5236;&#x4EA4;&#x4E92;.&#x591A;&#x4E2A;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x7684;&#x4EA4;&#x4E92;&#xFF0C;&#x88AB;&#x5C01;&#x88C5;&#x5728;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x91CC;&#x9762;&#x96C6;&#x4E2D;&#x7BA1;&#x7406;&#xFF0C;&#x4F7F;&#x5F97;&#x8FD9;&#x4E9B;&#x4EA4;&#x4E92;&#x884C;&#x4E3A;&#x53D1;&#x751F;&#x53D8;&#x5316;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x53EA;&#x9700;&#x8981;&#x4FEE;&#x6539;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x5C31;&#x53EF;&#x4EE5;&#x4E86;&#xFF0C;&#x5F53;&#x7136;&#x5982;&#x679C;&#x662F;&#x5DF2;&#x7ECF;&#x505A;&#x597D;&#x7684;&#x7CFB;&#x7EDF;&#xFF0C;&#x90A3;&#x4E48;&#x5C31;&#x6269;&#x5C55;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#xFF0C;&#x800C;&#x5404;&#x4E2A;&#x540C;&#x4E8B;&#x7C7B;&#x4E0D;&#x9700;&#x8981;&#x505A;&#x4FEE;&#x6539;&#x3002;</li>
+<li>&#x591A;&#x5BF9;&#x591A;&#x53D8;&#x6210;&#x4E00;&#x5BF9;&#x591A;.&#x6CA1;&#x6709;&#x4F7F;&#x7528;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x4E4B;&#x95F4;&#x7684;&#x5173;&#x7CFB;&#x901A;&#x5E38;&#x662F;&#x591A;&#x5BF9;&#x591A;&#x7684;&#xFF0C;&#x5F15;&#x5165;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x4EE5;&#x540E;&#xFF0C;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x548C;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x7684;&#x5173;&#x7CFB;&#x901A;&#x5E38;&#x53D8;&#x6210;&#x53CC;&#x5411;&#x7684;&#x4E00;&#x5BF9;&#x591A;&#xFF0C;&#x8FD9;&#x4F1A;&#x8BA9;&#x5BF9;&#x8C61;&#x7684;&#x5173;&#x7CFB;&#x66F4;&#x5BB9;&#x6613;&#x7406;&#x89E3;&#x548C;&#x5B9E;&#x73B0;&#x3002;</li>
+</ul>
+<h3 id="&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x7F3A;&#x70B9;"><a href="#&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x7F3A;&#x70B9;" class="headerlink" title="&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x7F3A;&#x70B9;"></a>&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x7F3A;&#x70B9;</h3><p>&#x3000;&#x3000;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x4E00;&#x4E2A;&#x6F5C;&#x5728;&#x7F3A;&#x70B9;&#x662F;&#xFF0C;&#x8FC7;&#x5EA6;&#x96C6;&#x4E2D;&#x5316;&#x3002;&#x5982;&#x679C;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x7684;&#x4EA4;&#x4E92;&#x975E;&#x5E38;&#x591A;&#xFF0C;&#x800C;&#x4E14;&#x6BD4;&#x8F83;&#x590D;&#x6742;&#xFF0C;&#x5F53;&#x8FD9;&#x4E9B;&#x590D;&#x6742;&#x6027;&#x5168;&#x90E8;&#x96C6;&#x4E2D;&#x5230;&#x8C03;&#x505C;&#x8005;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x4F1A;&#x5BFC;&#x81F4;&#x8C03;&#x505C;&#x8005;&#x5BF9;&#x8C61;&#x53D8;&#x5F97;&#x5341;&#x5206;&#x590D;&#x6742;&#xFF0C;&#x800C;&#x4E14;&#x96BE;&#x4E8E;&#x7BA1;&#x7406;&#x548C;&#x7EF4;&#x62A4;&#x3002;</p>
+<h3 id="&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x548C;&#x4E2D;&#x4ECB;&#x8005;&#xFF08;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#xFF09;&#x7684;&#x533A;&#x522B;"><a href="#&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x548C;&#x4E2D;&#x4ECB;&#x8005;&#xFF08;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#xFF09;&#x7684;&#x533A;&#x522B;" class="headerlink" title="&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x548C;&#x4E2D;&#x4ECB;&#x8005;&#xFF08;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#xFF09;&#x7684;&#x533A;&#x522B;"></a>&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x548C;&#x4E2D;&#x4ECB;&#x8005;&#xFF08;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#xFF09;&#x7684;&#x533A;&#x522B;</h3><p>&#x3000;&#x3000;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x4E3A;&#x590D;&#x6742;&#x7684;&#x5B50;&#x7CFB;&#x7EDF;&#x63D0;&#x4F9B;&#x7ED9;&#x4E00;&#x4E2A;&#x7EDF;&#x4E00;&#x7684;&#x8BBF;&#x95EE;&#x754C;&#x9762;&#xFF0C;&#x5B83;&#x5B9A;&#x4E49;&#x7684;&#x800C;&#x662F;&#x4E00;&#x4E2A;&#x9AD8;&#x5C42;&#x63A5;&#x53E3;&#xFF0C;&#x8BE5;&#x63A5;&#x53E3;&#x4F7F;&#x5F97;&#x5B50;&#x7CFB;&#x7EDF;&#x66F4;&#x52A0;&#x5BB9;&#x6613;&#x4F7F;&#x7528;&#xFF0C;&#x907F;&#x514D;&#x5916;&#x90E8;&#x6A21;&#x5757;&#x6DF1;&#x5165;&#x5230;&#x5B50;&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x800C;&#x4EA7;&#x751F;&#x4E8E;&#x5B50;&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x7EC6;&#x8282;&#x8026;&#x5408;&#x7684;&#x95EE;&#x9898;&#x3002;&#x4E2D;&#x4ECB;&#x8005;&#x6A21;&#x5F0F;&#x662F;&#x7528;&#x4E00;&#x4E2A;&#x4E2D;&#x4ECB;&#x5BF9;&#x8C61;&#x6765;&#x5C01;&#x88C5;&#x4E00;&#x7CFB;&#x5217;&#x540C;&#x4E8B;&#x5BF9;&#x8C61;&#x7684;&#x4EA4;&#x4E92;&#x884C;&#x4E3A;&#xFF0C;&#x5B83;&#x4F7F;&#x5404;&#x5BF9;&#x8C61;&#x4E4B;&#x95F4;&#x4E0D;&#x518D;&#x663E;&#x793A;&#x5730;&#x5F15;&#x7528;&#xFF0C;&#x4ECE;&#x800C;&#x4F7F;&#x5176;&#x8026;&#x5408;&#x677E;&#x6563;&#xFF0C;&#x5EFA;&#x7ACB;&#x4E00;&#x4E2A;&#x53EF;&#x6269;&#x5C55;&#x5E94;&#x7528;&#x67B6;&#x6784;&#x3002;</p>
+<p>&#x3000;&#x3000;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x548C;&#x4E2D;&#x4ECB;&#x8005;&#x6A21;&#x5F0F;&#x4E4B;&#x95F4;&#x7684;&#x533A;&#x522B;&#x8FD8;&#x662F;&#x6BD4;&#x8F83;&#x660E;&#x663E;&#x7684;&#xFF0C;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x662F;&#x4EE5;&#x5C01;&#x88C5;&#x548C;&#x9694;&#x79BB;&#x4E3A;&#x4E3B;&#x8981;&#x4EFB;&#x52A1;&#xFF0C;&#x800C;&#x4E2D;&#x4ECB;&#x8005;&#x6A21;&#x5F0F;&#x5219;&#x662F;&#x4EE5;&#x8C03;&#x548C;&#x540C;&#x4E8B;&#x7C7B;&#x4E4B;&#x95F4;&#x7684;&#x5173;&#x7CFB;&#x4E3A;&#x4E3B;&#xFF0C;&#x56E0;&#x4E3A;&#x8981;&#x8C03;&#x548C;&#xFF0C;&#x6240;&#x4EE5;&#x5177;&#x6709;&#x4E86;&#x5B50;&#x7CFB;&#x7EDF;&#x7684;&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#x63A7;&#x5236;&#x3002;</p>
+<p>   &#x529F;&#x80FD;&#x533A;&#x522B;&#xFF1A;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x53EA;&#x589E;&#x52A0;&#x4E86;&#x4E00;&#x4E2A;&#x95E8;&#x9762;&#xFF0C;&#x4ED6;&#x5BF9;&#x5B50;&#x7CFB;&#x7EDF;&#x6765;&#x8BF4;&#x6CA1;&#x6709;&#x589E;&#x52A0;&#x4EFB;&#x4F55;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x5B50;&#x7CFB;&#x7EDF;&#x82E5;&#x8131;&#x79BB;&#x95E8;&#x9762;&#x72EC;&#x7ACB;&#x8FD0;&#x884C;&#x5B8C;&#x5168;&#x662F;&#x53EF;&#x4EE5;&#x7684;&#x3002;&#x800C;&#x4E2D;&#x4ECB;&#x8005;&#x6A21;&#x5F0F;&#x5219;&#x589E;&#x52A0;&#x4E86;&#x4E1A;&#x52A1;&#x529F;&#x80FD;&#xFF0C;&#x5B83;&#x628A;&#x5404;&#x4E2A;&#x540C;&#x4E8B;&#x7C7B;&#x4E2D;&#x7684;&#x539F;&#x6709;&#x8026;&#x5408;&#x5173;&#x7CFB;&#x79FB;&#x690D;&#x5230;&#x4E86;&#x4E2D;&#x4ECB;&#x8005;&#xFF0C;&#x540C;&#x4E8B;&#x7C7B;&#x4E0D;&#x53EF;&#x80FD;&#x8131;&#x79BB;&#x4E2D;&#x4ECB;&#x8005;&#x800C;&#x72EC;&#x7ACB;&#x5B58;&#x5728;&#x3002;</p>
+<p>   &#x77E5;&#x6653;&#x72B6;&#x6001;&#x4E0D;&#x540C;&#xFF1A;&#x5BF9;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x6765;&#x8BF4;&#xFF0C;&#x5B50;&#x7CFB;&#x7EDF;&#x90E8;&#x77E5;&#x9053;&#x6709;&#x95E8;&#x9762;&#x5B58;&#x5728;&#xFF0C;&#x800C;&#x5BF9;&#x4E2D;&#x4ECB;&#x8005;&#x6765;&#x8BF4;&#xFF0C;&#x6BCF;&#x4E2A;&#x540C;&#x4E8B;&#x7C7B;&#x90FD;&#x77E5;&#x9053;&#x4E2D;&#x4ECB;&#x8005;&#x7684;&#x5B58;&#x5728;&#xFF0C;&#x56E0;&#x4E3A;&#x8981;&#x4F9D;&#x9760;&#x4E2D;&#x4ECB;&#x8005;&#x8C03;&#x548C;&#x540C;&#x4E8B;&#x4E4B;&#x95F4;&#x7684;&#x5173;&#x7CFB;</p>
+<p>   &#x5C01;&#x88C5;&#x7A0B;&#x5EA6;&#x4E0D;&#x540C;&#xFF1A;&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x662F;&#x4E00;&#x79CD;&#x7B80;&#x5355;&#x7684;&#x5C01;&#x88C5;&#xFF0C;&#x6240;&#x6709;&#x7684;&#x8BF7;&#x6C42;&#x5904;&#x7406;&#x90FD;&#x59D4;&#x6258;&#x7ED9;&#x5B50;&#x7CFB;&#x7EDF;&#x5B8C;&#x6210;&#xFF0C;&#x800C;&#x4E2D;&#x4ECB;&#x8005;&#x6A21;&#x5F0F;&#x5219;&#x9700;&#x8981;&#x6709;&#x4E00;&#x4E2A;&#x4E2D;&#x5FC3;&#xFF0C;&#x7531;&#x4E2D;&#x5FC3;&#x534F;&#x8C03;&#x540C;&#x4E8B;&#x7C7B;&#x5B8C;&#x6210;&#xFF0C;&#x5E76;&#x4E14;&#x4E2D;&#x5FC3;&#x672C;&#x8EAB;&#x4E5F;&#x5B8C;&#x6210;&#x90E8;&#x5206;&#x4E1A;&#x52A1;&#xFF0C;&#x5B83;&#x5C5E;&#x4E8E;&#x66F4;&#x8FDB;&#x4E00;&#x6B65;&#x7684;&#x4E1A;&#x52A1;&#x5C01;&#x88C5;</p>
+<h2 id="&#x53C2;&#x8003;&#x6587;&#x732E;"><a href="#&#x53C2;&#x8003;&#x6587;&#x732E;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x732E;"></a>&#x53C2;&#x8003;&#x6587;&#x732E;</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/wxgblogs/p/5666016.html">&#x8C03;&#x505C;&#x8005;(Mediator)&#x6A21;&#x5F0F;</a></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/09/11/装饰器模式/" data-toggle="tooltip" data-placement="top" title="装饰器模式">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/09/05/docker基础/" data-toggle="tooltip" data-placement="top" title="Docker基础">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#&#x95E8;&#x9762;&#x4E0E;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&amp;#x95E8;&amp;#x9762;&amp;#x4E0E;&amp;#x8C03;&amp;#x505C;&amp;#x8005;&amp;#x6A21;&amp;#x5F0F;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x95E8;&#x9762;&#x6A21;&#x5F0F;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x95E8;&amp;#x9762;&amp;#x6A21;&amp;#x5F0F;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x4E00;&#x4E2A;&#x7CFB;&#x7EDF;&#x53EF;&#x4EE5;&#x6709;&#x51E0;&#x4E2A;&#x95E8;&#x9762;"><span class="toc-nav-number">1.1.1.</span> <span class="toc-nav-text">&amp;#x4E00;&amp;#x4E2A;&amp;#x7CFB;&amp;#x7EDF;&amp;#x53EF;&amp;#x4EE5;&amp;#x6709;&amp;#x51E0;&amp;#x4E2A;&amp;#x95E8;&amp;#x9762;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x4E3A;&#x5B50;&#x7CFB;&#x7EDF;&#x589E;&#x52A0;&#x65B0;&#x884C;&#x4E3A;"><span class="toc-nav-number">1.1.2.</span> <span class="toc-nav-text">&amp;#x4E3A;&amp;#x5B50;&amp;#x7CFB;&amp;#x7EDF;&amp;#x589E;&amp;#x52A0;&amp;#x65B0;&amp;#x884C;&amp;#x4E3A;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;&#xFF1A;"><span class="toc-nav-number">1.1.3.</span> <span class="toc-nav-text">&amp;#x95E8;&amp;#x9762;&amp;#x6A21;&amp;#x5F0F;&amp;#x7684;&amp;#x4F18;&amp;#x70B9;&amp;#xFF1A;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">&amp;#x8C03;&amp;#x505C;&amp;#x8005;&amp;#x6A21;&amp;#x5F0F;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x4F18;&#x70B9;"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">&amp;#x8C03;&amp;#x505C;&amp;#x8005;&amp;#x6A21;&amp;#x5F0F;&amp;#x7684;&amp;#x4F18;&amp;#x70B9;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#x7684;&#x7F3A;&#x70B9;"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">&amp;#x8C03;&amp;#x505C;&amp;#x8005;&amp;#x6A21;&amp;#x5F0F;&amp;#x7684;&amp;#x7F3A;&amp;#x70B9;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x95E8;&#x9762;&#x6A21;&#x5F0F;&#x548C;&#x4E2D;&#x4ECB;&#x8005;&#xFF08;&#x8C03;&#x505C;&#x8005;&#x6A21;&#x5F0F;&#xFF09;&#x7684;&#x533A;&#x522B;"><span class="toc-nav-number">1.2.3.</span> <span class="toc-nav-text">&amp;#x95E8;&amp;#x9762;&amp;#x6A21;&amp;#x5F0F;&amp;#x548C;&amp;#x4E2D;&amp;#x4ECB;&amp;#x8005;&amp;#xFF08;&amp;#x8C03;&amp;#x505C;&amp;#x8005;&amp;#x6A21;&amp;#x5F0F;&amp;#xFF09;&amp;#x7684;&amp;#x533A;&amp;#x522B;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x53C2;&#x8003;&#x6587;&#x732E;"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">&amp;#x53C2;&amp;#x8003;&amp;#x6587;&amp;#x732E;</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#设计模式" title="设计模式">设计模式</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/09/10/%E9%97%A8%E9%9D%A2%E4%B8%8E%E8%B0%83%E5%81%9C%E8%80%85%E6%A8%A1%E5%BC%8F/";
+    var disqus_url = "http://example.com/2020/09/10/%E9%97%A8%E9%9D%A2%E4%B8%8E%E8%B0%83%E5%81%9C%E8%80%85%E6%A8%A1%E5%BC%8F/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

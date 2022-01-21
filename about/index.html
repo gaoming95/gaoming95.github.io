@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          About - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/about/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/about-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>About</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading">个人简介</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+            
+                <blockquote>
+<p>&#x59D3;&#x540D;&#xFF1A;&#x9AD8;&#x660E;<br>&#x751F;&#x65E5;&#xFF1A;1995/02/19<br>&#x5B66;&#x5386;&#xFF1A;&#x7855;&#x58EB;&#x7814;&#x7A76;&#x751F;<br>&#x5730;&#x533A;&#xFF1A;&#x4E0A;&#x6D77;<br>&#x90AE;&#x7BB1;&#xFF1A;<a href="mailto:qywtgm950120@foxmail.com">qywtgm950120@foxmail.com</a><br>&#x6280;&#x80FD;&#xFF1A;Java&#x540E;&#x7AEF;&#x5F00;&#x53D1;&#xFF0C;Python&#x5F00;&#x53D1;&#xFF0C;&#x81EA;&#x7136;&#x8BED;&#x8A00;&#x5904;&#x7406;&#x53CA;&#x6570;&#x636E;&#x5206;&#x6790;<br>&#x535A;&#x5BA2;&#xFF1A;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/">https://gaoming95.github.io</a></p>
+</blockquote>
+<ul>
+<li><strong>&#x6559;&#x80B2;&#x7ECF;&#x5386;</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>&#x65F6;&#x95F4;</th>
+<th>&#x5B66;&#x5386;</th>
+<th>&#x5B66;&#x6821;</th>
+<th>&#x4E13;&#x4E1A;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>2017.09 - 2020.06</code></td>
+<td>&#x7855;&#x58EB;</td>
+<td>&#x4E0A;&#x6D77;&#x5927;&#x5B66;</td>
+<td>&#x8BA1;&#x7B97;&#x673A;&#x5E94;&#x7528;&#x6280;&#x672F;</td>
+</tr>
+<tr>
+<td><code>2013.09 - 2017.06</code></td>
+<td>&#x672C;&#x79D1;</td>
+<td>&#x6E56;&#x5317;&#x5927;&#x5B66;</td>
+<td>&#x8BA1;&#x7B97;&#x673A;&#x79D1;&#x5B66;&#x4E0E;&#x6280;&#x672F;</td>
+</tr>
+<tr>
+<td><code>2014.09 - 2017.06</code></td>
+<td>&#x53CC;&#x5B66;&#x4F4D;</td>
+<td>&#x6B66;&#x6C49;&#x5927;&#x5B66;</td>
+<td>&#x7ECF;&#x6D4E;&#x5B66;</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p><strong>&#x5DE5;&#x4F5C;&#x7ECF;&#x5386;</strong></p>
+<ul>
+<li><p><code>2020/06/02-&#x81F3;&#x4ECA;</code>    <strong>&#x4E0A;&#x6D77;&#x54D4;&#x54E9;&#x54D4;&#x54E9;&#x79D1;&#x6280;&#x6709;&#x9650;&#x516C;&#x53F8;</strong>    <strong>&#x9AD8;&#x7EA7;&#x5F00;&#x53D1;&#x5DE5;&#x7A0B;&#x5E08;</strong> [<em>&#x5168;&#x804C;</em>]</p>
+<p>B&#x7AD9;&#x6307;&#x6570;&#xFF0C;&#x5EFA;&#x7AD9;&#x5DE5;&#x5177;&#xFF0C;&#x6548;&#x679C;&#x5E7F;&#x544A;&#xFF0C;&#x521B;&#x610F;&#x4E2D;&#x5FC3;</p>
+</li>
+<li><p><code>2019/06/12-2019/9/12</code>    <strong>&#x534E;&#x4E3A;&#x79D1;&#x6280;&#x6709;&#x9650;&#x516C;&#x53F8;</strong>    <strong>&#x4EBA;&#x5DE5;&#x667A;&#x80FD;&#x5DE5;&#x7A0B;&#x5E08;</strong> [<em>&#x5B9E;&#x4E60;</em>]</p>
+<p>Xbot&#x667A;&#x80FD;&#x52A9;&#x624B;&#xFF0C;&#x9886;&#x57DF;&#x77E5;&#x8BC6;&#x56FE;&#x8C31;&#x95EE;&#x7B54;&#x7CFB;&#x7EDF;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>&#x9879;&#x76EE;&#x7ECF;&#x5386;</strong></p>
+<ul>
+<li><p><strong>B&#x7AD9;&#x6307;&#x6570;&#x9879;&#x76EE;</strong><code>2021/01/10-&#x81F3;&#x4ECA;</code></p>
+<p>&#x9879;&#x76EE;&#x540E;&#x7AEF;&#x8D1F;&#x8D23;&#x4EBA;&#xFF0C;&#x8D1F;&#x8D23;&#x9879;&#x76EE;&#x7684;&#x6846;&#x67B6;&#x642D;&#x5EFA;&#xFF0C;&#x4EA7;&#x54C1;&#x9700;&#x6C42;&#x8FED;&#x4EE3;&#xFF0C;&#x4EE5;&#x53CA;&#x7EBF;&#x4E0A;&#x95EE;&#x9898;&#x8DDF;&#x8FDB;</p>
+<p>&#x9879;&#x76EE;&#x80CC;&#x666F;&#xFF1A;B&#x7AD9;&#x6307;&#x6570;&#x662F;&#x5BF9;&#x6807;&#x767E;&#x5EA6;&#x6307;&#x6807;&#x3001;&#x5934;&#x6761;&#x7B97;&#x6570;&#x6307;&#x6570;&#x7684;&#x6570;&#x636E;&#x5E73;&#x53F0;&#xFF0C;&#x76D8;&#x70B9;B&#x7AD9;&#x5185;&#x5BB9;&#x70ED;&#x70B9;&#x3001;&#x54C1;&#x724C;&#x53CA;UP&#x4E3B;&#x6392;&#x540D;&#xFF0C;&#x5E2E;&#x52A9;&#x5E02;&#x573A;&#x4E86;&#x89E3;B&#x7AD9;&#xFF0C;&#x53CD;&#x6620;&#x54C1;&#x724C;&#x5728;&#x884C;&#x4E1A;&#x4E2D;&#x7684;&#x4F4D;&#x7F6E;&#x548C;&#x53D8;&#x5316;&#x8D8B;&#x52BF;&#xFF0C;2021/09/10&#x5185;&#x6D4B;&#xFF0C;2021/10/20&#x7070;&#x5EA6;&#xFF0C;2021/12/20&#x4E0A;&#x7EBF;</p>
+<p>&#x7F51;&#x7AD9;&#x5730;&#x5740;&#xFF1A;<a target="_blank" rel="noopener" href="https://trends.bilibili.com/">https://trends.bilibili.com</a> &#x672A;&#x516C;&#x6D4B;&#xFF0C;&#x4E14;&#x5916;&#x7F51;&#x53EA;&#x62AB;&#x9732;&#x90E8;&#x5206;&#x529F;&#x80FD;</p>
+<p>&#x9879;&#x76EE;&#x5185;&#x5BB9;&#xFF1A;</p>
+<ol>
+<li>&#x6570;&#x636E;&#x751F;&#x4EA7;&#xFF0C;&#x540C;&#x6B65;&#x5404;&#x6E20;&#x9053;&#x6570;&#x636E;&#x4ECE;Hive&#x8868;&#x5230;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/07/15/ElasticSearch/">ElasticSearch</a>&#x96C6;&#x7FA4;&#x548C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/08/mongodb/">MongoDB</a>&#x96C6;&#x7FA4;</li>
+<li>&#x7528;&#x6237;&#x7BA1;&#x7406;&#xFF0C;&#x5185;&#x7F51;&#x652F;&#x6301;RBAC&#x7528;&#x6237;&#x6743;&#x9650;&#x7BA1;&#x7406;&#xFF0C;&#x5916;&#x7F51;&#x652F;&#x6301;Mid&#x6743;&#x9650;&#x70B9;&#x7BA1;&#x7406;</li>
+<li>&#x6570;&#x636E;&#x68C0;&#x7D22;&#xFF0C;&#x652F;&#x6301;&#x5185;&#x5BB9;&#x68C0;&#x7D22;&#x3001;&#x54C1;&#x724C;&#x68C0;&#x7D22;&#x3001;UP&#x4E3B;&#x68C0;&#x7D22;&#x3001;&#x5173;&#x952E;&#x5B57;&#x641C;&#x7D22;</li>
+<li>&#x6570;&#x636E;&#x5E72;&#x9884;&#xFF0C;&#x8FD0;&#x8425;&#x540E;&#x53F0;&#x652F;&#x6301;&#x9ED1;&#x540D;&#x5355;&#x8BCD;&#x5E93;&#x7BA1;&#x7406;&#xFF0C;&#x6392;&#x884C;&#x699C;&#x7BA1;&#x7406;&#xFF0C;&#x54C1;&#x724C;&#x7BA1;&#x7406;&#xFF0C;UP&#x4E3B;&#x7BA1;&#x7406;&#x7B49;</li>
+<li>&#x98CE;&#x63A7;&#x7BA1;&#x7406;&#xFF0C;&#x652F;&#x6301;&#x5B9E;&#x65F6;&#x654F;&#x611F;&#x8BCD;&#x751F;&#x6548;</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x6280;&#x672F;&#xFF1A;</p>
+<ol>
+<li>Springboot&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/22/Web%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E5%B1%82/">Web&#x7CFB;&#x7EDF;&#x6846;&#x67B6;</a>-&#x4E94;&#x5C42;&#x67B6;&#x6784;</li>
+<li><a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/07/15/ElasticSearch/">ElasticSearch</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/08/mongodb/">MongoDB</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/04/Mysql%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83/">Mysql</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/08/06/Redis/">Redis</a></li>
+<li><a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/08/26/Cat/">Cat</a>&#xFF0C;XXL-JOB&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#xFF0C;Databus&#xFF08;Kafka&#xFF09;&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/08/25/Redisson/">Redisson</a>&#xFF0C;Durid&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/07/01/QueryDSL/">QueryDsl</a>&#xFF0C;Kibana+Logstash+ES</li>
+<li><a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/09/03/Spring%20HTTP%20Invoker/">Spring Http Invoker</a>&#xFF0C;Grpc</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x7279;&#x70B9;&#xFF1A;</p>
+<ol>
+<li>&#x9762;&#x5411;&#x6240;&#x6709;B&#x7AD9;&#x7528;&#x6237;&#xFF0C;&#x9AD8;QPS&#xFF0C;&#x9AD8;&#x541E;&#x5410;&#x91CF;&#xFF0C;&#x4FDD;&#x6301;&#x7EBF;&#x4E0A;&#x7A33;&#x5B9A;</li>
+<li>ES&#x96C6;&#x7FA4;+MongoDB&#xFF0C;ES&#x96C6;&#x7FA4;&#x5B58;&#x50A8;&#x7D22;&#x5F15;&#x6570;&#x636E;&#xFF0C;&#x786C;&#x4EF6;&#x8D44;&#x6E90;&#x6709;&#x9650;</li>
+<li>&#x5E73;&#x8861;ES&#x96C6;&#x7FA4;&#x538B;&#x529B;&#x548C;&#x5E94;&#x7528;&#x670D;&#x52A1;&#x5668;&#x8BA1;&#x7B97;&#x538B;&#x529B;&#xFF0C;&#x5C06;&#x90E8;&#x5206;&#x8BA1;&#x7B97;&#x4EFB;&#x52A1;&#x653E;&#x5728;&#x5E94;&#x7528;&#x670D;&#x52A1;&#x5668;&#x4E2D;&#xFF0C;&#x964D;&#x4F4E;ES&#x96C6;&#x7FA4;&#x538B;&#x529B;&#xFF0C;&#x8C03;&#x6574;&#x5E94;&#x7528;&#x670D;&#x52A1;&#x5668;&#x5783;&#x573E;&#x56DE;&#x6536;&#x5668;G1</li>
+<li>&#x7D22;&#x5F15;&#x6309;&#x6708;&#x3001;&#x6309;&#x5E74;&#x5206;&#x62C6;&#xFF0C;&#x522B;&#x540D;&#x7BA1;&#x7406;&#xFF0C;&#x63D0;&#x5347;&#x67E5;&#x8BE2;&#x901F;&#x7387;</li>
+<li>&#x6743;&#x9650;&#x70B9;&#x652F;&#x6301;&#xFF0C;&#x652F;&#x6301;&#x5185;&#x7F51;RBAC&#x63A5;&#x53E3;&#x7EA7;&#x522B;&#x6743;&#x9650;&#xFF0C;&#x652F;&#x6301;&#x5916;&#x7F51;mid&#x63A5;&#x53E3;&#x7EA7;&#x522B;&#x6743;&#x9650;</li>
+<li>&#x9996;&#x9875;&#x6570;&#x636E;&#x5206;&#x9875;&#x7F13;&#x5B58;&#xFF0C;&#x5EF6;&#x8FDF;&#x53CC;&#x5220;&#x51CF;&#x5C11;&#x7F13;&#x5B58;&#x4E00;&#x81F4;&#x95F4;&#x9699;</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x6210;&#x679C;&#xFF1A;</p>
+<ol>
+<li>&#x7EBF;&#x4E0A;&#x7A33;&#x5B9A;&#xFF0C;&#x4E3B;&#x9875;&#x641C;&#x7D22;&#x63A5;&#x53E3;QPS&#x8FBE;8000&#xFF0C;&#x5176;&#x4ED6;&#x63A5;&#x53E3;QPS&#x5747;&#x8D85;&#x8FC7;3000</li>
+<li>&#x8FD0;&#x8425;&#x54C1;&#x724C;&#x62A5;&#x544A;&#xFF0C;&#x589E;&#x52A0;&#x54C1;&#x724C;&#x8425;&#x6536;&#xFF08;&#x76F8;&#x5173;&#x63D0;&#x5347;&#x70B9;&#x4E0D;&#x5B9C;&#x62AB;&#x9732;&#xFF09;</li>
+</ol>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>&#x9AD8;&#x80FD;&#x5EFA;&#x7AD9;&#x9879;&#x76EE;</strong><code>2020/06/02-&#x81F3;&#x4ECA;</code></p>
+<p>&#x9879;&#x76EE;&#x540E;&#x7AEF;&#x8D1F;&#x8D23;&#x4EBA;&#xFF0C;&#x8D1F;&#x8D23;&#x4EA7;&#x54C1;&#x9700;&#x6C42;&#x8FED;&#x4EE3;&#xFF0C;&#x4EE5;&#x53CA;&#x7EBF;&#x4E0A;&#x95EE;&#x9898;&#x8DDF;&#x8FDB;</p>
+<p>&#x9879;&#x76EE;&#x80CC;&#x666F;&#xFF1A;&#x5546;&#x4E1A;&#x5E7F;&#x544A;&#x81EA;&#x5EFA;&#x7AD9;&#x80FD;&#x529B;&#xFF0C;&#x652F;&#x6301;&#x4EE3;&#x7406;&#x4E0E;&#x5E7F;&#x544A;&#x4E3B;&#x5236;&#x4F5C;&#x843D;&#x5730;&#x9875;&#x7528;&#x6237;&#x5E7F;&#x544A;&#x6295;&#x653E;&#xFF0C;&#x63D0;&#x5347;B&#x7AD9;&#x5E7F;&#x544A;&#x70B9;&#x51FB;&#x7387;&#x548C;&#x8F6C;&#x5316;&#x7387;</p>
+<p>&#x7F51;&#x7AD9;&#x5730;&#x5740;&#xFF1A;<a target="_blank" rel="noopener" href="http://cm.bilibili.com/art/bricks/#/site">http://cm.bilibili.com/art/bricks/#/site</a> &#x9700;&#x5E7F;&#x544A;&#x4E3B;&#x767B;&#x5F55;</p>
+<p>&#x9879;&#x76EE;&#x5185;&#x5BB9;&#xFF1A;</p>
+<ol>
+<li>&#x652F;&#x6301;&#x4EE3;&#x7406;&#x548C;&#x5E7F;&#x544A;&#x4E3B;&#x521B;&#x5EFA;&#x3001;&#x53D1;&#x5E03;&#x3001;&#x7BA1;&#x7406;H5&#x843D;&#x5730;&#x9875;&#xFF0C;&#x539F;&#x751F;&#x843D;&#x5730;&#x9875;&#x548C;&#x5C0F;&#x7A0B;&#x5E8F;&#x843D;&#x5730;&#x9875;</li>
+<li>&#x652F;&#x6301;&#x843D;&#x5730;&#x9875;&#x7EC4;&#x4EF6;&#x7EA7;&#x522B;&#x8BBE;&#x8BA1;</li>
+<li>&#x652F;&#x6301;&#x4ECE;&#x6A21;&#x677F;&#x521B;&#x5EFA;&#x843D;&#x5730;&#x9875;&#xFF0C;&#x843D;&#x5730;&#x9875;&#x4F18;&#x9009;&#xFF0C;&#x6839;&#x636E;&#x521B;&#x610F;&#x5143;&#x7D20;&#x81EA;&#x52A8;&#x751F;&#x6210;&#x843D;&#x5730;&#x9875;</li>
+<li>&#x8425;&#x9500;&#x7EC4;&#x4EF6;&#x7BA1;&#x7406;&#xFF0C;&#x652F;&#x6301;&#x8868;&#x5355;&#x3001;&#x62BD;&#x5956;&#x7B49;&#x7EC4;&#x4EF6;</li>
+<li>&#x652F;&#x6301;&#x843D;&#x5730;&#x9875;&#x70B9;&#x51FB;&#x3001;&#x8F6C;&#x5316;&#x4FE1;&#x606F;&#x62AB;&#x9732;&#xFF0C;&#x70ED;&#x95E8;&#x6A21;&#x677F;&#x4EE5;&#x53CA;&#x4F18;&#x79C0;&#x843D;&#x5730;&#x9875;&#x5C55;&#x793A;</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x6280;&#x672F;&#xFF1A;</p>
+<ol>
+<li>Spring&#xFF0C;SpringMVC&#xFF0C;MyBatis&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/22/Web%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E5%B1%82/">Web&#x7CFB;&#x7EDF;&#x6846;&#x67B6;</a>-&#x4E94;&#x5C42;&#x67B6;&#x6784;</li>
+<li>ClickHouse&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/08/mongodb/">MongoDB</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/04/Mysql%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83/">Mysql</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/08/06/Redis/">Redis</a></li>
+<li>Cat&#xFF0C;JOOQ&#xFF0C;XXL-JOB&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#xFF0C;RabbitMQ&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/08/25/Redisson/">Redisson</a>&#xFF0C;Druid&#xFF0C;Kibana+Logstash+ES&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/07/01/QueryDSL/">QueryDsl</a></li>
+<li><a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/09/03/Spring%20HTTP%20Invoker/">Spring Http Invoker</a>&#xFF0C;Grpc&#xFF0C;&#x7EBF;&#x7A0B;&#x6C60;</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x96BE;&#x70B9;&#xFF1A;</p>
+<ol>
+<li>&#x5728;&#x7EBF;&#x843D;&#x5730;&#x9875;&#x5F00;&#x653E;&#x63A5;&#x53E3;&#xFF0C;&#x652F;&#x6301;8000QPS&#xFF0C;&#x4FDD;&#x6301;&#x7EBF;&#x4E0A;&#x7A33;&#x5B9A;</li>
+<li>&#x843D;&#x5730;&#x9875;&#x914D;&#x7F6E;&#x5C42;&#x7EA7;&#x590D;&#x6742;&#xFF0C;&#x843D;&#x5730;&#x9875;&#x7C7B;&#x578B;&#x8F83;&#x591A;&#xFF0C;&#x6574;&#x4F53;&#x903B;&#x8F91;&#x7ECF;&#x591A;&#x6B21;&#x8FED;&#x4EE3;&#x7EF4;&#x62A4;&#x6210;&#x672C;&#x5927;</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x6210;&#x679C;&#xFF1A;</p>
+<ol>
+<li>&#x5728;&#x7EBF;&#x5355;&#x65E5;&#x843D;&#x5730;&#x9875;900&#x4E07;&#x8BF7;&#x6C42;</li>
+<li>&#x529F;&#x80FD;&#x4E30;&#x5BCC;&#xFF0C;&#x652F;&#x6301;&#x7EC4;&#x4EF6;&#x7EA7;&#x522B;&#x7684;&#x843D;&#x5730;&#x9875;&#x5236;&#x4F5C;&#xFF0C;&#x5E7F;&#x544A;&#x7528;&#x6237;&#x4F7F;&#x7528;&#x7387;80%</li>
+<li>&#x5EFA;&#x7AD9;&#x843D;&#x5730;&#x9875;&#x8986;&#x76D6;&#x7387;65%</li>
+</ol>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>&#x6548;&#x679C;&#x5E7F;&#x544A;&#x9879;&#x76EE;</strong><code>2021/04/01-&#x81F3;&#x4ECA;</code></p>
+<p>&#x9879;&#x76EE;&#x540E;&#x7AEF;&#x53C2;&#x4E0E;&#x8005;&#xFF0C;&#x8D1F;&#x8D23;&#x4EA7;&#x54C1;&#x7684;&#x90E8;&#x5206;&#x9700;&#x6C42;&#x8FED;&#x4EE3;&#xFF0C;&#x4EE5;&#x53CA;&#x90E8;&#x5206;&#x7EBF;&#x4E0A;&#x95EE;&#x9898;&#x8DDF;&#x8FDB;</p>
+<p>&#x9879;&#x76EE;&#x80CC;&#x666F;&#xFF1A;&#x5546;&#x4E1A;&#x6548;&#x679C;&#x5E7F;&#x544A;&#x9879;&#x76EE;&#xFF0C;&#x5546;&#x4E1A;&#x5E7F;&#x544A;&#x6295;&#x653E;&#x5165;&#x53E3;</p>
+<p>&#x7F51;&#x7AD9;&#x5730;&#x5740;&#xFF1A;<a target="_blank" rel="noopener" href="https://cm.bilibili.com/ad/#/home">https://cm.bilibili.com/ad/#/home</a> &#x9700;&#x8981;&#x5E7F;&#x544A;&#x4E3B;&#x6216;&#x4EE3;&#x7406;&#x767B;&#x5F55;</p>
+<p>&#x9879;&#x76EE;&#x5185;&#x5BB9;&#xFF1A;</p>
+<ol>
+<li>&#x6570;&#x636E;&#x5C55;&#x793A;&#xFF1A;&#x5C55;&#x793A;&#x5E7F;&#x544A;&#x4E3B;&#x521B;&#x610F;&#x4FE1;&#x606F;&#xFF0C;&#x70B9;&#x51FB;&#x3001;&#x6D88;&#x8D39;&#x3001;CPC&#x4EF7;&#x683C;&#x7B49;&#xFF0C;&#x4FBF;&#x4E8E;&#x5E7F;&#x544A;&#x4E3B;&#x4E86;&#x89E3;&#x521B;&#x610F;&#x6295;&#x653E;&#x6548;&#x679C;&#xFF0C;&#x505A;&#x51FA;&#x6295;&#x653E;&#x8C03;&#x6574;</li>
+<li>&#x63A8;&#x5E7F;&#xFF1A;&#x8BA1;&#x5212;&#x3001;&#x5355;&#x5143;&#x3001;&#x521B;&#x610F;&#x521B;&#x5EFA;&#x3001;&#x8BBE;&#x7F6E;&#x3001;&#x53D1;&#x5E03;&#x3001;&#x542F;&#x52A8;&#x4E0E;&#x6682;&#x505C;</li>
+<li>&#x62A5;&#x8868;&#x5185;&#x5BB9;&#xFF1A;&#x591A;&#x7EF4;&#x5EA6;&#x5185;&#x5BB9;&#x5BF9;&#x6BD4;&#xFF0C;&#x5C55;&#x793A;&#x521B;&#x610F;&#x6295;&#x653E;&#x6548;&#x679C;&#xFF0C;&#x5C55;&#x70B9;&#x6D88;&#x6570;&#x636E;&#xFF0C;&#x8F6C;&#x5316;&#x6570;&#x636E;</li>
+<li>&#x8D26;&#x6237;&#x7BA1;&#x7406;&#xFF1A;&#x5E94;&#x7528;&#x5305;&#x7BA1;&#x7406;&#xFF0C;&#x54C1;&#x724C;logo&#xFF0C;&#x8D44;&#x8D28;&#x7BA1;&#x7406;</li>
+<li>&#x8D26;&#x6237;&#x8D44;&#x91D1;&#xFF1A;&#x8D26;&#x6237;&#x8D44;&#x91D1;&#x7BA1;&#x7406;&#x4E0E;&#x4EA4;&#x6613;&#x660E;&#x7EC6;</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x6280;&#x672F;&#xFF1A;</p>
+<ol>
+<li>Spring&#xFF0C;SpringMVC&#xFF0C;MyBatis</li>
+<li>ClickHouse&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/08/mongodb/">MongoDB</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/04/Mysql%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83/">Mysql</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/08/06/Redis/">Redis</a></li>
+<li>Cat&#xFF0C;JOOQ&#xFF0C;XXL-JOB&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#xFF0C;RabbitMQ&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/08/25/Redisson/">Redisson</a>&#xFF0C;Druid&#xFF0C;Kibana+Logstash+ES&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/07/01/QueryDSL/">QueryDsl</a></li>
+<li><a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/09/03/Spring%20HTTP%20Invoker/">Spring Http Invoker</a>&#xFF0C;Grpc&#xFF0C;&#x7EBF;&#x7A0B;&#x6C60;</li>
+</ol>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>&#x4E09;&#x8FDE;&#x521B;&#x610F;&#x9879;&#x76EE;</strong><code>2020/06/02-&#x81F3;&#x4ECA;</code></p>
+<p>&#x9879;&#x76EE;&#x540E;&#x7AEF;&#x8D1F;&#x8D23;&#x4EBA;&#xFF0C;&#x8D1F;&#x8D23;&#x4EA7;&#x54C1;&#x9700;&#x6C42;&#x8FED;&#x4EE3;&#xFF0C;&#x4EE5;&#x53CA;&#x7EBF;&#x4E0A;&#x95EE;&#x9898;&#x8DDF;&#x8FDB;</p>
+<p>&#x9879;&#x76EE;&#x80CC;&#x666F;&#xFF1A;&#x56F4;&#x7ED5;&#x521B;&#x610F;&#x70B9;&#x51FB;&#x7387;&#x7684;&#x63D0;&#x5347;&#xFF0C;&#x652F;&#x6301;&#x4EE3;&#x7406;&#x4E0E;&#x5E7F;&#x544A;&#x4E3B;&#x66F4;&#x9AD8;&#x6548;&#x5730;&#x5236;&#x4F5C;&#x521B;&#x610F;&#x7D20;&#x6750;&#xFF0C;&#x5E76;&#x4F20;&#x8FBE;B&#x7AD9;&#x5E7F;&#x544A;&#x521B;&#x610F;&#x5236;&#x4F5C;&#x7684;&#x65B9;&#x6CD5;&#x8BBA;&#x4E0E;&#x9AD8;&#x8D28;&#x6848;&#x4F8B;&#x3002;2021/10/27&#x5185;&#x6D4B;&#xFF0C;2020/11/4&#x7070;&#x5EA6;&#xFF0C;2020/11/23&#x4E0A;&#x7EBF;</p>
+<p>&#x7F51;&#x7AD9;&#x5730;&#x5740;&#xFF1A;<a target="_blank" rel="noopener" href="https://sanlian.bilibili.com/">https://sanlian.bilibili.com</a> &#x90E8;&#x5206;&#x529F;&#x80FD;&#x9700;&#x8981;&#x5E7F;&#x544A;&#x4E3B;&#x767B;&#x5F55;</p>
+<p>&#x9879;&#x76EE;&#x5185;&#x5BB9;&#xFF1A;</p>
+<ol>
+<li>&#x6A21;&#x677F;&#x5236;&#x56FE;&#x5DE5;&#x5177;&#xFF0C;&#x652F;&#x6301;&#x56FE;&#x5C42;&#x7EA7;&#x522B;&#x7684;&#x8C03;&#x6574;&#x8BBE;&#x8BA1;&#xFF0C;&#x652F;&#x6301;PSD&#x5728;&#x7EBF;&#x89E3;&#x6790;</li>
+<li>&#x89C6;&#x9891;GIF&#x5236;&#x4F5C;&#x5DE5;&#x5177;&#xFF0C;&#x652F;&#x6301;&#x5E27;&#x7EA7;&#x522B;&#x7684;&#x8C03;&#x6574;&#x8BBE;&#x8BA1;</li>
+<li>&#x4F5C;&#x54C1;&#x7BA1;&#x7406;&#xFF0C;&#x652F;&#x6301;&#x6A21;&#x677F;&#x7F16;&#x8F91;&#x3001;&#x540C;&#x6B65;&#x6295;&#x653E;&#x3001;&#x5386;&#x53F2;&#x7B49;&#x64CD;&#x4F5C;</li>
+<li>&#x8D44;&#x4EA7;&#x7BA1;&#x7406;&#xFF0C;&#x652F;&#x6301;&#x67E5;&#x770B;&#x6295;&#x653E;&#x7D20;&#x6750;&#x5E93;&#x4E2D;&#x6240;&#x6709;&#x521B;&#x610F;</li>
+<li>&#x70ED;&#x95E8;&#x5E7F;&#x544A;&#xFF0C;&#x70ED;&#x95E8;&#x89C6;&#x9891;&#xFF0C;&#x7075;&#x611F;&#x6D1E;&#x5BDF;&#xFF0C;&#x6211;&#x7684;&#x6536;&#x85CF;&#xFF0C;&#x652F;&#x6301;&#x5E7F;&#x544A;&#x4E3B;&#x521B;&#x610F;&#x7075;&#x611F;&#x5171;&#x4EAB;&#xFF0C;&#x652F;&#x6301;&#x5185;&#x5BB9;&#x6A21;&#x5757;&#x7BA1;&#x7406;</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x6280;&#x672F;&#xFF1A;</p>
+<ol>
+<li>Springboot&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/22/Web%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E5%B1%82/">Web&#x7CFB;&#x7EDF;&#x6846;&#x67B6;</a>-&#x4E94;&#x5C42;&#x67B6;&#x6784;</li>
+<li>ClickHouse&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/04/Mysql%E8%AE%BE%E8%AE%A1%E8%A7%84%E8%8C%83/">Mysql</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/08/06/Redis/">Redis</a></li>
+<li>Cat&#xFF0C;XXL-JOB&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;&#xFF0C;Databus&#xFF08;kafka&#xFF09;&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/08/25/Redisson/">Redisson</a>&#xFF0C;HikariCP&#xFF0C;Kibana+Logstash+ES</li>
+<li><a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/09/03/Spring%20HTTP%20Invoker/">Spring Http Invoker</a>&#xFF0C;Grpc&#xFF0C;&#x7EBF;&#x7A0B;&#x6C60;</li>
+</ol>
+<p>&#x9879;&#x76EE;&#x6210;&#x679C;&#xFF1A;</p>
+<ol>
+<li>&#x5C55;&#x793A;B&#x7AD9;&#x4F18;&#x79C0;&#x521B;&#x610F;&#x7D20;&#x6750;&#xFF0C;&#x63D0;&#x5347;&#x5E7F;&#x544A;&#x4E3B;&#x7D20;&#x6750;&#x521B;&#x4F5C;&#x80FD;&#x529B;</li>
+<li>&#x6C47;&#x603B;&#x5E7F;&#x544A;&#x521B;&#x610F;&#x6295;&#x653E;&#x7D20;&#x6750;&#x5185;&#x5BB9;&#xFF0C;&#x63D0;&#x4F9B;&#x7EDF;&#x4E00;&#x7BA1;&#x7406;&#x6E20;&#x9053;&#xFF0C;&#x4F18;&#x5316;&#x6295;&#x653E;&#x4E2D;&#x5FC3;&#x6574;&#x4F53;&#x903B;&#x8F91;&#xFF0C;&#x63D0;&#x5347;&#x5E7F;&#x544A;&#x4E3B;&#x521B;&#x5EFA;&#x521B;&#x610F;&#x80FD;&#x529B;</li>
+</ol>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>Xbot&#x667A;&#x80FD;&#x52A9;&#x624B;&#x9879;&#x76EE;</strong><code>2019/06/12-2020/09/12</code></p>
+<p>&#x9879;&#x76EE;&#x53C2;&#x4E0E;&#x8005;&#xFF0C;&#x8D1F;&#x8D23;&#x667A;&#x80FD;&#x52A9;&#x624B;&#x7684;&#x6846;&#x67B6;&#x8BBE;&#x8BA1;&#x3001;&#x5B9E;&#x4F53;&#x8BC6;&#x522B;&#x548C;&#x69FD;&#x4F4D;&#x8BC6;&#x522B;&#x6A21;&#x578B;&#x7684;&#x8BAD;&#x7EC3;&#x548C;&#x90E8;&#x7F72;&#xFF0C;&#x4EE5;&#x53CA;&#x76F8;&#x5173;&#x6D4B;&#x8BD5;</p>
+<p>&#x8BE5;&#x9879;&#x76EE;&#x4E3A;&#x90E8;&#x95E8;&#x7EBF;&#x4E0A;&#x9879;&#x76EE;&#xFF0C;&#x8FD0;&#x8425;&#x5546;&#x5728;&#x4F7F;&#x7528;&#x516C;&#x53F8;&#x4EA7;&#x54C1;&#x65F6;&#xFF0C;&#x7531;&#x4E8E;&#x529F;&#x80FD;&#x7684;&#x590D;&#x6742;&#x6027;&#xFF0C;&#x5E0C;&#x671B;&#x80FD;&#x591F;&#x51CF;&#x5C11;&#x7528;&#x6237;&#x7684;&#x4F7F;&#x7528;&#x96BE;&#x5EA6;&#x3002;&#x5728;&#x4EA7;&#x54C1;&#x53F3;&#x4FA7;&#x63D0;&#x4F9B;&#x667A;&#x80FD;&#x52A9;&#x624B;&#x670D;&#x52A1;&#xFF0C;&#x667A;&#x80FD;&#x52A9;&#x624B;&#x652F;&#x6301;&#x5E2E;&#x52A9;&#x7528;&#x6237;&#x6267;&#x884C;&#x76F8;&#x5173;&#x64CD;&#x4F5C;&#x3002;</p>
+<p>&#x6839;&#x636E;&#x7528;&#x6237;&#x63D0;&#x95EE;&#x7684;&#x8BED;&#x4E49;&#x4FE1;&#x606F;&#x81EA;&#x52A8;&#x4E0B;&#x53D1;&#x4EFB;&#x52A1;&#xFF0C;&#x8BBE;&#x8BA1;&#x5E76;&#x5B9E;&#x73B0;&#x4E86;&#x57FA;&#x4E8E;&#x6DF1;&#x5EA6;&#x5B66;&#x4E60;&#x7684;&#x610F;&#x56FE;&#x8BC6;&#x522B;&#x6A21;&#x578B;&#x548C;&#x69FD;&#x4F4D;&#x8BC6;&#x522B;&#x6A21;&#x578B;&#x3002;</p>
+<p>&#x610F;&#x56FE;&#x8BC6;&#x522B;&#x6A21;&#x578B;&#x8BC6;&#x522B;&#x7528;&#x6237;&#x95EE;&#x9898;&#x610F;&#x56FE;&#xFF0C;&#x57FA;&#x4E8E;&#x6587;&#x672C;&#x5206;&#x7C7B;&#x4EFB;&#x52A1;&#xFF0C;&#x5C06;&#x95EE;&#x9898;&#x8BC6;&#x522B;&#x4E3A;&#x7CFB;&#x7EDF;&#x5B9A;&#x4E49;&#x7684;&#x67D0;&#x4E00;&#x9879;&#x4E1A;&#x52A1;</p>
+<p>&#x69FD;&#x4F4D;&#x8BC6;&#x522B;&#x6A21;&#x578B;&#x8BC6;&#x522B;&#x7528;&#x6237;&#x95EE;&#x9898;&#x5173;&#x952E;&#x5B9E;&#x4F53;&#xFF0C;&#x57FA;&#x4E8E;&#x547D;&#x540D;&#x5B9E;&#x4F53;&#x8BC6;&#x522B;&#xFF0C;&#x5C06;&#x5B8C;&#x6210;&#x4EFB;&#x52A1;&#x6240;&#x9700;&#x7684;&#x5B9E;&#x4F53;&#x8BC6;&#x522B;&#x51FA;&#x6765;&#xFF0C;&#x5176;&#x4E2D;&#x8FD8;&#x5305;&#x62EC;&#x5B9E;&#x4F53;&#x94FE;&#x63A5;&#x7B49;</p>
+<p>&#x610F;&#x56FE;&#x51C6;&#x786E;&#x7387;94%&#xFF0C;&#x69FD;&#x4F4D;&#x8BC6;&#x522B;F1&#x503C;&#x4E3A;87%</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>&#x9886;&#x57DF;&#x77E5;&#x8BC6;&#x56FE;&#x8C31;&#x95EE;&#x7B54;&#x7CFB;&#x7EDF;</strong><code>2019/06/12-2020/09/12</code></p>
+<p>&#x9879;&#x76EE;&#x53C2;&#x4E0E;&#x8005;&#xFF0C;&#x8D1F;&#x8D23;&#x90E8;&#x5206;&#x5B9E;&#x4F53;&#x3001;&#x5173;&#x7CFB;&#x3001;&#x5C5E;&#x6027;&#x7684;&#x5B9A;&#x4E49;&#x548C;AI&#x7B54;&#x6848;&#x62BD;&#x53D6;&#x6A21;&#x578B;&#x7684;&#x8BBE;&#x8BA1;</p>
+<p>&#x8BE5;&#x9879;&#x76EE;&#x4E3A;&#x90E8;&#x95E8;&#x9884;&#x7814;&#x9879;&#x76EE;&#xFF0C;&#x89E3;&#x51B3;&#x90E8;&#x95E8;&#x6587;&#x6863;&#x6570;&#x91CF;&#x591A;&#x4F46;&#x68C0;&#x7D22;&#x6548;&#x7387;&#x5DEE;&#x95EE;&#x9898;&#x3002;&#x8BE5;&#x9879;&#x76EE;&#x5206;&#x4E3A;&#x77E5;&#x8BC6;&#x56FE;&#x8C31;&#x548C;AI&#x7B54;&#x6848;&#x62BD;&#x53D6;&#x4E24;&#x90E8;&#x5206;&#x8FDB;&#x884C;&#x3002;</p>
+<p>&#x65B9;&#x6848;&#x4E00;&#x77E5;&#x8BC6;&#x56FE;&#x8C31;&#x90E8;&#x5206;&#xFF0C;&#x901A;&#x8FC7;&#x4EBA;&#x5DE5;&#x6216;&#x534A;&#x4EBA;&#x5DE5;&#x65B9;&#x5F0F;&#x5B9A;&#x4E49;&#x5B9E;&#x4F53;&#x3001;&#x5173;&#x7CFB;&#x3001;&#x5C5E;&#x6027;&#x7B49;&#xFF0C;&#x62BD;&#x53D6;&#x6587;&#x6863;&#x4E2D;&#x7684;&#x56FE;&#x8C31;&#x4E09;&#x8981;&#x7D20;&#x5B58;&#x5165;&#x56FE;&#x6570;&#x636E;&#x5E93;&#xFF0C;&#x5229;&#x7528;&#x56FE;&#x6570;&#x636E;&#x5E93;&#x7684;&#x56FE;&#x68C0;&#x7D22;&#x80FD;&#x529B;&#xFF0C;&#x53EF;&#x4EE5;&#x5BF9;&#x56FE;&#x8C31;&#x7684;&#x4E09;&#x8981;&#x7D20;&#x4F5C;&#x7B80;&#x5355;&#x67E5;&#x8BE2;&#x3002;</p>
+<p>&#x65B9;&#x6848;&#x4E8C;AI&#x7B54;&#x6848;&#x62BD;&#x53D6;&#x90E8;&#x5206;&#xFF0C;&#x901A;&#x8FC7;&#x5173;&#x952E;&#x8BCD;&#x6216;&#x5173;&#x952E;&#x5B9E;&#x4F53;&#x5BF9;&#x6587;&#x6863;&#x6784;&#x5EFA;&#x5012;&#x6392;&#x7D22;&#x5F15;&#xFF0C;&#x5BF9;&#x7528;&#x6237;&#x63D0;&#x95EE;&#x62BD;&#x53D6;&#x5173;&#x952E;&#x5B57;&#x6216;&#x8005;&#x5173;&#x952E;&#x5B9E;&#x4F53;&#xFF0C;&#x627E;&#x5230;&#x5BF9;&#x5E94;&#x6587;&#x6863;&#xFF0C;&#x57FA;&#x4E8E;&#x673A;&#x5668;&#x9605;&#x8BFB;&#x7406;&#x89E3;&#x7684;&#x7B54;&#x6848;&#x62BD;&#x53D6;&#x6A21;&#x578B;&#xFF0C;&#x5728;&#x5019;&#x9009;&#x6BB5;&#x843D;&#x4E2D;&#x8FD4;&#x56DE;&#x7B54;&#x6848;&#x3002;</p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>&#x7CBE;&#x51C6;&#x533B;&#x7597;-&#x4E2D;&#x56FD;&#x5341;&#x4E07;&#x4EBA;&#x57FA;&#x56E0;&#x7EC4;&#x8BA1;&#x5212;&#x9879;&#x76EE;</strong><code>2018/01/01-2020/04/06</code></p>
+<p>&#x9879;&#x76EE;&#x53C2;&#x4E0E;&#x8005;&#xFF0C;&#x8D1F;&#x8D23;&#x4E2D;&#x6587;&#x7535;&#x5B50;&#x75C5;&#x5386;&#x7684;&#x547D;&#x540D;&#x5B9E;&#x4F53;&#x7814;&#x7A76;&#xFF0C;&#x6A21;&#x578B;&#x7684;&#x642D;&#x5EFA;&#xFF0C;&#x8BBA;&#x6587;&#x64B0;&#x5199;</p>
+<p>&#x8BE5;&#x9879;&#x76EE;&#x7531;&#x54C8;&#x5C14;&#x6EE8;&#x5DE5;&#x4E1A;&#x5927;&#x5B66;&#x7275;&#x5934;&#xFF0C;&#x8BFE;&#x9898;&#x7EC4;&#x53C2;&#x4E0E;&#x4E2D;&#x6587;&#x75C5;&#x5386;&#x547D;&#x540D;&#x5B9E;&#x4F53;&#x8BC6;&#x522B;&#x65B9;&#x6CD5;&#x7814;&#x7A76;&#xFF0C;&#x4E3A;&#x4E86;&#x52A0;&#x5FEB;Bi-LSTM&#x7F51;&#x7EDC;&#x63D0;&#x53D6;&#x75C5;&#x5386;&#x6587;&#x672C;&#x7279;&#x5F81;&#xFF0C;&#x6539;&#x8FDB;&#x4E86;&#x57FA;&#x4E8E;ID-CNN&#x6A21;&#x578B;&#x8FDB;&#x884C;&#x75C5;&#x5386;&#x5B9E;&#x4F53;&#x63D0;&#x53D6;&#xFF0C;&#x63D0;&#x51FA;&#x4E86;&#x4E00;&#x79CD;Attention-based ID-CNNs-CRF&#x6A21;&#x578B;&#x7528;&#x4E8E;&#x547D;&#x540D;&#x5B9E;&#x4F53;&#x8BC6;&#x522B;&#xFF0C;&#x8BE5;&#x6A21;&#x578B;&#x878D;&#x5408;&#x5355;&#x8BCD;&#x5D4C;&#x5165;&#x3001;&#x5B57;&#x7B26;&#x5D4C;&#x5165;&#x3001;&#x8BCD;&#x6027;&#x5D4C;&#x5165;&#x548C;&#x4F4D;&#x7F6E;&#x5D4C;&#x5165;&#x7684;&#x8BCD;&#x5411;&#x91CF;&#x4F5C;&#x4E3A;&#x6A21;&#x578B;&#x8F93;&#x5165;&#x3002;&#x5176;&#x6B21;&#xFF0C;&#x5806;&#x53E0;4&#x4E2A;&#x81A8;&#x80C0;&#x5377;&#x79EF;&#x5757;&#x63D0;&#x53D6;&#x5168;&#x5C40;&#x8BED;&#x4E49;&#x4FE1;&#x606F;&#xFF0C;&#x4E4B;&#x540E;&#xFF0C;&#x7ED3;&#x5408;&#x6CE8;&#x610F;&#x529B;&#x673A;&#x5236;&#x589E;&#x5F3A;&#x5BF9;&#x5C40;&#x90E8;&#x8BED;&#x4E49;&#x4FE1;&#x606F;&#x7684;&#x611F;&#x77E5;&#xFF0C;&#x6700;&#x540E;&#x5229;&#x7528;CRF&#x83B7;&#x53D6;&#x6700;&#x4F18;&#x7684;&#x6807;&#x7B7E;&#x5E8F;&#x5217;&#xFF0C;&#x6A21;&#x578B;&#x6548;&#x679C;&#x548C;&#x9884;&#x6D4B;&#x901F;&#x5EA6;&#x5747;&#x4F18;&#x4E8E;&#x73B0;&#x6709;&#x7684;Bi-LSTM-CRF&#x6A21;&#x578B;&#xFF0C;&#x7814;&#x7A76;&#x6210;&#x679C;<a target="_blank" rel="noopener" href="https://link.springer.com/chapter/10.1007/978-3-030-30493-5_25"><em>An attention-based ID-CNNs-CRF model for named entity recognition on clinical electronic medical records</em></a>&#xFF0C;&#x53D1;&#x8868;&#x4E8E;<a target="_blank" rel="noopener" href="https://e-nns.org/icann2019/"><em>ICANN2019</em></a>&#xFF08;<em>CCF C</em>&#x7C7B;&#x4F1A;&#x8BAE;&#xFF09;&#xFF0C;&#x7B2C;&#x4E00;&#x4F5C;&#x8005; </p>
+</li>
+</ul>
+<hr>
+<ul>
+<li><p><strong>&#x4E92;&#x8054;&#x7F51;&#x516C;&#x5F00;&#x4FE1;&#x606F;&#x91C7;&#x96C6;&#x8BFE;&#x9898;&#x7814;&#x7A76;</strong><code>2021/07/01-2021/11/01</code></p>
+<p>&#x9879;&#x76EE;&#x8D1F;&#x8D23;&#x4EBA;&#xFF0C;&#x8D1F;&#x8D23;&#x9879;&#x76EE;&#x7684;&#x6574;&#x4F53;&#x65B9;&#x6848;&#x8BBE;&#x8BA1;&#xFF0C;&#x8FDB;&#x5EA6;&#x63A7;&#x5236;&#xFF0C;&#x4EE3;&#x7801;&#x7F16;&#x5199;&#xFF0C;&#x6D4B;&#x8BD5;&#xFF0C;&#x4EA4;&#x4ED8;&#x7B49;</p>
+<p>&#x4E0E;&#x4E0A;&#x6D77;&#x8D44;&#x4FE1;&#x6709;&#x9650;&#x516C;&#x53F8;&#x5408;&#x4F5C;&#xFF0C;&#x5171;&#x540C;&#x5F00;&#x53D1;&#x4E00;&#x6B3E;&#x6570;&#x636E;&#x91C7;&#x96C6;&#x7CFB;&#x7EDF;&#x7528;&#x4E8E;&#x652F;&#x6301;&#x4F01;&#x4E1A;&#x8D37;&#x6B3E;&#x5B89;&#x5168;&#x98CE;&#x63A7;&#x4FE1;&#x606F;&#x5206;&#x6790;&#xFF0C;&#x4E3B;&#x8981;&#x91C7;&#x96C6;&#x56FD;&#x5BB6;&#x4F01;&#x4E1A;&#x4FE1;&#x606F;&#x4FE1;&#x606F;&#x516C;&#x793A;&#x7CFB;&#x7EDF;&#xFF0C;&#x56FD;&#x5BB6;&#x4E13;&#x5229;&#x7CFB;&#x7EDF;&#x3001;&#x88AB;&#x6267;&#x884C;&#x4EBA;&#x7B49;&#x7CFB;&#x7EDF;&#x4E2D;&#x4F01;&#x4E1A;&#x3001;&#x4E13;&#x5229;&#x3001;&#x88AB;&#x6267;&#x884C;&#x4EBA;&#x4FE1;&#x606F;&#x3002;&#x8BE5;&#x7CFB;&#x7EDF;&#x5206;&#x4E3A;&#x6570;&#x636E;&#x91C7;&#x96C6;&#x7CFB;&#x7EDF;&#x548C;&#x7BA1;&#x7406;&#x7CFB;&#x7EDF;&#x4E24;&#x90E8;&#x5206;&#x3002;</p>
+<p>&#x7BA1;&#x7406;&#x7CFB;&#x7EDF;&#xFF1A;&#x57FA;&#x4E8E;Spring+SpringMVC+Hibernate&#xFF0C;&#x5B9E;&#x73B0;&#x7528;&#x6237;&#x6570;&#x636E;&#x91C7;&#x96C6;&#x4EFB;&#x52A1;&#x7684;&#x521B;&#x5EFA;&#xFF0C;&#x5B9A;&#x65F6;&#x542F;&#x52A8;&#xFF0C;&#x5F02;&#x5E38;&#x91C7;&#x96C6;&#x8FC7;&#x7A0B;&#x6536;&#x96C6;&#xFF0C;&#x5F02;&#x5E38;&#x91CD;&#x8BD5;&#xFF0C;&#x4EFB;&#x52A1;&#x5B9E;&#x65F6;&#x8FDB;&#x5EA6;&#x5C55;&#x793A;&#xFF0C;&#x4EFB;&#x52A1;&#x5B8C;&#x6210;&#x5FAE;&#x4FE1;&#xFF08;itchat&#xFF09;&#x548C;&#x90AE;&#x4EF6;&#x901A;&#x77E5;&#xFF0C;&#x91C7;&#x96C6;&#x6570;&#x636E;&#x5C55;&#x793A;&#xFF0C;&#x6570;&#x636E;&#x4E0B;&#x8F7D;&#x7B49;&#x529F;&#x80FD;</p>
+<p>&#x91C7;&#x96C6;&#x7CFB;&#x7EDF;&#xFF1A;&#x57FA;&#x4E8E;Scrpy&#xFF0C;Selenium&#x3001;Requests&#x3001;Chrome Webdriver&#xFF0C;Appium&#xFF0C;MySql&#x7B49;&#x6280;&#x672F;&#xFF0C;&#x91C7;&#x96C6;&#x7F51;&#x7AD9;&#x6570;&#x636E;&#x3002;&#x5B9E;&#x73B0;&#x5206;&#x5E03;&#x5F0F;&#x4EFB;&#x52A1;&#x5904;&#x7406;&#x529F;&#x80FD;&#xFF0C;&#x7531;&#x5355;&#x53F0;&#x670D;&#x52A1;&#x5668;&#x8D1F;&#x8D23;&#x54CD;&#x5E94;&#x7528;&#x6237;&#x4EFB;&#x52A1;&#xFF0C;&#x5411;&#x5176;&#x4ED6;&#x6570;&#x636E;&#x91C7;&#x96C6;&#x670D;&#x52A1;&#x5668;&#x4E0B;&#x53D1;&#x4EFB;&#x52A1;&#x3002;&#x8BE5;&#x7CFB;&#x7EDF;&#x7834;&#x89E3;&#x4E86;&#x6781;&#x9A8C;&#x6ED1;&#x52A8;&#x9A8C;&#x8BC1;&#x7801;&#xFF0C;&#x6781;&#x9A8C;3.0&#x6587;&#x5B57;&#x70B9;&#x51FB;&#x9A8C;&#x8BC1;&#x7801;&#xFF0C;&#x4EE5;&#x53CA;&#x4E00;&#x822C;&#x7684;&#x9632;&#x722C;&#x866B;&#x6280;&#x672F;&#xFF0C;&#x5E76;&#x5B9E;&#x73B0;&#x4E86;&#x57FA;&#x4E8E;CNN&#x7684;&#x5B57;&#x6BCD;&#x6570;&#x5B57;&#x9A8C;&#x8BC1;&#x7801;&#x8BC6;&#x522B;&#x3002;</p>
+</li>
+</ul>
+</li>
+<li><p><strong>&#x804C;&#x4E1A;&#x6280;&#x80FD;</strong></p>
+<ul>
+<li>Java&#x540E;&#x7AEF;&#x5F00;&#x53D1;&#x3001;Python&#x5F00;&#x53D1;</li>
+<li>&#x4E86;&#x89E3;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/02/Java%E8%99%9A%E6%8B%9F%E6%9C%BA/">JVM&#x865A;&#x62DF;&#x673A;</a>&#xFF0C;&#x6709;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/07/05/Jvm%E5%B7%A5%E5%85%B7/">JVM&#x8C03;&#x4F18;</a>&#x76F8;&#x5173;&#x7ECF;&#x9A8C;</li>
+<li>&#x719F;&#x6089;&#x6570;&#x636E;&#x7ED3;&#x6784;&#xFF0C;&#x4EE5;&#x53CA;&#x76F8;&#x5173;&#x7B97;&#x6CD5;</li>
+<li>&#x9605;&#x8BFB;Java&#x76F8;&#x5173;&#x6E90;&#x7801;&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/07/09/Stream%E6%B5%81%E5%B8%B8%E8%A7%84%E7%94%A8%E6%B3%95/">Stream&#x6D41;</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">ReentrantLock</a>&#xFF0C;HashMap&#xFF0C;Spring&#x7B49;</li>
+<li>&#x4F7F;&#x7528;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/20/RabbitMQ/">RabbitMQ</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/08/25/Redisson/">Redission</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/08/02/ZooKeeper/">Zookeeper</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/08/26/Cat/">Cat</a>&#xFF0C;XXL-Job&#x7B49;&#x4E2D;&#x95F4;&#x4EF6;</li>
+<li>&#x4E86;&#x89E3;Mysql&#x4F18;&#x5316;&#xFF0C;&#x4E86;&#x89E3;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/07/15/ElasticSearch/">ElasticSearch</a>&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/06/08/mongodb/">MongoDB</a>&#xFF0C;Clickhouse&#xFF0C;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/08/06/Redis/">Redis</a>&#x6570;&#x636E;&#x5E93;</li>
+<li>&#x638C;&#x63E1;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2020/11/01/Git%E5%9F%BA%E7%A1%80/">Git</a>&#x3001;Maven&#x5F00;&#x53D1;&#x5DE5;&#x5177;&#xFF0C;&#x4E86;&#x89E3;<a target="_blank" rel="noopener" href="https://gaoming95.github.io/2021/01/15/Devops/">Devops</a></li>
+<li>&#x6709;ToC&#x9879;&#x76EE;&#x67B6;&#x6784;&#x7ECF;&#x9A8C;&#x548C;&#x641C;&#x7D22;&#x5F15;&#x64CE;&#x4E1A;&#x52A1;&#x76F8;&#x5173;&#x7ECF;&#x9A8C;</li>
+<li>&#x4E86;&#x89E3;&#x673A;&#x5668;&#x5B66;&#x4E60;&#x76F8;&#x5173;&#x7B97;&#x6CD5;&#xFF0C;&#x6DF1;&#x5EA6;&#x5B66;&#x4E60;&#x76F8;&#x5173;&#x6A21;&#x578B;&#xFF0C;tersorflow&#xFF0C;keras&#x7B49;&#x6846;&#x67B6;&#xFF0C;&#x719F;&#x7EC3;&#x6570;&#x636E;&#x91C7;&#x96C6;&#x4E0E;&#x5206;&#x6790;</li>
+</ul>
+</li>
+<li><p><strong>&#x8363;&#x8A89;&#x8BC1;&#x4E66;</strong></p>
+<ul>
+<li>&#x4E0A;&#x6D77;&#x5E02;&#x4F18;&#x79C0;&#x6BD5;&#x4E1A;&#x751F;</li>
+<li>&#x4E0A;&#x6D77;&#x5927;&#x5B66;&#x4F18;&#x79C0;&#x5B66;&#x751F;</li>
+<li>&#x4E0A;&#x6D77;&#x5927;&#x5B66;&#x5B66;&#x4E1A;&#x5956;&#x5B66;&#x91D1;&#x4E00;&#x7B49;&#x5956;</li>
+</ul>
+</li>
+<li><p><strong>&#x6240;&#x83B7;&#x6210;&#x679C;</strong></p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://link.springer.com/chapter/10.1007/978-3-030-30493-5_25"><em>An attention-based ID-CNNs-CRF model for named entity recognition on clinical electronic medical records</em></a>&#xFF0C;&#x53D1;&#x8868;&#x4E8E;<a target="_blank" rel="noopener" href="https://e-nns.org/icann2019/"><em>ICANN2019</em></a>&#xFF08;<em>CCF C</em>&#x7C7B;&#x4F1A;&#x8BAE;&#xFF09;&#xFF0C;&#x7B2C;&#x4E00;&#x4F5C;&#x8005; </li>
+<li><a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/335406934_An_Improved_Method_for_Named_Entity_Recognition_and_Its_Application_to_CEMR"><em>An Improved Method for named entity recognition and Its Appliaction to CEMR</em></a>&#xFF0C;&#x53D1;&#x8868;&#x4E8E;<a target="_blank" rel="noopener" href="https://www.mdpi.com/journal/futureinternet"><em>Future Internet</em></a>&#xFF08;<em>ESCI</em>&#x671F;&#x520A;&#xFF09;&#xFF0C;&#x7B2C;&#x4E00;&#x4F5C;&#x8005; </li>
+<li><a target="_blank" rel="noopener" href="https://www.researchgate.net/publication/340775534_A_topic-enhanced_recurrent_autoencoder_model_for_sentiment_analysis_of_short_texts"><em>A Topic-Enhanced Recurrent Autoencoder Model for Sentiment Analysis of Short Texts</em></a>&#xFF0C;&#x53D1;&#x8868;&#x4E8E;<em>EI</em>&#x671F;&#x520A;<a target="_blank" rel="noopener" href="https://www.inderscience.com/jhome.php?jcode=IJIMS"><em>International Journal of Internet Manufacturing and Services</em></a>&#xFF0C; &#x7B2C;&#x4E8C;&#x4F5C;&#x8005;</li>
+<li>Chinese Electronic Medical Record Named Entity Recognition Based on PreAtt-BiLSTM-CRF&#xFF0C;&#x53D1;&#x8868;&#x4E8E;&#x4E00;&#x822C;&#x671F;&#x520A;<em>Data SCIENCE AND INDUSTRIAL INTERNET</em>&#xFF0C;&#x7B2C;&#x4E00;&#x4F5C;&#x8005;</li>
+<li><em>A Topic-Enhanced Recurrent Autoencoder Model for Sentiment Analysis of Short Texts</em>&#xFF0C;&#x53D1;&#x8868;&#x4E8E;&#x56FD;&#x9645;&#x4F1A;&#x8BAE; <a target="_blank" rel="noopener" href="http://icss2018.shu.edu.cn/"><em>2018 11th International Conference on Service Science (ICSS2018)</em></a>&#xFF0C; &#x7B2C;&#x4E8C;&#x4F5C;&#x8005;</li>
+</ul>
+</li>
+</ul>
+
+
+                <!-- 如果开启评论功能 -->
+                
+                    <hr>
+
+                    
+
+                    
+                    <!-- disqus 评论框 start -->
+                    <div class="comment">
+                        <div id="disqus_thread" class="disqus-thread"></div>
+                    </div>
+                    <!-- disqus 评论框 end -->
+                    
+
+
+                    
+
+                    
+                    <!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+                    <script type="text/javascript">
+                        /* * * CONFIGURATION VARIABLES * * */
+                        var disqus_shortname = "hexo-theme-huxblog";
+                        var disqus_identifier = "http://example.com/about/index.html";
+                        var disqus_url = "http://example.com/about/index.html";
+
+                        (function() {
+                            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+                        })();
+
+                        
+                    </script>
+                    <!-- disqus 公共JS代码 end -->
+                    
+
+
+
+                
+
+            </div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                            
+                            <a href="/tags/#工具" title="工具" rel="3">工具</a>
+                            
+                        
+                            
+                            <a href="/tags/#机器学习" title="机器学习" rel="13">机器学习</a>
+                            
+                        
+                            
+                            <a href="/tags/#中间件" title="中间件" rel="6">中间件</a>
+                            
+                        
+                            
+                            <a href="/tags/#Java基础" title="Java基础" rel="12">Java基础</a>
+                            
+                        
+                            
+                            <a href="/tags/#运维" title="运维" rel="4">运维</a>
+                            
+                        
+                            
+                        
+                            
+                            <a href="/tags/#神经网络" title="神经网络" rel="6">神经网络</a>
+                            
+                        
+                            
+                            <a href="/tags/#Spring" title="Spring" rel="3">Spring</a>
+                            
+                        
+                            
+                            <a href="/tags/#应用框架" title="应用框架" rel="2">应用框架</a>
+                            
+                        
+                            
+                            <a href="/tags/#数据库" title="数据库" rel="4">数据库</a>
+                            
+                        
+                            
+                            <a href="/tags/#设计模式" title="设计模式" rel="7">设计模式</a>
+                            
+                        
+                            
+                            <a href="/tags/#剑指offer" title="剑指offer" rel="18">剑指offer</a>
+                            
+                        
+                            
+                            <a href="/tags/#多线程" title="多线程" rel="2">多线程</a>
+                            
+                        
+                            
+                            <a href="/tags/#深度学习" title="深度学习" rel="4">深度学习</a>
+                            
+                        
+                            
+                        
+                            
+                        
+                            
+                        
+                            
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+
+                        
+                            <img src="/img/avatar.jpg" />
+                        
+
+                        
+                            <p>喜欢尝试，永不止步</p>
+                        
+                        <!-- Image to hack wechat -->
+                        
+
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                            
+                            
+                                <li>
+                                    <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa  fa-stack-1x fa-inverse">知</i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+
+                            
+                                <li>
+                                    <a target="_blank" href="http://weibo.com/u/3874944289">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+
+                            
+
+                            
+                                <li>
+                                    <a target="_blank"  href="https://github.com/gaoming95">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+                            
+                            
+                            
+                                <li>
+                                    <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        
+    </div>
+</div>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

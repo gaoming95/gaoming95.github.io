@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          GBDT和XGBoost区别 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2019/10/07/GBDT和XGBoost的区别/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                        
+                    </div>
+                    <h1>GBDT和XGBoost区别</h1>
+                    <h2 class="subheading">GBDT和XGBoost区别</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2019-10-07
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="GBDT&#x548C;XGBoost&#x533A;&#x522B;"><a href="#GBDT&#x548C;XGBoost&#x533A;&#x522B;" class="headerlink" title="GBDT&#x548C;XGBoost&#x533A;&#x522B;"></a>GBDT&#x548C;XGBoost&#x533A;&#x522B;</h1><h2 id="&#x725B;&#x987F;&#x6CD5;"><a href="#&#x725B;&#x987F;&#x6CD5;" class="headerlink" title="&#x725B;&#x987F;&#x6CD5;"></a>&#x725B;&#x987F;&#x6CD5;</h2><p>GBDT &#x5728;&#x51FD;&#x6570;&#x7A7A;&#x95F4;&#x4E2D;&#x5229;&#x7528;&#x68AF;&#x5EA6;&#x4E0B;&#x964D;&#x6CD5;&#x8FDB;&#x884C;&#x4F18;&#x5316; </p>
+<p>XGBoost &#x5728;&#x51FD;&#x6570;&#x7A7A;&#x95F4;&#x4E2D;&#x7528;&#x725B;&#x987F;&#x6CD5;&#x8FDB;&#x884C;&#x4F18;&#x5316; </p>
+<p>&#x725B;&#x987F;&#x6CD5;&#x770B;&#x4F3C;&#x6BD4;&#x8F83;&#x964C;&#x751F;&#xFF0C;&#x5728;GBDT&#x4E2D;&#x68AF;&#x5EA6;&#x4E0B;&#x964D;&#x53EA;&#x662F;&#x4E00;&#x9636;&#x6CF0;&#x52D2;&#x516C;&#x5F0F;&#x5C55;&#x5F00;&#xFF0C;&#x725B;&#x987F;&#x6CD5;&#x5C31;&#x662F;&#x4E8C;&#x9636;&#x7684;&#x6CF0;&#x52D2;&#x516C;&#x5F0F;&#x5C55;&#x5F00;&#xFF0C;&#x5728;&#x53C2;&#x6570;&#x7A7A;&#x95F4;&#x4E2D;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image001.png" alt="&#x6CF0;&#x52D2;&#x516C;&#x5F0F;"></p>
+<p>&#x4E3A;&#x4E86;&#x7B80;&#x5316;&#x5206;&#x6790;&#x8FC7;&#x7A0B;&#xFF0C;&#x5047;&#x8BBE;&#x53C2;&#x6570;&#x662F;&#x6807;&#x91CF;&#xFF08;&#x5373; &#x53EA;&#x6709;&#x4E00;&#x7EF4;&#xFF09;&#xFF0C;&#x5219;&#x53EF;&#x5C06;&#x4E00;&#x9636;&#x548C;&#x4E8C;&#x9636;&#x5BFC;&#x6570;&#x5206;&#x522B;&#x8BB0;&#x4E3A; g &#x548C; h&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image002.png" alt="1"></p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image003.png" alt="2"></p>
+<p>&#x5728;&#x51FD;&#x6570;&#x7A7A;&#x95F4;&#x4E2D;&#x7684;&#x725B;&#x987F;&#x6CD5;boosting&#x4E0E;&#x68AF;&#x5EA6;boosting&#x601D;&#x60F3;&#x4E00;&#x6837;&#xFF0C;&#x53EA;&#x662F;f&#xFF08;x&#xFF09;&#x51FD;&#x6570;&#x53D8;&#x4E86;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image004.png" alt="3"></p>
+<p>&#x4E4B;&#x540E;&#x8FD8;&#x662F;&#x6700;&#x7EC8;&#x51FD;&#x6570;&#x7B49;&#x4E8E;&#x6BCF;&#x6B21;&#x8FED;&#x4EE3;&#x7684;&#x589E;&#x91CF;&#x7684;&#x7D2F;&#x52A0;&#x548C;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image005.png" alt="4"></p>
+<p>XGBOOST&#x7684;&#x76EE;&#x6807;&#x51FD;&#x6570;</p>
+<p>&#x6837;&#x672C;&#x8FDB;&#x884C;&#x9884;&#x6D4B;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image006.png" alt="5"></p>
+<p>&#x8FD9;&#x91CC;k&#x662F;&#x6811;&#x7684;&#x6570;&#x91CF;&#xFF0C;&#x662F;&#x5168;&#x90E8;&#x7684;&#x56DE;&#x5F52;&#x6811;&#x96C6;&#x5408;&#xFF0C;&#x800C;f&#x5C31;&#x662F;&#x5176;&#x4E2D;&#x4E00;&#x4E2A;&#x56DE;&#x5F52;&#x6811;&#x3002;</p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image008.png" alt="6"></p>
+<p>&#x63A5;&#x4E0B;&#x6765;&#x770B;XGBOOST&#x7684;&#x76EE;&#x6807;&#x51FD;&#x6570;&#xFF0C; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image009.png" alt="7"></p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image010.png" alt="8"></p>
+<p>&#x8BEF;&#x5DEE;&#x51FD;&#x6570;&#x53EF;&#x4EE5;&#x662F;square loss&#xFF0C;logloss&#x7B49;&#xFF0C;&#x6B63;&#x5219;&#x9879;&#x53EF;&#x4EE5;&#x662F;L1&#x6B63;&#x5219;&#xFF0C;L2&#x6B63;&#x5219;&#x7B49;&#x3002; </p>
+<p>&#x5C06;y&#x7684;&#x9884;&#x6D4B;&#x503C;&#x5E26;&#x5165;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image011.png" alt="9"></p>
+<p>&#x6A21;&#x578B;&#x8981;&#x5B66;&#x4E60;&#x7684;&#x53EA;&#x6709;&#x7B2C;t&#x68F5;&#x6811; ,&#x5BF9;&#x8FDB;&#x884C;&#x4E8C;&#x9636;&#x6CF0;&#x52D2;&#x5C55;&#x5F00;</p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image013.png" alt="11 "></p>
+<p>&#x5176;&#x4E2D;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image014.png" alt="22"></p>
+<p>&#x53BB;&#x6389;&#x5176;&#x4E2D;&#x7684;&#x5E38;&#x6570;&#x9879;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image015.png" alt="33"></p>
+<p>&#x63A5;&#x4E0B;&#x6765;&#x8BB2;&#x516C;&#x5F0F;&#x7684;&#x540E;&#x9762;&#x90A3;&#x4E2A;&#x4E1C;&#x897F;&#xFF1A;&#x6B63;&#x5219;&#x9879;&#x3002;</p>
+<h2 id="&#x6B63;&#x5219;&#x9879;"><a href="#&#x6B63;&#x5219;&#x9879;" class="headerlink" title="&#x6B63;&#x5219;&#x9879;"></a>&#x6B63;&#x5219;&#x9879;</h2><p>&#x4E0A;&#x9762;&#x5BF9;GBDT&#x4E2D;&#x7684;&#x5206;&#x6790;&#x53EF;&#x4EE5;&#x77E5;&#x9053;&#x5B83;&#x662F;&#x6CA1;&#x6709;&#x6B63;&#x5219;&#x9879;&#x7684;&#xFF0C;&#x5728;XGBOOST&#x4E2D;&#x52A0;&#x5165;&#x4E86;&#x6B63;&#x5219;&#x9879;&#xFF0C;&#x4F46;&#x662F;&#x6B63;&#x5219;&#x9879;&#x4E5F;&#x4E0D;&#x662F;XGBOOST&#x9996;&#x5148;&#x52A0;&#x5165;&#x7684;&#xFF0C;&#x5E76;&#x4E0D;&#x662F;&#x5F00;&#x521B;&#x4E86;&#x5148;&#x6CB3;&#x3002; </p>
+<p>&#x6B63;&#x5219;&#x9879;&#x6709;&#x4EC0;&#x4E48;&#x4F5C;&#x7528;&#x5462;&#xFF1F;&#x7B80;&#x5355;&#x6765;&#x8BF4;&#x5C31;&#x662F;&#x53EF;&#x4EE5;&#x662F;&#x7684;&#x6A21;&#x578B;&#x4E0D;&#x5BB9;&#x6613;&#x8FC7;&#x62DF;&#x5408;&#x3002;&#x6B63;&#x5219;&#x9879;&#x5BF9;&#x6BCF;&#x68F5;&#x56DE;&#x5F52;&#x6811;&#x7684;&#x590D;&#x6742;&#x5EA6;&#x8FDB;&#x884C;&#x4E86;&#x60E9;&#x7F5A;&#xFF0C;&#x800C;&#x590D;&#x6742;&#x5EA6;&#x53EF;&#x4EE5;&#x7528;&#x6811;&#x7684;&#x6DF1;&#x5EA6;&#xFF0C;&#x5185;&#x90E8;&#x8282;&#x70B9;&#x4E2A;&#x6570;&#xFF0C;&#x53F6;&#x5B50;&#x8282;&#x70B9;&#x4E2A;&#x6570;(T)&#xFF0C;&#x53F6;&#x8282;&#x70B9;&#x5206;&#x6570;(w)&#x7B49;&#x6765;&#x8861;&#x91CF;&#x3002; </p>
+<p>&#x9996;&#x5148;&#x5BF9;f&#xFF08;x&#xFF09;&#x5B9A;&#x4E49;&#x4E3A;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image016.png" alt="44"></p>
+<p>&#x8FD9;&#x4E2A;&#x5B9A;&#x4E49;&#x4E5F;&#x8981;&#x4EE3;&#x5165;&#x5728;&#x6574;&#x4E2A;&#x76EE;&#x6807;&#x51FD;&#x6570;&#x4E2D;&#x3002;&#x5728;XGBOOST&#x4E2D;&#xFF0C;&#x590D;&#x6742;&#x5EA6;&#x53EF;&#x4EE5;&#x7528;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image017.png" alt="55"></p>
+<p>&#x6765;&#x8868;&#x793A;&#xFF0C;&#x5BF9;&#x53F6;&#x5B50;&#x8282;&#x70B9;&#x4E2A;&#x6570;&#x8FDB;&#x884C;&#x60E9;&#x7F5A;&#xFF0C;&#x76F8;&#x5F53;&#x4E8E;&#x5728;&#x8BAD;&#x7EC3;&#x8FC7;&#x7A0B;&#x4E2D;&#x505A;&#x4E86;&#x526A;&#x679D;&#x3002;</p>
+<p>&#x7B80;&#x5316;&#x76EE;&#x6807;&#x51FD;&#x6570;</p>
+<p>&#x5E26;&#x5165;&#x6B63;&#x5219;&#x9879;&#x548C;f&#xFF08;x&#xFF09;&#xFF1A; </p>
+<p>![obj  g&#x131;Wq@i) + &#xEE;hiW2 ] + &#x2014;A w2J  .jz&#x131;  ie&#x131;j  ie&#x131;j ](file:///C:/Users/gaoming/AppData/Local/Temp/msohtmlclip1/01/clip_image018.png)</p>
+<p>&#x5176;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;&#x7EA6;&#x7B49;&#x4E8E;&#x5F0F;&#x5B50;&#x91CC;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image019.png" alt="66"></p>
+<p>&#x5C06;&#x5B83;&#x4EEC;&#x7EDF;&#x4E00;&#x8D77;&#x6765;&#xFF0C;&#x5B9A;&#x4E49;&#x6BCF;&#x4E2A;&#x53F6;&#x8282;&#x70B9;j&#x4E0A;&#x7684;&#x6837;&#x672C;&#x96C6;&#x5408;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image020.png" alt="77"></p>
+<p>&#x5C31;&#x6210;&#x4E86;&#x540E;&#x9762;&#x7684;&#x5F0F;&#x5B50;&#x3002;&#x5B9A;&#x4E49;: </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image021.png" alt="88"></p>
+<p>&#x53EF;&#x4EE5;&#x5F97;&#x5230;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image022.png" alt="99"></p>
+<p>&#x5982;&#x679C;&#x786E;&#x5B9A;&#x4E86;&#x6811;&#x7684;&#x7ED3;&#x6784;&#xFF08;&#x5373;q(x)&#x786E;&#x5B9A;&#xFF09;&#xFF0C;&#x4E3A;&#x4E86;&#x4F7F;&#x76EE;&#x6807;&#x51FD;&#x6570;&#x6700;&#x5C0F;&#xFF0C;&#x53EF;&#x4EE5;&#x4EE4;&#x5176;&#x5BFC;&#x6570;&#x4E3A;0&#xFF0C;&#x89E3;&#x5F97;&#x6BCF;&#x4E2A;&#x53F6;&#x8282;&#x70B9;&#x7684;&#x6700;&#x4F18;&#x9884;&#x6D4B;&#x5206;&#x6570;&#x4E3A;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image023.png" alt="111"></p>
+<p>&#x5E26;&#x5165;&#x76EE;&#x6807;&#x51FD;&#x6570;&#xFF0C;&#x5F97;&#x5230;&#x6700;&#x5C0F;&#x635F;&#x5931;&#x51FD;&#x6570;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x6211;&#x4EEC;&#x7684;&#x76EE;&#x6807;&#x51FD;&#x6570;&#x4E3A;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image024.png" alt="222"></p>
+<p>XGBOOST&#x7684;&#x6253;&#x5206;&#x51FD;&#x6570;</p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image025.png" alt="333"></p>
+<p>&#x6807;&#x7EA2;&#x90E8;&#x5206;&#x8861;&#x91CF;&#x4E86;&#x6BCF;&#x4E2A;&#x53F6;&#x5B50;&#x8282;&#x70B9;&#x5BF9;&#x603B;&#x4F53;&#x635F;&#x5931;&#x7684;&#x7684;&#x8D21;&#x732E;&#xFF0C;&#x6211;&#x4EEC;&#x5E0C;&#x671B;&#x635F;&#x5931;&#x8D8A;&#x5C0F;&#x8D8A;&#x597D;&#xFF0C;&#x5219;&#x6807;&#x7EA2;&#x90E8;&#x5206;&#x7684;&#x503C;&#x8D8A;&#x5927;&#x8D8A;&#x597D;&#x3002; </p>
+<p>Gain&#x51FD;&#x6570;&#xFF1A; </p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image026.png" alt="444"></p>
+<p>&#x8FD9;&#x4E2A;&#x516C;&#x5F0F;&#x53EF;&#x4EE5;&#x5206;&#x89E3;&#x4E3A;&#xFF1A;1&#xFF09;&#x65B0;&#x5DE6;&#x53F6;&#x4E0A;&#x7684;&#x5F97;&#x5206;2&#xFF09;&#x65B0;&#x53F3;&#x53F6;&#x4E0A;&#x7684;&#x5F97;&#x5206;3&#xFF09;&#x539F;&#x53F6;&#x4E0A;&#x7684;&#x5F97;&#x5206;4&#xFF09;&#x9644;&#x52A0;&#x53F6;&#x4E0A;&#x7684;&#x6B63;&#x5219;&#x5316; &#xFF0C;&#x6240;&#x4EE5;&#x5F53;&#x5BF9;&#x4E00;&#x4E2A;&#x53F6;&#x8282;&#x70B9;&#x5206;&#x5272;&#x65F6;&#xFF0C;&#x8BA1;&#x7B97;&#x6240;&#x6709;&#x5019;&#x9009;(feature,value)&#x5BF9;&#x5E94;&#x7684;gain&#xFF0C;&#x9009;&#x53D6;gain&#x6700;&#x5927;&#x7684;&#x8FDB;&#x884C;&#x5206;&#x5272;&#x3002; </p>
+<h2 id="&#x5176;&#x4ED6;&#x533A;&#x522B;"><a href="#&#x5176;&#x4ED6;&#x533A;&#x522B;" class="headerlink" title="&#x5176;&#x4ED6;&#x533A;&#x522B;"></a>&#x5176;&#x4ED6;&#x533A;&#x522B;</h2><p>Shrinkage&#xFF08;&#x7F29;&#x51CF;&#xFF09;&#xFF1A;&#x76F8;&#x5F53;&#x4E8E;&#x5B66;&#x4E60;&#x901F;&#x7387;&#xFF08;xgboost&#x4E2D;&#x7684;&#xFF09;&#x3002;XGBoost&#x5728;&#x8FDB;&#x884C;&#x5B8C;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#x540E;&#xFF0C;&#x4F1A;&#x5C06;&#x53F6;&#x5B50;&#x8282;&#x70B9;&#x7684;&#x6743;&#x91CD;&#x4E58;&#x4E0A;&#x8BE5;&#x7CFB;&#x6570;&#xFF0C;&#x4E3B;&#x8981;&#x662F;&#x4E3A;&#x4E86;&#x524A;&#x5F31;&#x6BCF;&#x68F5;&#x6811;&#x7684;&#x5F71;&#x54CD;&#xFF0C;&#x8BA9;&#x540E;&#x9762;&#x6709;&#x66F4;&#x5927;&#x7684;&#x5B66;&#x4E60;&#x7A7A;&#x95F4;&#x3002;&#x5B9E;&#x9645;&#x5E94;&#x7528;&#x4E2D;&#xFF0C;&#x4E00;&#x822C;&#x628A;eta&#x8BBE;&#x7F6E;&#x5F97;&#x5C0F;&#x4E00;&#x70B9;&#xFF0C;&#x7136;&#x540E;&#x8FED;&#x4EE3;&#x6B21;&#x6570;&#x8BBE;&#x7F6E;&#x5F97;&#x5927;&#x4E00;&#x70B9;&#x3002;&#xFF08;&#x8865;&#x5145;&#xFF1A;&#x4F20;&#x7EDF;GBDT&#x7684;&#x5B9E;&#x73B0;&#x4E5F;&#x6709;&#x5B66;&#x4E60;&#x901F;&#x7387;&#xFF09;</p>
+<p>&#x7F3A;&#x5931;&#x503C;&#x5904;&#x7406;&#xFF1A;XGBoost&#x8003;&#x8651;&#x4E86;&#x8BAD;&#x7EC3;&#x6570;&#x636E;&#x4E3A;&#x7A00;&#x758F;&#x503C;&#x7684;&#x60C5;&#x51B5;&#xFF0C;&#x53EF;&#x4EE5;&#x4E3A;&#x7F3A;&#x5931;&#x503C;&#x6216;&#x8005;&#x6307;&#x5B9A;&#x7684;&#x503C;&#x6307;&#x5B9A;&#x5206;&#x652F;&#x7684;&#x9ED8;&#x8BA4;&#x65B9;&#x5411;&#xFF0C;&#x8FD9;&#x80FD;&#x5927;&#x5927;&#x63D0;&#x5347;&#x7B97;&#x6CD5;&#x7684;&#x6548;&#x7387;&#xFF0C;paper&#x63D0;&#x5230;50&#x500D;&#x3002;&#x5373;&#x5BF9;&#x4E8E;&#x7279;&#x5F81;&#x7684;&#x503C;&#x6709;&#x7F3A;&#x5931;&#x7684;&#x6837;&#x672C;&#xFF0C;XGBoost&#x53EF;&#x4EE5;&#x81EA;&#x52A8;&#x5B66;&#x4E60;&#x51FA;&#x5B83;&#x7684;&#x5206;&#x88C2;&#x65B9;&#x5411;&#x3002;&#xFF08;&#x901A;&#x8FC7;&#x679A;&#x4E3E;&#x6240;&#x6709;&#x7F3A;&#x5931;&#x503C;&#x5728;&#x5F53;&#x524D;&#x8282;&#x70B9;&#x662F;&#x8FDB;&#x5165;&#x5DE6;&#x5B50;&#x6811;&#xFF0C;&#x8FD8;&#x662F;&#x8FDB;&#x5165;&#x53F3;&#x5B50;&#x6811;&#x66F4;&#x4F18;&#x6765;&#x51B3;&#x5B9A;&#x4E00;&#x4E2A;&#x5904;&#x7406;&#x7F3A;&#x5931;&#x503C;&#x9ED8;&#x8BA4;&#x7684;&#x65B9;&#x5411;&#xFF09;&#x3002;<br>  &#x589E;&#x76CA;&#x6700;&#x5927;&#x7684;&#x90A3;&#x4E2A;&#x7279;&#x5F81;&#x53BB;&#x505A;&#x5206;&#x88C2;&#xFF0C;&#x90A3;&#x4E48;&#x5404;&#x4E2A;&#x7279;&#x5F81;&#x7684;&#x589E;&#x76CA;&#x8BA1;&#x7B97;&#x5C31;&#x53EF;&#x4EE5;&#x5F00;&#x591A;&#x7EBF;&#x7A0B;&#x8FDB;&#x884C;&#x3002; XGBoost&#x5DE5;&#x5177;&#x652F;&#x6301;&#x5E76;&#x884C;&#xFF1A;Boosting&#x4E0D;&#x662F;&#x4E00;&#x79CD;&#x4E32;&#x884C;&#x7684;&#x7ED3;&#x6784;&#x5417;?&#x600E;&#x4E48;&#x5E76;&#x884C;&#x7684;&#xFF1F;&#x6CE8;&#x610F;XGBoost&#x7684;&#x5E76;&#x884C;&#x4E0D;&#x662F;tree&#x7C92;&#x5EA6;&#x7684;&#x5E76;&#x884C;&#xFF0C;XGBoost&#x4E5F;&#x662F;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#x5B8C;&#x624D;&#x80FD;&#x8FDB;&#x884C;&#x4E0B;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#x7684;&#xFF08;&#x7B2C;&#x6B21;&#x8FED;&#x4EE3;&#x7684;&#x635F;&#x5931;&#x51FD;&#x6570;&#x91CC;&#x5305;&#x542B;&#x4E86;&#x524D;&#x9762;&#x6B21;&#x8FED;&#x4EE3;&#x7684;&#x9884;&#x6D4B;&#x503C;&#xFF09;&#x3002;XGBoost&#x7684;&#x5E76;&#x884C;&#x662F;&#x5728;&#x7279;&#x5F81;&#x7C92;&#x5EA6;&#x4E0A;&#x7684;&#x3002;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#xFF0C;&#x51B3;&#x7B56;&#x6811;&#x7684;&#x5B66;&#x4E60;&#x6700;&#x8017;&#x65F6;&#x7684;&#x4E00;&#x4E2A;&#x6B65;&#x9AA4;&#x5C31;&#x662F;&#x5BF9;&#x7279;&#x5F81;&#x7684;&#x503C;&#x8FDB;&#x884C;&#x6392;&#x5E8F;&#xFF08;&#x56E0;&#x4E3A;&#x8981;&#x786E;&#x5B9A;&#x6700;&#x4F73;&#x5206;&#x5272;&#x70B9;&#xFF09;&#xFF0C;XGBoost&#x5728;&#x8BAD;&#x7EC3;&#x4E4B;&#x524D;&#xFF0C;&#x9884;&#x5148;&#x5BF9;&#x6570;&#x636E;&#x8FDB;&#x884C;&#x4E86;&#x6392;&#x5E8F;&#xFF0C;&#x7136;&#x540E;&#x4FDD;&#x5B58;&#x4E3A;block(&#x5757;)&#x7ED3;&#x6784;&#xFF0C;&#x540E;&#x9762;&#x7684;&#x8FED;&#x4EE3;&#x4E2D;&#x91CD;&#x590D;&#x5730;&#x4F7F;&#x7528;&#x8FD9;&#x4E2A;&#x7ED3;&#x6784;&#xFF0C;&#x5927;&#x5927;&#x51CF;&#x5C0F;&#x8BA1;&#x7B97;&#x91CF;&#x3002;&#x8FD9;&#x4E2A;block&#x7ED3;&#x6784;&#x4E5F;&#x4F7F;&#x5F97;&#x5E76;&#x884C;&#x6210;&#x4E3A;&#x4E86;&#x53EF;&#x80FD;&#xFF0C;&#x5728;&#x8FDB;&#x884C;&#x8282;&#x70B9;&#x7684;&#x5206;&#x88C2;&#x65F6;&#xFF0C;&#x9700;&#x8981;&#x8BA1;&#x7B97;&#x6BCF;&#x4E2A;&#x7279;&#x5F81;&#x7684;&#x589E;&#x76CA;&#xFF0C;&#x6700;&#x7EC8;&#x9009;</p>
+<p><img src="/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/clip_image027.png" alt="555"></p>
+<p>out-of-core &#x901A;&#x8FC7;&#x5C06;block&#x538B;&#x7F29;&#xFF08;block      compressoin&#xFF09;&#x5E76;&#x5B58;&#x50A8;&#x5230;&#x786C;&#x76D8;&#x4E0A;&#xFF0C;&#x5E76;&#x4E14;&#x901A;&#x8FC7;&#x5C06;block&#x5206;&#x533A;&#x5230;&#x591A;&#x4E2A;&#x786C;&#x76D8;&#x4E0A;&#xFF08;block Sharding&#xFF09;&#x5B9E;&#x73B0;&#x4E86;&#x66F4;&#x5927;&#x7684;IO      &#x8BFB;&#x5199;&#x901F;&#x5EA6;&#xFF0C;&#x56E0;&#x6B64;&#xFF0C;&#x56E0;&#x4E3A;&#x52A0;&#x5165;&#x4E86;&#x786C;&#x76D8;&#x5B58;&#x50A8;block&#x8BFB;&#x5199;&#x7684;&#x90E8;&#x5206;&#x4E0D;&#x4EC5;&#x4EC5;&#x4F7F;&#x5F97;xgboost&#x5904;&#x7406;&#x5927;&#x6570;&#x636E;&#x91CF;&#x7684;&#x80FD;&#x529B;&#x6709;&#x6240;&#x63D0;&#x5347;&#xFF0C;&#x5E76;&#x4E14;&#x901A;&#x8FC7;&#x63D0;&#x9AD8;IO&#x7684;&#x541E;&#x5410;&#x91CF;&#x4F7F;&#x5F97;xgboost&#x76F8;&#x6BD4;&#x4E00;&#x822C;&#x5B9E;&#x5229;&#x7528;&#x8FD9;&#x79CD;&#x6280;&#x672F;&#x5B9E;&#x73B0;&#x5927;&#x6570;&#x636E;&#x8BA1;&#x7B97;&#x7684;&#x6846;&#x67B6;&#x66F4;&#x5FEB;&#x3002;</p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2019/11/01/深度学习基础/" data-toggle="tooltip" data-placement="top" title="深度学习基础">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2019/10/07/GBDT/" data-toggle="tooltip" data-placement="top" title="GBDT">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#GBDT&#x548C;XGBoost&#x533A;&#x522B;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">GBDT&amp;#x548C;XGBoost&amp;#x533A;&amp;#x522B;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x725B;&#x987F;&#x6CD5;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x725B;&amp;#x987F;&amp;#x6CD5;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x6B63;&#x5219;&#x9879;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">&amp;#x6B63;&amp;#x5219;&amp;#x9879;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x5176;&#x4ED6;&#x533A;&#x522B;"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">&amp;#x5176;&amp;#x4ED6;&amp;#x533A;&amp;#x522B;</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#机器学习" title="机器学习">机器学习</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/";
+    var disqus_url = "http://example.com/2019/10/07/GBDT%E5%92%8CXGBoost%E7%9A%84%E5%8C%BA%E5%88%AB/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

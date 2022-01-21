@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          SpringSecurity单点登录 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/06/19/SpringSecurity/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Spring" title="Spring">Spring</a>
+                        
+                    </div>
+                    <h1>SpringSecurity单点登录</h1>
+                    <h2 class="subheading">基于SpringSecurity的单点登录</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-06-19
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="SpringSecurity&#x5355;&#x70B9;&#x767B;&#x5F55;"><a href="#SpringSecurity&#x5355;&#x70B9;&#x767B;&#x5F55;" class="headerlink" title="SpringSecurity&#x5355;&#x70B9;&#x767B;&#x5F55;"></a>SpringSecurity&#x5355;&#x70B9;&#x767B;&#x5F55;</h1><h2 id="1-SpringSecurity"><a href="#1-SpringSecurity" class="headerlink" title="1 SpringSecurity"></a>1 SpringSecurity</h2><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-security<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x53EA;&#x8981;&#x52A0;&#x5165;&#x4F9D;&#x8D56;&#xFF0C;&#x9879;&#x76EE;&#x4E2D;&#x7684;&#x6240;&#x6709;&#x7684;&#x63A5;&#x53E3;&#x90FD;&#x4F1A;&#x88AB;&#x81EA;&#x52A8;&#x4FDD;&#x62A4;&#x8D77;&#x6765;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">helloController</span> </span>{</span><br><span class="line">    <span class="meta">@GetMapping(&quot;/hello&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">hello</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;hello&quot;</span>;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x5F53;&#x7528;&#x6237;&#x4ECE;&#x6D4F;&#x89C8;&#x5668;&#x53D1;&#x8D77;&#x8BF7;&#x6C42;</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//</span>localhost:<span class="number">8080</span>/hello</span><br></pre></td></tr></table></figure>
+
+<p>&#x670D;&#x52A1;&#x7AEF;&#x4F1A;&#x8FD4;&#x56DE;<code>302</code>&#x54CD;&#x5E94;&#x7801;&#xFF0C;&#x8BA9;&#x5BA2;&#x6237;&#x7AEF;&#x91CD;&#x5B9A;&#x5411;&#x5230;<code>/login</code>&#x9875;&#x9762;&#xFF0C;&#x7528;&#x6237;&#x5728;<code>/login</code>&#x767B;&#x5F55;&#x6210;&#x529F;&#x540E;&#xFF0C;&#x5C31;&#x4F1A;&#x81EA;&#x52A8;&#x8DF3;&#x8F6C;<code>/hello</code>&#x63A5;&#x53E3;&#x3002;</p>
+<figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&#x7528;&#x6237;&#x540D;&#xFF1A;user</span><br><span class="line">&#x5BC6;&#x7801;&#xFF1A;7b6a3aea-<span class="number">0d1a</span>-4cef-bed7-<span class="number">185469b28490</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x9ED8;&#x8BA4;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x767B;&#x5F55;&#x7684;&#x7528;&#x6237;&#x540D;&#x662F; <code>user</code> &#xFF0C;&#x5BC6;&#x7801;&#x5219;&#x662F;&#x9879;&#x76EE;&#x542F;&#x52A8;&#x65F6;&#x968F;&#x673A;&#x751F;&#x6210;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#xFF0C;&#x53EF;&#x4EE5;&#x4ECE;&#x542F;&#x52A8;&#x7684;&#x63A7;&#x5236;&#x53F0;&#x65E5;&#x5FD7;&#x4E2D;&#x770B;&#x5230;&#x9ED8;&#x8BA4;&#x5BC6;&#x7801;</p>
+<p>&#x8FD9;&#x662F;&#x968F;&#x673A;&#x751F;&#x6210;&#x7684;&#x5BC6;&#x7801;&#xFF0C;&#x6BCF;&#x6B21;&#x542F;&#x52A8;&#x90FD;&#x4F1A;&#x53D8;&#xFF0C;&#x5BF9;&#x767B;&#x5F55;&#x7684;&#x7528;&#x6237;&#x540D;/&#x5BC6;&#x7801;&#x8FDB;&#x884C;&#x914D;&#x7F6E;&#xFF0C;&#x6709;&#x4E09;&#x79CD;&#x65B9;&#x6CD5;</p>
+<ul>
+<li>&#x5728; application.properties &#x4E2D;&#x8FDB;&#x884C;&#x914D;&#x7F6E;</li>
+<li>&#x901A;&#x8FC7; Java &#x4EE3;&#x7801;&#x914D;&#x7F6E;&#x5728;&#x5185;&#x5B58;&#x4E2D;</li>
+<li>&#x901A;&#x8FC7; Java &#x4ECE;&#x6570;&#x636E;&#x5E93;&#x4E2D;&#x52A0;&#x8F7D;</li>
+</ul>
+<h3 id="1-1-&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;-&#x5BC6;&#x7801;"><a href="#1-1-&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;-&#x5BC6;&#x7801;" class="headerlink" title="1.1 &#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;/&#x5BC6;&#x7801;"></a>1.1 &#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;/&#x5BC6;&#x7801;</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">spring.<span class="keyword">security</span>.<span class="keyword">user</span>.name=javaboy</span><br><span class="line">spring.<span class="keyword">security</span>.<span class="keyword">user</span>.<span class="keyword">password</span>=<span class="number">123</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-Java&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;-&#x5BC6;&#x7801;"><a href="#1-2-Java&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;-&#x5BC6;&#x7801;" class="headerlink" title="1.2 Java&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;/&#x5BC6;&#x7801;"></a>1.2 Java&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;/&#x5BC6;&#x7801;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>{</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(AuthenticationManagerBuilder auth)</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line">        <span class="comment">//&#x4E0B;&#x9762;&#x8FD9;&#x4E24;&#x884C;&#x914D;&#x7F6E;&#x8868;&#x793A;&#x5728;&#x5185;&#x5B58;&#x4E2D;&#x914D;&#x7F6E;&#x4E86;&#x4E24;&#x4E2A;&#x7528;&#x6237;</span></span><br><span class="line">        auth.inMemoryAuthentication()</span><br><span class="line">                .withUser(<span class="string">&quot;javaboy&quot;</span>).roles(<span class="string">&quot;admin&quot;</span>).password(<span class="string">&quot;$2a$10$OR3VSksVAmCzc.7WeaRPR.t0wyCsIj24k0Bne8iKWV1o.V9wsP8Xe&quot;</span>)</span><br><span class="line">                .and()</span><br><span class="line">                .withUser(<span class="string">&quot;lisi&quot;</span>).roles(<span class="string">&quot;user&quot;</span>).password(<span class="string">&quot;$2a$10$p1H8iWa8I4.CA.7Z8bwLjes91ZpY.rYREGHQEInNtAp4NzL6PLKxi&quot;</span>);</span><br><span class="line">    }</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function">PasswordEncoder <span class="title">passwordEncoder</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> BCryptPasswordEncoder();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x8FD9;&#x91CC;&#x6211;&#x4EEC;&#x5728; configure &#x65B9;&#x6CD5;&#x4E2D;&#x914D;&#x7F6E;&#x4E86;&#x4E24;&#x4E2A;&#x7528;&#x6237;&#xFF0C;&#x7528;&#x6237;&#x7684;&#x5BC6;&#x7801;&#x90FD;&#x662F;&#x52A0;&#x5BC6;&#x4E4B;&#x540E;&#x7684;&#x5B57;&#x7B26;&#x4E32;(&#x660E;&#x6587;&#x662F; 123)&#xFF0C;&#x4ECE; Spring5 &#x5F00;&#x59CB;&#xFF0C;&#x5F3A;&#x5236;&#x8981;&#x6C42;&#x5BC6;&#x7801;&#x8981;&#x52A0;&#x5BC6;&#xFF0C;&#x5982;&#x679C;&#x975E;&#x4E0D;&#x60F3;&#x52A0;&#x5BC6;&#xFF0C;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;&#x4E00;&#x4E2A;&#x8FC7;&#x671F;&#x7684; PasswordEncoder &#x7684;&#x5B9E;&#x4F8B; NoOpPasswordEncoder&#xFF0C;&#x4F46;&#x662F;&#x4E0D;&#x5EFA;&#x8BAE;&#x8FD9;&#x4E48;&#x505A;&#xFF0C;&#x6BD5;&#x7ADF;&#x4E0D;&#x5B89;&#x5168;&#x3002;</p>
+<p>Spring Security &#x4E2D;&#x63D0;&#x4F9B;&#x4E86; BCryptPasswordEncoder &#x5BC6;&#x7801;&#x7F16;&#x7801;&#x5DE5;&#x5177;&#xFF0C;&#x53EF;&#x4EE5;&#x975E;&#x5E38;&#x65B9;&#x4FBF;&#x7684;&#x5B9E;&#x73B0;&#x5BC6;&#x7801;&#x7684;&#x52A0;&#x5BC6;&#x52A0;&#x76D0;&#xFF0C;&#x76F8;&#x540C;&#x660E;&#x6587;&#x52A0;&#x5BC6;&#x51FA;&#x6765;&#x7684;&#x7ED3;&#x679C;&#x603B;&#x662F;&#x4E0D;&#x540C;&#xFF0C;&#x8FD9;&#x6837;&#x5C31;&#x4E0D;&#x9700;&#x8981;&#x7528;&#x6237;&#x53BB;&#x989D;&#x5916;&#x4FDD;&#x5B58;<code>salt</code>&#x7684;&#x5B57;&#x6BB5;&#x4E86;&#xFF0C;&#x8FD9;&#x4E00;&#x70B9;&#x6BD4; Shiro &#x8981;&#x65B9;&#x4FBF;&#x5F88;&#x591A;</p>
+<h3 id="1-3-&#x767B;&#x5F55;&#x914D;&#x7F6E;"><a href="#1-3-&#x767B;&#x5F55;&#x914D;&#x7F6E;" class="headerlink" title="1.3 &#x767B;&#x5F55;&#x914D;&#x7F6E;"></a>1.3 &#x767B;&#x5F55;&#x914D;&#x7F6E;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>{</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    VerifyCodeFilter verifyCodeFilter;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line">        http.addFilterBefore(verifyCodeFilter, UsernamePasswordAuthenticationFilter.class);</span><br><span class="line">        http</span><br><span class="line">        .authorizeRequests()<span class="comment">//&#x5F00;&#x542F;&#x767B;&#x5F55;&#x914D;&#x7F6E;</span></span><br><span class="line">        .antMatchers(<span class="string">&quot;/hello&quot;</span>).hasRole(<span class="string">&quot;admin&quot;</span>)<span class="comment">//&#x8868;&#x793A;&#x8BBF;&#x95EE; /hello &#x8FD9;&#x4E2A;&#x63A5;&#x53E3;&#xFF0C;&#x9700;&#x8981;&#x5177;&#x5907; admin &#x8FD9;&#x4E2A;&#x89D2;&#x8272;</span></span><br><span class="line">        .anyRequest().authenticated()<span class="comment">//&#x8868;&#x793A;&#x5269;&#x4F59;&#x7684;&#x5176;&#x4ED6;&#x63A5;&#x53E3;&#xFF0C;&#x767B;&#x5F55;&#x4E4B;&#x540E;&#x5C31;&#x80FD;&#x8BBF;&#x95EE;</span></span><br><span class="line">        .and()</span><br><span class="line">        .formLogin()</span><br><span class="line">        <span class="comment">//&#x5B9A;&#x4E49;&#x767B;&#x5F55;&#x9875;&#x9762;&#xFF0C;&#x672A;&#x767B;&#x5F55;&#x65F6;&#xFF0C;&#x8BBF;&#x95EE;&#x4E00;&#x4E2A;&#x9700;&#x8981;&#x767B;&#x5F55;&#x4E4B;&#x540E;&#x624D;&#x80FD;&#x8BBF;&#x95EE;&#x7684;&#x63A5;&#x53E3;&#xFF0C;&#x4F1A;&#x81EA;&#x52A8;&#x8DF3;&#x8F6C;&#x5230;&#x8BE5;&#x9875;&#x9762;</span></span><br><span class="line">        .loginPage(<span class="string">&quot;/login_p&quot;</span>)</span><br><span class="line">        <span class="comment">//&#x767B;&#x5F55;&#x5904;&#x7406;&#x63A5;&#x53E3;</span></span><br><span class="line">        .loginProcessingUrl(<span class="string">&quot;/doLogin&quot;</span>)</span><br><span class="line">        <span class="comment">//&#x5B9A;&#x4E49;&#x767B;&#x5F55;&#x65F6;&#xFF0C;&#x7528;&#x6237;&#x540D;&#x7684; key&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A; username</span></span><br><span class="line">        .usernameParameter(<span class="string">&quot;uname&quot;</span>)</span><br><span class="line">        <span class="comment">//&#x5B9A;&#x4E49;&#x767B;&#x5F55;&#x65F6;&#xFF0C;&#x7528;&#x6237;&#x5BC6;&#x7801;&#x7684; key&#xFF0C;&#x9ED8;&#x8BA4;&#x4E3A; password</span></span><br><span class="line">        .passwordParameter(<span class="string">&quot;passwd&quot;</span>)</span><br><span class="line">        <span class="comment">//&#x767B;&#x5F55;&#x6210;&#x529F;&#x7684;&#x5904;&#x7406;&#x5668;</span></span><br><span class="line">        .successHandler(<span class="keyword">new</span> AuthenticationSuccessHandler() {</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAuthenticationSuccess</span><span class="params">(HttpServletRequest req, HttpServletResponse resp, Authentication authentication)</span> <span class="keyword">throws</span> IOException, ServletException </span>{</span><br><span class="line">                    resp.setContentType(<span class="string">&quot;application/json;charset=utf-8&quot;</span>);</span><br><span class="line">                    PrintWriter out = resp.getWriter();</span><br><span class="line">                    out.write(<span class="string">&quot;success&quot;</span>);</span><br><span class="line">                    out.flush();</span><br><span class="line">                }</span><br><span class="line">            })</span><br><span class="line">            .failureHandler(<span class="keyword">new</span> AuthenticationFailureHandler() {</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAuthenticationFailure</span><span class="params">(HttpServletRequest req, HttpServletResponse resp, AuthenticationException exception)</span> <span class="keyword">throws</span> IOException, ServletException </span>{</span><br><span class="line">                    resp.setContentType(<span class="string">&quot;application/json;charset=utf-8&quot;</span>);</span><br><span class="line">                    PrintWriter out = resp.getWriter();</span><br><span class="line">                    out.write(<span class="string">&quot;fail&quot;</span>);</span><br><span class="line">                    out.flush();</span><br><span class="line">                }</span><br><span class="line">            })</span><br><span class="line">            .permitAll()<span class="comment">//&#x548C;&#x8868;&#x5355;&#x767B;&#x5F55;&#x76F8;&#x5173;&#x7684;&#x63A5;&#x53E3;&#x7EDF;&#x7EDF;&#x90FD;&#x76F4;&#x63A5;&#x901A;&#x8FC7;</span></span><br><span class="line">            .and()</span><br><span class="line">            .logout()</span><br><span class="line">            .logoutUrl(<span class="string">&quot;/logout&quot;</span>)</span><br><span class="line">            .logoutSuccessHandler(<span class="keyword">new</span> LogoutSuccessHandler() {</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onLogoutSuccess</span><span class="params">(HttpServletRequest req, HttpServletResponse resp, Authentication authentication)</span> <span class="keyword">throws</span> IOException, ServletException </span>{</span><br><span class="line">                    resp.setContentType(<span class="string">&quot;application/json;charset=utf-8&quot;</span>);</span><br><span class="line">                    PrintWriter out = resp.getWriter();</span><br><span class="line">                    out.write(<span class="string">&quot;logout success&quot;</span>);</span><br><span class="line">                    out.flush();</span><br><span class="line">                }</span><br><span class="line">            })</span><br><span class="line">            .permitAll()</span><br><span class="line">            .and()</span><br><span class="line">            .httpBasic()</span><br><span class="line">            .and()</span><br><span class="line">            .csrf().disable();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5728; successHandler &#x65B9;&#x6CD5;&#x4E2D;&#xFF0C;&#x914D;&#x7F6E;&#x767B;&#x5F55;&#x6210;&#x529F;&#x7684;&#x56DE;&#x8C03;&#xFF0C;&#x5982;&#x679C;&#x662F;&#x524D;&#x540E;&#x7AEF;&#x5206;&#x79BB;&#x5F00;&#x53D1;&#x7684;&#x8BDD;&#xFF0C;&#x767B;&#x5F55;&#x6210;&#x529F;&#x540E;&#x8FD4;&#x56DE; JSON &#x5373;&#x53EF;&#xFF0C;&#x540C;&#x7406;&#xFF0C;failureHandler &#x65B9;&#x6CD5;&#x4E2D;&#x914D;&#x7F6E;&#x767B;&#x5F55;&#x5931;&#x8D25;&#x7684;&#x56DE;&#x8C03;&#xFF0C;logoutSuccessHandler &#x4E2D;&#x5219;&#x914D;&#x7F6E;&#x6CE8;&#x9500;&#x6210;&#x529F;&#x7684;&#x56DE;&#x8C03;&#x3002;</p>
+<h3 id="1-4-&#x5FFD;&#x7565;&#x62E6;&#x622A;"><a href="#1-4-&#x5FFD;&#x7565;&#x62E6;&#x622A;" class="headerlink" title="1.4 &#x5FFD;&#x7565;&#x62E6;&#x622A;"></a>1.4 &#x5FFD;&#x7565;&#x62E6;&#x622A;</h3><p>&#x5982;&#x679C;&#x67D0;&#x4E00;&#x4E2A;&#x8BF7;&#x6C42;&#x5730;&#x5740;&#x4E0D;&#x9700;&#x8981;&#x62E6;&#x622A;&#x7684;&#x8BDD;&#xFF0C;&#x6709;&#x4E24;&#x79CD;&#x65B9;&#x5F0F;&#x5B9E;&#x73B0;&#xFF1A;</p>
+<ul>
+<li>&#x8BBE;&#x7F6E;&#x8BE5;&#x5730;&#x5740;&#x533F;&#x540D;&#x8BBF;&#x95EE;</li>
+<li>&#x76F4;&#x63A5;&#x8FC7;&#x6EE4;&#x6389;&#x8BE5;&#x5730;&#x5740;&#xFF0C;&#x5373;&#x8BE5;&#x5730;&#x5740;&#x4E0D;&#x8D70; Spring Security &#x8FC7;&#x6EE4;&#x5668;&#x94FE;</li>
+</ul>
+<p>&#x63A8;&#x8350;&#x4F7F;&#x7528;&#x7B2C;&#x4E8C;&#x79CD;&#x65B9;&#x6848;&#xFF0C;&#x914D;&#x7F6E;&#x5982;&#x4E0B;:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>{</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(WebSecurity web)</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line">        web.ignoring().antMatchers(<span class="string">&quot;/vercode&quot;</span>);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h2 id="sso-&#x5FEB;&#x901F;"><a href="#sso-&#x5FEB;&#x901F;" class="headerlink" title="sso (&#x5FEB;&#x901F;)"></a>sso (&#x5FEB;&#x901F;)</h2><h3 id="SecurityConfig-java"><a href="#SecurityConfig-java" class="headerlink" title="SecurityConfig.java"></a>SecurityConfig.java</h3><p><code>SpringSecurity</code>&#x914D;&#x7F6E;&#x7C7B;&#xFF0C;&#x9700;&#x8981;&#x5B9E;&#x73B0;<code>WebSecurityConfigurerAdapter</code>&#x63A5;&#x53E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecurityConfig</span> <span class="keyword">extends</span> <span class="title">WebSecurityConfigurerAdapter</span> </span>{</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line">        http.formLogin() <span class="comment">// &#x914D;&#x7F6E;&#x8868;&#x5355;&#x767B;&#x5F55;</span></span><br><span class="line">                .loginProcessingUrl(<span class="string">&quot;/login/userLogin&quot;</span>) <span class="comment">// &#x8868;&#x5355;&#x767B;&#x9646;&#x5730;&#x5740; post&#x8BF7;&#x6C42;</span></span><br><span class="line">                .and()</span><br><span class="line">                .authorizeRequests() <span class="comment">// &#x5206;&#x522B;&#x914D;&#x7F6E;&#x4E0D;&#x540C;&#x7684;&#x6743;&#x9650;&#x5C5E;&#x6027;</span></span><br><span class="line">                .antMatchers(<span class="string">&quot;/login/**&quot;</span>).permitAll() <span class="comment">// &#x8BBE;&#x7F6E;&#x4E0D;&#x8FDB;&#x884C;&#x6743;&#x9650;&#x9A8C;&#x8BC1;&#x7684;&#x8BF7;&#x6C42;&#x6216;&#x8D44;&#x6E90; &#xFF08;&#x767B;&#x5F55;&#x8BF7;&#x6C42;&#x4E0D;&#x9A8C;&#x8BC1;&#xFF09;</span></span><br><span class="line">                .anyRequest().authenticated() <span class="comment">// &#x5176;&#x4ED6;&#x8BF7;&#x6C42;&#x9700;&#x8981;&#x767B;&#x5F55;&#x624D;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;</span></span><br><span class="line">            	.and()</span><br><span class="line">            	.cors() <span class="comment">// &#x8BBE;&#x7F6E;&#x8DE8;&#x57DF;</span></span><br><span class="line">            	.and()</span><br><span class="line">            	.csrf().disable(); <span class="comment">// &#x53D6;&#x6D88;&#x8DE8;&#x7AD9;&#x8BF7;&#x6C42;&#x4F2A;&#x9020;&#x9632;&#x62A4;</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="UserAuthenticationProvider-java"><a href="#UserAuthenticationProvider-java" class="headerlink" title="UserAuthenticationProvider.java"></a>UserAuthenticationProvider.java</h3><p><code>UserAuthenticationProvider</code>&#x5B9E;&#x73B0;<code>AuthenticationProvider</code>&#x63A5;&#x53E3;</p>
+<p>&#x83B7;&#x53D6;&#x8868;&#x5355;&#x7684;&#x7528;&#x6237;&#x540D;&#x548C;&#x5BC6;&#x7801;&#xFF0C;&#x83B7;&#x53D6;&#x7528;&#x6237;&#xFF0C;&#x8FDB;&#x884C;&#x6BD4;&#x8F83;&#xFF0C;&#x9700;&#x8981;&#x5B9E;&#x73B0;<code>loadUserByUsername</code>&#x65B9;&#x6CD5;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserAuthenticationProvider</span> <span class="keyword">implements</span> <span class="title">AuthenticationProvider</span> </span>{</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    UserInfo userInfo;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Authentication <span class="title">authenticate</span><span class="params">(Authentication authentication)</span> <span class="keyword">throws</span> AuthenticationException </span>{</span><br><span class="line">        <span class="comment">// &#x83B7;&#x53D6;&#x8868;&#x5355;&#x8F93;&#x5165;&#x4E2D;&#x8FD4;&#x56DE;&#x7684;&#x7528;&#x6237;&#x540D;</span></span><br><span class="line">        String userName = (String) authentication.getPrincipal();</span><br><span class="line">        <span class="comment">// &#x83B7;&#x53D6;&#x8868;&#x5355;&#x4E2D;&#x8F93;&#x5165;&#x7684;&#x5BC6;&#x7801;</span></span><br><span class="line">        String password = (String) authentication.getCredentials();</span><br><span class="line">        <span class="comment">// &#x67E5;&#x8BE2;&#x7528;&#x6237;&#x662F;&#x5426;&#x5B58;&#x5728;</span></span><br><span class="line">        UserDetails userDetails = userInfo.loadUserByUsername(userName); <span class="comment">// &#x8FD4;&#x56DE;&#x771F;&#x5B9E;&#x7528;&#x6237;&#x4FE1;&#x606F;</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// &#x8FDB;&#x884C;&#x767B;&#x5F55;</span></span><br><span class="line">        Set&lt;GrantedAuthority&gt; authorities = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> UsernamePasswordAuthenticationToken(userDetails, password, authorities);</span><br><span class="line">    }</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">supports</span><span class="params">(Class&lt;?&gt; authentication)</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="UserService-java"><a href="#UserService-java" class="headerlink" title="UserService.java"></a>UserService.java</h3><p><code>UserService</code>&#x9700;&#x8981;&#x5B9E;&#x73B0;<code>UserDetailsService</code>&#x63A5;&#x53E3;&#xFF0C;&#x91CD;&#x5199;<code>loadUserByUsername</code>&#x65B9;&#x6CD5;&#xFF0C;&#x8FD4;&#x56DE;&#x771F;&#x5B9E;&#x7684;&#x7528;&#x6237;&#x4FE1;&#x606F;&#xFF08;&#x4ECE;DB&#x4E2D;&#xFF09;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserService</span> <span class="keyword">implements</span> <span class="title">UserDetailsService</span> </span>{</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> UserDetails <span class="title">loadUserByUsername</span><span class="params">(String s)</span> <span class="keyword">throws</span> UsernameNotFoundException </span>{</span><br><span class="line">        String pwd = <span class="string">&quot;123456&quot;</span>;</span><br><span class="line">        String cryptPwd = <span class="keyword">new</span> BCryptPasswordEncoder().encode(pwd);</span><br><span class="line">        System.out.println(<span class="string">&quot;&#x767B;&#x5F55;&#x6210;&#x529F;&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> User(<span class="string">&quot;s&quot;</span>, cryptPwd, AuthorityUtils.commaSeparatedStringToAuthorityList(<span class="string">&quot;admin&quot;</span>));</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h2 id="sso"><a href="#sso" class="headerlink" title="sso"></a>sso</h2><h3 id="&#x767B;&#x5F55;&#x6210;&#x529F;"><a href="#&#x767B;&#x5F55;&#x6210;&#x529F;" class="headerlink" title="&#x767B;&#x5F55;&#x6210;&#x529F;"></a>&#x767B;&#x5F55;&#x6210;&#x529F;</h3><p>&#x5411;&#x5BA2;&#x6237;&#x7AEF;&#x8FD4;&#x56DE;<code>token</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserLoginSuccessHandler</span> <span class="keyword">implements</span> <span class="title">AuthenticationSuccessHandler</span> </span>{</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAuthenticationSuccess</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Authentication authentication)</span></span>{</span><br><span class="line">        <span class="comment">// &#x7EC4;&#x88C5;JWT</span></span><br><span class="line">        SelfUserEntity selfUserEntity =  (SelfUserEntity) authentication.getPrincipal();</span><br><span class="line">        String token = JWTTokenUtil.createAccessToken(selfUserEntity);</span><br><span class="line">        token = JWTConfig.tokenPrefix + token;</span><br><span class="line">        <span class="comment">// &#x5C01;&#x88C5;&#x8FD4;&#x56DE;&#x53C2;&#x6570;</span></span><br><span class="line">        Map&lt;String,Object&gt; resultData = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        resultData.put(<span class="string">&quot;code&quot;</span>,<span class="string">&quot;200&quot;</span>);</span><br><span class="line">        resultData.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;&#x767B;&#x5F55;&#x6210;&#x529F;&quot;</span>);</span><br><span class="line">        resultData.put(<span class="string">&quot;token&quot;</span>,token);</span><br><span class="line">        ResultUtil.responseJson(response,resultData);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x767B;&#x5F55;&#x5931;&#x8D25;"><a href="#&#x767B;&#x5F55;&#x5931;&#x8D25;" class="headerlink" title="&#x767B;&#x5F55;&#x5931;&#x8D25;"></a>&#x767B;&#x5F55;&#x5931;&#x8D25;</h3><p>&#x9700;&#x8981;&#x5B9E;&#x73B0;<code>AuthenticationFailureHandler</code>&#x63A5;&#x53E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserLoginFailureHandler</span> <span class="keyword">implements</span> <span class="title">AuthenticationFailureHandler</span> </span>{</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onAuthenticationFailure</span><span class="params">(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)</span></span>{</span><br><span class="line">        <span class="comment">// &#x8FD9;&#x4E9B;&#x5BF9;&#x4E8E;&#x64CD;&#x4F5C;&#x7684;&#x5904;&#x7406;&#x7C7B;&#x53EF;&#x4EE5;&#x6839;&#x636E;&#x4E0D;&#x540C;&#x5F02;&#x5E38;&#x8FDB;&#x884C;&#x4E0D;&#x540C;&#x5904;&#x7406;</span></span><br><span class="line">        <span class="keyword">if</span> (exception <span class="keyword">instanceof</span> UsernameNotFoundException){</span><br><span class="line">            log.info(<span class="string">&quot;&#x3010;&#x767B;&#x5F55;&#x5931;&#x8D25;&#x3011;&quot;</span>+exception.getMessage());</span><br><span class="line">            ResultUtil.responseJson(response,ResultUtil.resultCode(<span class="number">500</span>,<span class="string">&quot;&#x7528;&#x6237;&#x540D;&#x4E0D;&#x5B58;&#x5728;&quot;</span>));</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">if</span> (exception <span class="keyword">instanceof</span> LockedException){</span><br><span class="line">            log.info(<span class="string">&quot;&#x3010;&#x767B;&#x5F55;&#x5931;&#x8D25;&#x3011;&quot;</span>+exception.getMessage());</span><br><span class="line">            ResultUtil.responseJson(response,ResultUtil.resultCode(<span class="number">500</span>,<span class="string">&quot;&#x7528;&#x6237;&#x88AB;&#x51BB;&#x7ED3;&quot;</span>));</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">if</span> (exception <span class="keyword">instanceof</span> BadCredentialsException){</span><br><span class="line">            log.info(<span class="string">&quot;&#x3010;&#x767B;&#x5F55;&#x5931;&#x8D25;&#x3011;&quot;</span>+exception.getMessage());</span><br><span class="line">            ResultUtil.responseJson(response,ResultUtil.resultCode(<span class="number">500</span>,<span class="string">&quot;&#x7528;&#x6237;&#x540D;&#x5BC6;&#x7801;&#x4E0D;&#x6B63;&#x786E;&quot;</span>));</span><br><span class="line">        }</span><br><span class="line">        ResultUtil.responseJson(response,ResultUtil.resultCode(<span class="number">500</span>,<span class="string">&quot;&#x767B;&#x5F55;&#x5931;&#x8D25;&quot;</span>));</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x767B;&#x51FA;&#x6210;&#x529F;"><a href="#&#x767B;&#x51FA;&#x6210;&#x529F;" class="headerlink" title="&#x767B;&#x51FA;&#x6210;&#x529F;"></a>&#x767B;&#x51FA;&#x6210;&#x529F;</h3><p>&#x767B;&#x51FA;&#x6210;&#x529F;&#x9700;&#x8981;&#x5B9E;&#x73B0;<code>LogoutSuccessHandler</code>&#x63A5;&#x53E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserLogoutSuccessHandler</span> <span class="keyword">implements</span> <span class="title">LogoutSuccessHandler</span> </span>{</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onLogoutSuccess</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Authentication authentication)</span></span>{</span><br><span class="line">        Map&lt;String,Object&gt; resultData = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">        resultData.put(<span class="string">&quot;code&quot;</span>,<span class="string">&quot;200&quot;</span>);</span><br><span class="line">        resultData.put(<span class="string">&quot;msg&quot;</span>, <span class="string">&quot;&#x767B;&#x51FA;&#x6210;&#x529F;&quot;</span>);</span><br><span class="line">        SecurityContextHolder.clearContext();</span><br><span class="line">        ResultUtil.responseJson(response,ResultUtil.resultSuccess(resultData));</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x672A;&#x767B;&#x5F55;"><a href="#&#x672A;&#x767B;&#x5F55;" class="headerlink" title="&#x672A;&#x767B;&#x5F55;"></a>&#x672A;&#x767B;&#x5F55;</h3><p>&#x672A;&#x767B;&#x5F55;&#x9700;&#x8981;&#x5B9E;&#x73B0;<code>AuthenticationEntryPoint</code>&#x63A5;&#x53E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserAuthenticationEntryPointHandler</span> <span class="keyword">implements</span> <span class="title">AuthenticationEntryPoint</span> </span>{</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">commence</span><span class="params">(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)</span></span>{</span><br><span class="line">        ResultUtil.responseJson(response,ResultUtil.resultCode(<span class="number">401</span>,<span class="string">&quot;&#x672A;&#x767B;&#x5F55;&quot;</span>));</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x672A;&#x6388;&#x6743;"><a href="#&#x672A;&#x6388;&#x6743;" class="headerlink" title="&#x672A;&#x6388;&#x6743;"></a>&#x672A;&#x6388;&#x6743;</h3><p>&#x672A;&#x6388;&#x6743;&#x9700;&#x8981;&#x5B9E;&#x73B0;<code>AccessDeniedHandler</code>&#x63A5;&#x53E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserAuthAccessDeniedHandler</span> <span class="keyword">implements</span> <span class="title">AccessDeniedHandler</span></span>{</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception)</span></span>{</span><br><span class="line">        ResultUtil.responseJson(response,ResultUtil.resultCode(<span class="number">403</span>,<span class="string">&quot;&#x672A;&#x6388;&#x6743;&quot;</span>));</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x5916;&#x90E8;&#x8BF7;&#x6C42;&#x7684;&#x8FC7;&#x6EE4;&#x5668;"><a href="#&#x5916;&#x90E8;&#x8BF7;&#x6C42;&#x7684;&#x8FC7;&#x6EE4;&#x5668;" class="headerlink" title="&#x5916;&#x90E8;&#x8BF7;&#x6C42;&#x7684;&#x8FC7;&#x6EE4;&#x5668;"></a>&#x5916;&#x90E8;&#x8BF7;&#x6C42;&#x7684;&#x8FC7;&#x6EE4;&#x5668;</h3><p>&#x5F53;&#x767B;&#x5F55;&#x6210;&#x529F;&#x4E4B;&#x540E;&#xFF0C;&#x6D4F;&#x89C8;&#x5668;<code>cookie</code>&#x4E2D;&#x643A;&#x5E26;<code>token</code>&#x5411;&#x670D;&#x52A1;&#x5668;&#x53D1;&#x51FA;&#x8BF7;&#x6C42;&#xFF0C;&#x670D;&#x52A1;&#x5668;&#x9700;&#x8981;&#x62E6;&#x622A;<code>token</code>&#x5E76;&#x5224;&#x65AD;&#x662F;&#x5426;&#x5408;&#x6CD5;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JWTAuthenticationTokenFilter</span> <span class="keyword">extends</span> <span class="title">BasicAuthenticationFilter</span> </span>{</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">JWTAuthenticationTokenFilter</span><span class="params">(AuthenticationManager authenticationManager)</span> </span>{</span><br><span class="line">        <span class="keyword">super</span>(authenticationManager);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">doFilterInternal</span><span class="params">(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)</span> <span class="keyword">throws</span> ServletException, IOException </span>{</span><br><span class="line">        <span class="comment">// &#x83B7;&#x53D6;&#x8BF7;&#x6C42;&#x5934;&#x4E2D;JWT&#x7684;Token</span></span><br><span class="line">        String tokenHeader = request.getHeader(JWTConfig.tokenHeader);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span>!=tokenHeader &amp;&amp; tokenHeader.startsWith(JWTConfig.tokenPrefix)) {</span><br><span class="line">            <span class="keyword">try</span> {</span><br><span class="line">                <span class="comment">// &#x622A;&#x53D6;JWT&#x524D;&#x7F00;</span></span><br><span class="line">                String token = tokenHeader.replace(JWTConfig.tokenPrefix, <span class="string">&quot;&quot;</span>);</span><br><span class="line">                <span class="comment">// &#x89E3;&#x6790;JWT</span></span><br><span class="line">                Claims claims = Jwts.parser()</span><br><span class="line">                        .setSigningKey(JWTConfig.secret)</span><br><span class="line">                        .parseClaimsJws(token)</span><br><span class="line">                        .getBody();</span><br><span class="line">                <span class="comment">// &#x83B7;&#x53D6;&#x7528;&#x6237;&#x540D;</span></span><br><span class="line">                String username = claims.getSubject();</span><br><span class="line">                String userId=claims.getId();</span><br><span class="line">                <span class="keyword">if</span>(!StringUtils.isEmpty(username)&amp;&amp;!StringUtils.isEmpty(userId)) {</span><br><span class="line">                    <span class="comment">// &#x83B7;&#x53D6;&#x89D2;&#x8272;</span></span><br><span class="line">                    List&lt;GrantedAuthority&gt; authorities = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">                    String authority = claims.get(<span class="string">&quot;authorities&quot;</span>).toString();</span><br><span class="line">                    <span class="keyword">if</span>(!StringUtils.isEmpty(authority)){</span><br><span class="line">                        List&lt;Map&lt;String,String&gt;&gt; authorityMap = JSONObject.parseObject(authority, List.class);</span><br><span class="line">                        <span class="keyword">for</span>(Map&lt;String,String&gt; role : authorityMap){</span><br><span class="line">                            <span class="keyword">if</span>(!StringUtils.isEmpty(role)) {</span><br><span class="line">                                authorities.add(<span class="keyword">new</span> SimpleGrantedAuthority(role.get(<span class="string">&quot;authority&quot;</span>)));</span><br><span class="line">                            }</span><br><span class="line">                        }</span><br><span class="line">                    }</span><br><span class="line">                    <span class="comment">//&#x7EC4;&#x88C5;&#x53C2;&#x6570;</span></span><br><span class="line">                    SelfUserEntity selfUserEntity = <span class="keyword">new</span> SelfUserEntity();</span><br><span class="line">                    selfUserEntity.setUsername(claims.getSubject());</span><br><span class="line">                    selfUserEntity.setUserId(Long.parseLong(claims.getId()));</span><br><span class="line">                    selfUserEntity.setAuthorities(authorities);</span><br><span class="line">                    UsernamePasswordAuthenticationToken authentication = <span class="keyword">new</span> UsernamePasswordAuthenticationToken(selfUserEntity, userId, authorities);</span><br><span class="line">                    SecurityContextHolder.getContext().setAuthentication(authentication);</span><br><span class="line">                }</span><br><span class="line">            } <span class="keyword">catch</span> (ExpiredJwtException e){</span><br><span class="line">                log.info(<span class="string">&quot;Token&#x8FC7;&#x671F;&quot;</span>);</span><br><span class="line">            } <span class="keyword">catch</span> (Exception e) {</span><br><span class="line">                log.info(<span class="string">&quot;Token&#x65E0;&#x6548;&quot;</span>);</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">        filterChain.doFilter(request, response);</span><br><span class="line">    }</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#x53EF;&#x4EE5;&#x8BBE;&#x7F6E;&#x5728;request&#x4E2D;&#x8BBE;&#x7F6E;context&#xFF0C;&#x8FD9;&#x6837;&#x6BCF;&#x4E00;&#x4E2A;&#x8BF7;&#x6C42;&#x53EF;&#x4EE5;&#x7528;@ApiIgnore Context context&#x63A5;&#x6536;</span></span><br><span class="line">request.setAttribute(<span class="string">&quot;context&quot;</span>, <span class="keyword">new</span> Context(</span><br><span class="line">                    Integer.valueOf(signedJWT.getJWTClaimsSet().getJWTID()),</span><br><span class="line">                    signedJWT.getJWTClaimsSet().getIssuer(),</span><br><span class="line">                    salesType.getCode(),</span><br><span class="line">                    signedJWT.getJWTClaimsSet().getIntegerClaim(TokenUtil.PROXY_ID),</span><br><span class="line">                    signedJWT.getJWTClaimsSet().getStringClaim(TokenUtil.PROXY_NAME),</span><br><span class="line">                    signedJWT.getJWTClaimsSet().getIntegerClaim(TokenUtil.TYPE)</span><br><span class="line">            ));</span><br></pre></td></tr></table></figure>
+
+<h3 id="Token&#x751F;&#x6210;&#x5DE5;&#x5177;"><a href="#Token&#x751F;&#x6210;&#x5DE5;&#x5177;" class="headerlink" title="Token&#x751F;&#x6210;&#x5DE5;&#x5177;"></a>Token&#x751F;&#x6210;&#x5DE5;&#x5177;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Slf4j</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JWTTokenUtil</span> </span>{</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#x79C1;&#x6709;&#x5316;&#x6784;&#x9020;&#x5668;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">JWTTokenUtil</span><span class="params">()</span></span>{}</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">createAccessToken</span><span class="params">(SelfUserEntity selfUserEntity)</span></span>{</span><br><span class="line">        <span class="comment">// &#x767B;&#x9646;&#x6210;&#x529F;&#x751F;&#x6210;JWT</span></span><br><span class="line">        String token = Jwts.builder()</span><br><span class="line">                <span class="comment">// &#x653E;&#x5165;&#x7528;&#x6237;&#x540D;&#x548C;&#x7528;&#x6237;ID</span></span><br><span class="line">                .setId(selfUserEntity.getUserId()+<span class="string">&quot;&quot;</span>)</span><br><span class="line">                <span class="comment">// &#x4E3B;&#x9898;</span></span><br><span class="line">                .setSubject(selfUserEntity.getUsername())</span><br><span class="line">                <span class="comment">// &#x7B7E;&#x53D1;&#x65F6;&#x95F4;</span></span><br><span class="line">                .setIssuedAt(<span class="keyword">new</span> Date())</span><br><span class="line">                <span class="comment">// &#x7B7E;&#x53D1;&#x8005;</span></span><br><span class="line">                .setIssuer(<span class="string">&quot;sans&quot;</span>)</span><br><span class="line">                <span class="comment">// &#x81EA;&#x5B9A;&#x4E49;&#x5C5E;&#x6027; &#x653E;&#x5165;&#x7528;&#x6237;&#x62E5;&#x6709;&#x6743;&#x9650;</span></span><br><span class="line">                .claim(<span class="string">&quot;authorities&quot;</span>, JSON.toJSONString(selfUserEntity.getAuthorities()))</span><br><span class="line">                <span class="comment">// &#x5931;&#x6548;&#x65F6;&#x95F4;</span></span><br><span class="line">                .setExpiration(<span class="keyword">new</span> Date(System.currentTimeMillis() + JWTConfig.expiration))</span><br><span class="line">                <span class="comment">// &#x7B7E;&#x540D;&#x7B97;&#x6CD5;&#x548C;&#x5BC6;&#x94A5;</span></span><br><span class="line">                .signWith(SignatureAlgorithm.HS512, JWTConfig.secret)</span><br><span class="line">                .compact();</span><br><span class="line">        <span class="keyword">return</span> token;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x83B7;&#x53D6;&#x7528;&#x6237;&#x4FE1;&#x606F;"><a href="#&#x83B7;&#x53D6;&#x7528;&#x6237;&#x4FE1;&#x606F;" class="headerlink" title="&#x83B7;&#x53D6;&#x7528;&#x6237;&#x4FE1;&#x606F;"></a>&#x83B7;&#x53D6;&#x7528;&#x6237;&#x4FE1;&#x606F;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SecurityContextHolder.getContext().getAuthentication() .getPrincipal();</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SecurityUtil</span> </span>{</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#x79C1;&#x6709;&#x5316;&#x6784;&#x9020;&#x5668;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SecurityUtil</span><span class="params">()</span></span>{}</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#x83B7;&#x53D6;&#x5F53;&#x524D;&#x7528;&#x6237;&#x4FE1;&#x606F;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> SelfUserEntity <span class="title">getUserInfo</span><span class="params">()</span></span>{</span><br><span class="line">        SelfUserEntity userDetails = (SelfUserEntity) SecurityContextHolder.getContext().getAuthentication().getPrincipal();</span><br><span class="line">        <span class="keyword">return</span> userDetails;</span><br><span class="line">    }</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#x83B7;&#x53D6;&#x5F53;&#x524D;&#x7528;&#x6237;ID</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Long <span class="title">getUserId</span><span class="params">()</span></span>{</span><br><span class="line">        <span class="keyword">return</span> getUserInfo().getUserId();</span><br><span class="line">    }</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#x83B7;&#x53D6;&#x5F53;&#x524D;&#x7528;&#x6237;&#x8D26;&#x53F7;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> String <span class="title">getUserName</span><span class="params">()</span></span>{</span><br><span class="line">        <span class="keyword">return</span> getUserInfo().getUsername();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="response&#x5199;&#x6570;&#x636E;"><a href="#response&#x5199;&#x6570;&#x636E;" class="headerlink" title="response&#x5199;&#x6570;&#x636E;"></a>response&#x5199;&#x6570;&#x636E;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">responseJson</span><span class="params">(ServletResponse response, Map&lt;String, Object&gt; resultMap)</span></span>{</span><br><span class="line">    PrintWriter out = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> {</span><br><span class="line">        response.setCharacterEncoding(<span class="string">&quot;UTF-8&quot;</span>);</span><br><span class="line">        response.setContentType(<span class="string">&quot;application/json&quot;</span>);</span><br><span class="line">        out = response.getWriter();</span><br><span class="line">        out.println(JSON.toJSONString(resultMap));</span><br><span class="line">    } <span class="keyword">catch</span> (Exception e) {</span><br><span class="line">        log.error(<span class="string">&quot;&#x3010;JSON&#x8F93;&#x51FA;&#x5F02;&#x5E38;&#x3011;&quot;</span>+e);</span><br><span class="line">    }<span class="keyword">finally</span>{</span><br><span class="line">        <span class="keyword">if</span>(out!=<span class="keyword">null</span>){</span><br><span class="line">            out.flush();</span><br><span class="line">            out.close();</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x6743;&#x9650;&#x6CE8;&#x89E3;&#x9A8C;&#x8BC1;"><a href="#&#x6743;&#x9650;&#x6CE8;&#x89E3;&#x9A8C;&#x8BC1;" class="headerlink" title="&#x6743;&#x9650;&#x6CE8;&#x89E3;&#x9A8C;&#x8BC1;"></a>&#x6743;&#x9650;&#x6CE8;&#x89E3;&#x9A8C;&#x8BC1;</h3><p>&#x9700;&#x8981;&#x5B9E;&#x73B0;&#x63A5;&#x53E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">UserPermissionEvaluator</span> <span class="keyword">implements</span> <span class="title">PermissionEvaluator</span> </span>{</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> SysUserService sysUserService;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasPermission</span><span class="params">(Authentication authentication, Object targetUrl, Object permission)</span> </span>{</span><br><span class="line">        <span class="comment">// &#x83B7;&#x53D6;&#x7528;&#x6237;&#x4FE1;&#x606F;</span></span><br><span class="line">        SelfUserEntity selfUserEntity =(SelfUserEntity) authentication.getPrincipal();</span><br><span class="line">        <span class="comment">// &#x67E5;&#x8BE2;&#x7528;&#x6237;&#x6743;&#x9650;(&#x8FD9;&#x91CC;&#x53EF;&#x4EE5;&#x5C06;&#x6743;&#x9650;&#x653E;&#x5165;&#x7F13;&#x5B58;&#x4E2D;&#x63D0;&#x5347;&#x6548;&#x7387;)</span></span><br><span class="line">        Set&lt;String&gt; permissions = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line">        List&lt;SysMenuEntity&gt; sysMenuEntityList = sysUserService.selectSysMenuByUserId(selfUserEntity.getUserId());</span><br><span class="line">        <span class="keyword">for</span> (SysMenuEntity sysMenuEntity:sysMenuEntityList) {</span><br><span class="line">            permissions.add(sysMenuEntity.getPermission());</span><br><span class="line">        }</span><br><span class="line">        <span class="comment">// &#x6743;&#x9650;&#x5BF9;&#x6BD4;</span></span><br><span class="line">        <span class="keyword">if</span> (permissions.contains(permission.toString())){</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    }</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasPermission</span><span class="params">(Authentication authentication, Serializable targetId, String targetType, Object permission)</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="Cotroller"><a href="#Cotroller" class="headerlink" title="Cotroller"></a>Cotroller</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PreAuthorize(&quot;hasRole(&apos;ADMIN&apos;)&quot;)</span></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/info&quot;,method = RequestMethod.GET)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Map&lt;String,Object&gt; <span class="title">userLogin</span><span class="params">()</span></span>{</span><br><span class="line">    Map&lt;String,Object&gt; result = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    SelfUserEntity userDetails = SecurityUtil.getUserInfo();</span><br><span class="line">    result.put(<span class="string">&quot;title&quot;</span>,<span class="string">&quot;&#x7BA1;&#x7406;&#x7AEF;&#x4FE1;&#x606F;&quot;</span>);</span><br><span class="line">    result.put(<span class="string">&quot;data&quot;</span>,userDetails);</span><br><span class="line">    <span class="keyword">return</span> ResultUtil.resultSuccess(result);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* &#x62E5;&#x6709;sys:user:info&#x6743;&#x9650;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;</span></span><br><span class="line"><span class="comment">* hasPermission &#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x8BF7;&#x6C42;&#x8DEF;&#x5F84; &#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x6743;&#x9650;&#x8868;&#x8FBE;&#x5F0F;</span></span><br><span class="line"><span class="comment">* <span class="doctag">@Author</span> Sans</span></span><br><span class="line"><span class="comment">* <span class="doctag">@CreateTime</span> 2019/10/2 14:22</span></span><br><span class="line"><span class="comment">* <span class="doctag">@Return</span> Map&lt;String,Object&gt; &#x8FD4;&#x56DE;&#x6570;&#x636E;MAP</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="meta">@PreAuthorize(&quot;hasPermission(&apos;/admin/userList&apos;,&apos;sys:user:info&apos;)&quot;)</span></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/userList&quot;,method = RequestMethod.GET)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Map&lt;String,Object&gt; <span class="title">userList</span><span class="params">()</span></span>{</span><br><span class="line">    Map&lt;String,Object&gt; result = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    List&lt;SysUserEntity&gt; sysUserEntityList = sysUserService.list();</span><br><span class="line">    result.put(<span class="string">&quot;title&quot;</span>,<span class="string">&quot;&#x62E5;&#x6709;sys:user:info&#x6743;&#x9650;&#x90FD;&#x53EF;&#x4EE5;&#x67E5;&#x770B;&quot;</span>);</span><br><span class="line">    result.put(<span class="string">&quot;data&quot;</span>,sysUserEntityList);</span><br><span class="line">    <span class="keyword">return</span> ResultUtil.resultSuccess(result);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@PreAuthorize(&quot;hasRole(&apos;ADMIN&apos;) and hasPermission(&apos;/admin/adminRoleList&apos;,&apos;sys:role:info&apos;)&quot;)</span></span><br><span class="line"><span class="meta">@RequestMapping(value = &quot;/adminRoleList&quot;,method = RequestMethod.GET)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Map&lt;String,Object&gt; <span class="title">adminRoleList</span><span class="params">()</span></span>{</span><br><span class="line">    Map&lt;String,Object&gt; result = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    List&lt;SysRoleEntity&gt; sysRoleEntityList = sysRoleService.list();</span><br><span class="line">    result.put(<span class="string">&quot;title&quot;</span>,<span class="string">&quot;&#x62E5;&#x6709;ADMIN&#x89D2;&#x8272;&#x548C;sys:role:info&#x6743;&#x9650;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;&quot;</span>);</span><br><span class="line">    result.put(<span class="string">&quot;data&quot;</span>,sysRoleEntityList);</span><br><span class="line">    <span class="keyword">return</span> ResultUtil.resultSuccess(result);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/06/20/RabbitMQ/" data-toggle="tooltip" data-placement="top" title="RabbitMq">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/06/10/Java注解/" data-toggle="tooltip" data-placement="top" title="Java注解(Annotation)">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#SpringSecurity&#x5355;&#x70B9;&#x767B;&#x5F55;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">SpringSecurity&amp;#x5355;&amp;#x70B9;&amp;#x767B;&amp;#x5F55;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#1-SpringSecurity"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">1 SpringSecurity</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-1-&#x914D;&#x7F6E;&#x6587;&#x4EF6;&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;-&#x5BC6;&#x7801;"><span class="toc-nav-number">1.1.1.</span> <span class="toc-nav-text">1.1 &amp;#x914D;&amp;#x7F6E;&amp;#x6587;&amp;#x4EF6;&amp;#x914D;&amp;#x7F6E;&amp;#x7528;&amp;#x6237;&amp;#x540D;&#x2F;&amp;#x5BC6;&amp;#x7801;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-2-Java&#x914D;&#x7F6E;&#x7528;&#x6237;&#x540D;-&#x5BC6;&#x7801;"><span class="toc-nav-number">1.1.2.</span> <span class="toc-nav-text">1.2 Java&amp;#x914D;&amp;#x7F6E;&amp;#x7528;&amp;#x6237;&amp;#x540D;&#x2F;&amp;#x5BC6;&amp;#x7801;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-3-&#x767B;&#x5F55;&#x914D;&#x7F6E;"><span class="toc-nav-number">1.1.3.</span> <span class="toc-nav-text">1.3 &amp;#x767B;&amp;#x5F55;&amp;#x914D;&amp;#x7F6E;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#1-4-&#x5FFD;&#x7565;&#x62E6;&#x622A;"><span class="toc-nav-number">1.1.4.</span> <span class="toc-nav-text">1.4 &amp;#x5FFD;&amp;#x7565;&amp;#x62E6;&amp;#x622A;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#sso-&#x5FEB;&#x901F;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">sso (&amp;#x5FEB;&amp;#x901F;)</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#SecurityConfig-java"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">SecurityConfig.java</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#UserAuthenticationProvider-java"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">UserAuthenticationProvider.java</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#UserService-java"><span class="toc-nav-number">1.2.3.</span> <span class="toc-nav-text">UserService.java</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#sso"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">sso</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x767B;&#x5F55;&#x6210;&#x529F;"><span class="toc-nav-number">1.3.1.</span> <span class="toc-nav-text">&amp;#x767B;&amp;#x5F55;&amp;#x6210;&amp;#x529F;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x767B;&#x5F55;&#x5931;&#x8D25;"><span class="toc-nav-number">1.3.2.</span> <span class="toc-nav-text">&amp;#x767B;&amp;#x5F55;&amp;#x5931;&amp;#x8D25;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x767B;&#x51FA;&#x6210;&#x529F;"><span class="toc-nav-number">1.3.3.</span> <span class="toc-nav-text">&amp;#x767B;&amp;#x51FA;&amp;#x6210;&amp;#x529F;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x672A;&#x767B;&#x5F55;"><span class="toc-nav-number">1.3.4.</span> <span class="toc-nav-text">&amp;#x672A;&amp;#x767B;&amp;#x5F55;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x672A;&#x6388;&#x6743;"><span class="toc-nav-number">1.3.5.</span> <span class="toc-nav-text">&amp;#x672A;&amp;#x6388;&amp;#x6743;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x5916;&#x90E8;&#x8BF7;&#x6C42;&#x7684;&#x8FC7;&#x6EE4;&#x5668;"><span class="toc-nav-number">1.3.6.</span> <span class="toc-nav-text">&amp;#x5916;&amp;#x90E8;&amp;#x8BF7;&amp;#x6C42;&amp;#x7684;&amp;#x8FC7;&amp;#x6EE4;&amp;#x5668;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Token&#x751F;&#x6210;&#x5DE5;&#x5177;"><span class="toc-nav-number">1.3.7.</span> <span class="toc-nav-text">Token&amp;#x751F;&amp;#x6210;&amp;#x5DE5;&amp;#x5177;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x83B7;&#x53D6;&#x7528;&#x6237;&#x4FE1;&#x606F;"><span class="toc-nav-number">1.3.8.</span> <span class="toc-nav-text">&amp;#x83B7;&amp;#x53D6;&amp;#x7528;&amp;#x6237;&amp;#x4FE1;&amp;#x606F;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#response&#x5199;&#x6570;&#x636E;"><span class="toc-nav-number">1.3.9.</span> <span class="toc-nav-text">response&amp;#x5199;&amp;#x6570;&amp;#x636E;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x6743;&#x9650;&#x6CE8;&#x89E3;&#x9A8C;&#x8BC1;"><span class="toc-nav-number">1.3.10.</span> <span class="toc-nav-text">&amp;#x6743;&amp;#x9650;&amp;#x6CE8;&amp;#x89E3;&amp;#x9A8C;&amp;#x8BC1;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Cotroller"><span class="toc-nav-number">1.3.11.</span> <span class="toc-nav-text">Cotroller</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Spring" title="Spring">Spring</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/06/19/SpringSecurity/";
+    var disqus_url = "http://example.com/2020/06/19/SpringSecurity/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

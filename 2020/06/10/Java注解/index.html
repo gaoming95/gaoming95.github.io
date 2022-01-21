@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Java注解(Annotation) - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/06/10/Java注解/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                    <h1>Java注解(Annotation)</h1>
+                    <h2 class="subheading">Java语言的类、方法、变量、参数和包等都可以被标注，和JavaDoc不同，Java标注可以通过反射获取标注内容，在编译器生成类文件时，标注可以被嵌入到字节码中</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-06-10
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="Java&#x6CE8;&#x89E3;-Annotation"><a href="#Java&#x6CE8;&#x89E3;-Annotation" class="headerlink" title="Java&#x6CE8;&#x89E3;(Annotation)"></a>Java&#x6CE8;&#x89E3;(Annotation)</h1><p><code>Java</code>&#x6CE8;&#x89E3;&#xFF08;<code>Annotation</code>&#xFF09;&#x53C8;&#x79F0;<code>Java</code>&#x6807;&#x6CE8;&#xFF0C;&#x662F;<code>JDK1.5</code>&#x5F15;&#x5165;&#x7684;&#x4E00;&#x79CD;&#x6CE8;&#x91CA;&#x673A;&#x5236;</p>
+<p>Java&#x8BED;&#x8A00;&#x7684;&#x7C7B;&#x3001;&#x65B9;&#x6CD5;&#x3001;&#x53D8;&#x91CF;&#x3001;&#x53C2;&#x6570;&#x548C;&#x5305;&#x7B49;&#x90FD;&#x53EF;&#x4EE5;&#x88AB;&#x6807;&#x6CE8;&#xFF0C;&#x548C;<code>JavaDoc</code>&#x4E0D;&#x540C;&#xFF0C;<code>Java</code>&#x6807;&#x6CE8;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x53CD;&#x5C04;&#x83B7;&#x53D6;&#x6807;&#x6CE8;&#x5185;&#x5BB9;&#xFF0C;&#x5728;&#x7F16;&#x8BD1;&#x5668;&#x751F;&#x6210;&#x7C7B;&#x6587;&#x4EF6;&#x65F6;&#xFF0C;&#x6807;&#x6CE8;&#x53EF;&#x4EE5;&#x88AB;&#x5D4C;&#x5165;&#x5230;&#x5B57;&#x8282;&#x7801;&#x4E2D;&#x3002;<code>Java</code>&#x865A;&#x62DF;&#x673A;&#x53EF;&#x4EE5;&#x4FDD;&#x7559;&#x6807;&#x6CE8;&#x5185;&#x5BB9;&#xFF0C;&#x5F53;&#x7136;&#x5B83;&#x4E5F;&#x652F;&#x6301;&#x81EA;&#x5B9A;&#x4E49;<code>Java</code>&#x6807;&#x6CE8;</p>
+<h2 id="&#x5185;&#x7F6E;&#x7684;&#x6CE8;&#x89E3;"><a href="#&#x5185;&#x7F6E;&#x7684;&#x6CE8;&#x89E3;" class="headerlink" title="&#x5185;&#x7F6E;&#x7684;&#x6CE8;&#x89E3;"></a>&#x5185;&#x7F6E;&#x7684;&#x6CE8;&#x89E3;</h2><p><code>Java</code>&#x5B9A;&#x4E49;&#x4E86;&#x4E00;&#x5957;&#x6CE8;&#x89E3;&#xFF0C;&#x5171;&#x6709;7&#x4E2A;&#xFF0C;3&#x4E2A;&#x5728;<code>java.lang</code>&#x4E2D;&#xFF0C;&#x5269;&#x4E0B;4&#x4E2A;&#x5728;<code>java.lang.annotation</code>&#x4E2D;</p>
+<h3 id="&#x4F5C;&#x7528;&#x5728;&#x4EE3;&#x7801;&#x7684;&#x6CE8;&#x89E3;&#x662F;"><a href="#&#x4F5C;&#x7528;&#x5728;&#x4EE3;&#x7801;&#x7684;&#x6CE8;&#x89E3;&#x662F;" class="headerlink" title="&#x4F5C;&#x7528;&#x5728;&#x4EE3;&#x7801;&#x7684;&#x6CE8;&#x89E3;&#x662F;"></a>&#x4F5C;&#x7528;&#x5728;&#x4EE3;&#x7801;&#x7684;&#x6CE8;&#x89E3;&#x662F;</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@Override</span></span><br><span class="line">&#x68C0;&#x67E5;&#x8BE5;&#x65B9;&#x6CD5;&#x662F;&#x5426;&#x662F;&#x91CD;&#x5199;&#x65B9;&#x6CD5;&#xFF0C;&#x5982;&#x679C;&#x53D1;&#x73B0;&#x5176;&#x7236;&#x7C7B;&#xFF0C;&#x6216;&#x8005;&#x662F;&#x5F15;&#x7528;&#x7684;&#x63A5;&#x53E3;&#x4E2D;&#x5E76;&#x6CA1;&#x6709;&#x8BE5;&#x65B9;&#x6CD5;&#xFF0C;&#x4F1A;&#x7F16;&#x8BD1;&#x62A5;&#x9519;</span><br><span class="line"><span class="variable">@Deprecated</span></span><br><span class="line">&#x6807;&#x8BB0;&#x8FC7;&#x65F6;&#x65B9;&#x6CD5;&#xFF0C;&#x5982;&#x679C;&#x4F7F;&#x7528;&#x8BE5;&#x65B9;&#x6CD5;&#xFF0C;&#x4F1A;&#x62A5;&#x7F16;&#x8BD1;&#x8B66;&#x544A;</span><br><span class="line"><span class="variable">@SuppressWarnings</span></span><br><span class="line">&#x6307;&#x793A;&#x7F16;&#x8BD1;&#x5668;&#x53BB;&#x5FFD;&#x7565;&#x6CE8;&#x89E3;&#x4E2D;&#x58F0;&#x660E;&#x7684;&#x8B66;&#x544A;</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x4F5C;&#x7528;&#x5728;&#x5176;&#x4ED6;&#x6CE8;&#x89E3;&#x7684;&#x6CE8;&#x89E3;&#xFF08;&#x6216;&#x8005;&#x8BF4;&#x662F;&#x5143;&#x6CE8;&#x89E3;&#xFF09;"><a href="#&#x4F5C;&#x7528;&#x5728;&#x5176;&#x4ED6;&#x6CE8;&#x89E3;&#x7684;&#x6CE8;&#x89E3;&#xFF08;&#x6216;&#x8005;&#x8BF4;&#x662F;&#x5143;&#x6CE8;&#x89E3;&#xFF09;" class="headerlink" title="&#x4F5C;&#x7528;&#x5728;&#x5176;&#x4ED6;&#x6CE8;&#x89E3;&#x7684;&#x6CE8;&#x89E3;&#xFF08;&#x6216;&#x8005;&#x8BF4;&#x662F;&#x5143;&#x6CE8;&#x89E3;&#xFF09;"></a>&#x4F5C;&#x7528;&#x5728;&#x5176;&#x4ED6;&#x6CE8;&#x89E3;&#x7684;&#x6CE8;&#x89E3;&#xFF08;&#x6216;&#x8005;&#x8BF4;&#x662F;&#x5143;&#x6CE8;&#x89E3;&#xFF09;</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@Retention</span></span><br><span class="line"><span class="variable">@Retention</span>(RetentionPolicy.RUNTIME) &#x8FD0;&#x884C;&#x65F6;&#x901A;&#x8FC7;&#x53CD;&#x5C04;&#x8BBF;&#x95EE;</span><br><span class="line"><span class="variable">@Retention</span>(RetentionPolicy.SOURCE) </span><br><span class="line"><span class="variable">@Retention</span>(RetentionPolicy.CLASS) </span><br><span class="line">&#x6807;&#x8BB0;&#x8FD9;&#x4E2A;&#x6CE8;&#x89E3;&#x600E;&#x4E48;&#x4FDD;&#x5B58;&#xFF0C;&#x662F;&#x53EA;&#x5728;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;&#x8FD8;&#x662F;&#x7F16;&#x5165;class&#x6587;&#x4EF6;&#x4E2D;&#xFF0C;&#x6216;&#x8005;&#x662F;&#x5728;&#x8FD0;&#x884C;&#x65F6;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x53CD;&#x5C04;&#x8BBF;&#x95EE;</span><br><span class="line"><span class="variable">@Documented</span></span><br><span class="line">&#x6807;&#x8BB0;&#x8FD9;&#x4E9B;&#x6CE8;&#x89E3;&#x662F;&#x5426;&#x5305;&#x542B;&#x5728;&#x7528;&#x6237;&#x6587;&#x6863;&#x4E2D;</span><br><span class="line"><span class="variable">@Target</span></span><br><span class="line">&#x6807;&#x8BB0;&#x8FD9;&#x4E2A;&#x6CE8;&#x89E3;&#x5E94;&#x8BE5;&#x662F;&#x54EA;&#x79CD;Java&#x6210;&#x5458;</span><br><span class="line"><span class="variable">@Inherited</span></span><br><span class="line">&#x6807;&#x8BB0;&#x8FD9;&#x4E2A;&#x6CE8;&#x89E3;&#x662F;&#x7EE7;&#x627F;&#x4E8E;&#x54EA;&#x4E2A;&#x6CE8;&#x89E3;&#x7C7B;&#xFF08;&#x9ED8;&#x8BA4; &#x6CE8;&#x89E3;&#x6CA1;&#x6709;&#x7EE7;&#x627F;&#x4E8E;&#x4EFB;&#x4F55;&#x5B50;&#x7C7B;&#xFF09;</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x4ECE;Java-7&#x5F00;&#x59CB;&#xFF0C;&#x989D;&#x5916;&#x6DFB;&#x52A0;&#x4E86;3&#x4E2A;&#x6CE8;&#x89E3;"><a href="#&#x4ECE;Java-7&#x5F00;&#x59CB;&#xFF0C;&#x989D;&#x5916;&#x6DFB;&#x52A0;&#x4E86;3&#x4E2A;&#x6CE8;&#x89E3;" class="headerlink" title="&#x4ECE;Java 7&#x5F00;&#x59CB;&#xFF0C;&#x989D;&#x5916;&#x6DFB;&#x52A0;&#x4E86;3&#x4E2A;&#x6CE8;&#x89E3;"></a>&#x4ECE;Java 7&#x5F00;&#x59CB;&#xFF0C;&#x989D;&#x5916;&#x6DFB;&#x52A0;&#x4E86;3&#x4E2A;&#x6CE8;&#x89E3;</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">@SafeVarargs</span></span><br><span class="line">Java7&#x5F00;&#x59CB;&#x652F;&#x6301;&#xFF0C;&#x5FFD;&#x7565;&#x4EFB;&#x4F55;&#x4F7F;&#x7528;&#x53C2;&#x6570;&#x4E3A;&#x6CDB;&#x578B;&#x53D8;&#x91CF;&#x7684;&#x65B9;&#x6CD5;&#x6216;&#x6784;&#x9020;&#x51FD;&#x6570;&#x8C03;&#x7528;&#x7684;&#x8B66;&#x544A;</span><br><span class="line"><span class="variable">@FuncationalInterface</span></span><br><span class="line">Java8&#x5F00;&#x59CB;&#x652F;&#x6301;&#xFF0C;&#x6807;&#x8BC6;&#x4E00;&#x4E2A;&#x533F;&#x540D;&#x51FD;&#x6570;&#x6216;&#x51FD;&#x6570;&#x5F0F;&#x63A5;&#x53E3;</span><br><span class="line"><span class="variable">@Repeatable</span></span><br><span class="line">Java8&#x5F00;&#x59CB;&#x652F;&#x6301;&#xFF0C;&#x6807;&#x8BC6;&#x67D0;&#x6CE8;&#x89E3;&#x53EF;&#x4EE5;&#x5728;&#x540C;&#x4E00;&#x4E2A;&#x58F0;&#x660E;&#x4E0A;&#x4F7F;&#x7528;&#x591A;&#x6B21;</span><br></pre></td></tr></table></figure>
+
+<h2 id="&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;"><a href="#&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;" class="headerlink" title="&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;"></a>&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;</h2><h3 id="&#x793A;&#x4F8B;"><a href="#&#x793A;&#x4F8B;" class="headerlink" title="&#x793A;&#x4F8B;"></a>&#x793A;&#x4F8B;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyAnnotation1 {</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E0A;&#x9762;&#x7684;&#x4F5C;&#x7528;&#x662F;&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;<code>Annotation</code>&#xFF0C;&#x5B83;&#x7684;&#x540D;&#x5B57;&#x662F;<code>MyAnnotation1</code>&#xFF0C;&#x5B9A;&#x4E49;&#x4E86;<code>MyAnnotation1</code>&#x4E4B;&#x540E;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5728;&#x4EE3;&#x7801;&#x4E2D;&#x901A;&#x8FC7;<code>@MyAnnotation1</code>&#x6765;&#x4F7F;&#x7528;&#x5B83;&#xFF0C;&#x5176;&#x4ED6;&#x7684;&#xFF0C;<code>@Documented</code>,<code>@Traget</code>,<code>@Retention</code>,<code>@interface</code>&#x90FD;&#x662F;&#x6765;&#x4FEE;&#x9970;<code>MyAnnotation1</code>&#x7684;&#xFF0C;&#x4E0B;&#x9762;&#x8BF4;&#x8BF4;&#x5B83;&#x4EEC;&#x7684;&#x542B;&#x4E49;&#xFF1A;</p>
+<h4 id="interface"><a href="#interface" class="headerlink" title="@interface"></a>@interface</h4><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x4F7F;&#x7528; <span class="variable">@interface</span> &#x5B9A;&#x4E49;&#x6CE8;&#x89E3;&#x65F6;&#xFF0C;&#x610F;&#x5473;&#x7740;&#x5B83;&#x5B9E;&#x73B0;&#x4E86; java.lang.annotation.Annotation &#x63A5;&#x53E3;&#xFF0C;&#x5373;&#x8BE5;&#x6CE8;&#x89E3;&#x5C31;&#x662F;&#x4E00;&#x4E2A;Annotation&#x3002;</span><br><span class="line">&#x5B9A;&#x4E49; Annotation &#x65F6;&#xFF0C;<span class="variable">@interface</span> &#x662F;&#x5FC5;&#x987B;&#x7684;&#x3002;</span><br><span class="line">&#x6CE8;&#x610F;&#xFF1A;&#x5B83;&#x548C;&#x6211;&#x4EEC;&#x901A;&#x5E38;&#x7684; implemented &#x5B9E;&#x73B0;&#x63A5;&#x53E3;&#x7684;&#x65B9;&#x6CD5;&#x4E0D;&#x540C;&#x3002;Annotation &#x63A5;&#x53E3;&#x7684;&#x5B9E;&#x73B0;&#x7EC6;&#x8282;&#x90FD;&#x7531;&#x7F16;&#x8BD1;&#x5668;&#x5B8C;&#x6210;&#x3002;&#x901A;&#x8FC7; <span class="variable">@interface</span> &#x5B9A;&#x4E49;&#x6CE8;&#x89E3;&#x540E;&#xFF0C;&#x8BE5;&#x6CE8;&#x89E3;&#x4E0D;&#x80FD;&#x7EE7;&#x627F;&#x5176;&#x4ED6;&#x7684;&#x6CE8;&#x89E3;&#x6216;&#x63A5;&#x53E3;&#x3002;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Documented"><a href="#Documented" class="headerlink" title="@Documented"></a>@Documented</h4><figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&#x7C7B;&#x548C;&#x65B9;&#x6CD5;&#x7684; <span class="built_in">Annotation</span> &#x5728;&#x7F3A;&#x7701;&#x60C5;&#x51B5;&#x4E0B;&#x662F;&#x4E0D;&#x51FA;&#x73B0;&#x5728; <span class="variable">javadoc</span> &#x4E2D;&#x7684;&#x3002;&#x5982;&#x679C;&#x4F7F;&#x7528; <span class="operator">@</span><span class="variable">Documented</span> &#x4FEE;&#x9970;&#x8BE5; <span class="built_in">Annotation</span>&#xFF0C;&#x5219;&#x8868;&#x793A;&#x5B83;&#x53EF;&#x4EE5;&#x51FA;&#x73B0;&#x5728; <span class="variable">javadoc</span> &#x4E2D;&#x3002;</span><br><span class="line"></span><br><span class="line">&#x5B9A;&#x4E49; <span class="built_in">Annotation</span> &#x65F6;&#xFF0C;<span class="operator">@</span><span class="variable">Documented</span> &#x53EF;&#x6709;&#x53EF;&#x65E0;&#xFF1B;&#x82E5;&#x6CA1;&#x6709;&#x5B9A;&#x4E49;&#xFF0C;&#x5219; <span class="built_in">Annotation</span> &#x4E0D;&#x4F1A;&#x51FA;&#x73B0;&#x5728; <span class="variable">javadoc</span> &#x4E2D;&#x3002;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Target-ElementType-TYPE"><a href="#Target-ElementType-TYPE" class="headerlink" title="@Target(ElementType.TYPE)"></a>@Target(ElementType.TYPE)</h4><figure class="highlight fortran"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x524D;&#x9762;&#x6211;&#x4EEC;&#x8BF4;&#x8FC7;&#xFF0C;ElementType &#x662F; Annotation &#x7684;&#x7C7B;&#x578B;&#x5C5E;&#x6027;&#x3002;&#x800C; @<span class="keyword">Target</span> &#x7684;&#x4F5C;&#x7528;&#xFF0C;&#x5C31;&#x662F;&#x6765;&#x6307;&#x5B9A; Annotation &#x7684;&#x7C7B;&#x578B;&#x5C5E;&#x6027;&#x3002;</span><br><span class="line"></span><br><span class="line">@<span class="keyword">Target</span>(ElementType.<span class="keyword">TYPE</span>) &#x7684;&#x610F;&#x601D;&#x5C31;&#x662F;&#x6307;&#x5B9A;&#x8BE5; Annotation &#x7684;&#x7C7B;&#x578B;&#x662F; ElementType.<span class="keyword">TYPE</span>&#x3002;&#x8FD9;&#x5C31;&#x610F;&#x5473;&#x7740;&#xFF0C;MyAnnotation1 &#x662F;&#x6765;&#x4FEE;&#x9970;<span class="string">&quot;&#x7C7B;&#x3001;&#x63A5;&#x53E3;&#xFF08;&#x5305;&#x62EC;&#x6CE8;&#x91CA;&#x7C7B;&#x578B;&#xFF09;&#x6216;&#x679A;&#x4E3E;&#x58F0;&#x660E;&quot;</span>&#x7684;&#x6CE8;&#x89E3;&#x3002;</span><br><span class="line"></span><br><span class="line">&#x5B9A;&#x4E49; Annotation &#x65F6;&#xFF0C;@<span class="keyword">Target</span> &#x53EF;&#x6709;&#x53EF;&#x65E0;&#x3002;&#x82E5;&#x6709; @<span class="keyword">Target</span>&#xFF0C;&#x5219;&#x8BE5; Annotation &#x53EA;&#x80FD;&#x7528;&#x4E8E;&#x5B83;&#x6240;&#x6307;&#x5B9A;&#x7684;&#x5730;&#x65B9;&#xFF1B;&#x82E5;&#x6CA1;&#x6709; @<span class="keyword">Target</span>&#xFF0C;&#x5219;&#x8BE5; Annotation &#x53EF;&#x4EE5;&#x7528;&#x4E8E;&#x4EFB;&#x4F55;&#x5730;&#x65B9;&#x3002;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Retention-RetentionPolicy-RUNTIME"><a href="#Retention-RetentionPolicy-RUNTIME" class="headerlink" title="@Retention(RetentionPolicy.RUNTIME)"></a>@Retention(RetentionPolicy.RUNTIME)</h4><figure class="highlight kotlin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#x524D;&#x9762;&#x6211;&#x4EEC;&#x8BF4;&#x8FC7;&#xFF0C;RetentionPolicy &#x662F; Annotation &#x7684;&#x7B56;&#x7565;&#x5C5E;&#x6027;&#xFF0C;&#x800C; <span class="meta">@Retention</span> &#x7684;&#x4F5C;&#x7528;&#xFF0C;&#x5C31;&#x662F;&#x6307;&#x5B9A; Annotation &#x7684;&#x7B56;&#x7565;&#x5C5E;&#x6027;&#x3002;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span> &#x7684;&#x610F;&#x601D;&#x5C31;&#x662F;&#x6307;&#x5B9A;&#x8BE5; Annotation &#x7684;&#x7B56;&#x7565;&#x662F; RetentionPolicy.RUNTIME&#x3002;&#x8FD9;&#x5C31;&#x610F;&#x5473;&#x7740;&#xFF0C;&#x7F16;&#x8BD1;&#x5668;&#x4F1A;&#x5C06;&#x8BE5; Annotation &#x4FE1;&#x606F;&#x4FDD;&#x7559;&#x5728; .<span class="keyword">class</span> &#x6587;&#x4EF6;&#x4E2D;&#xFF0C;&#x5E76;&#x4E14;&#x80FD;&#x88AB;&#x865A;&#x62DF;&#x673A;&#x8BFB;&#x53D6;&#x3002;</span><br><span class="line"></span><br><span class="line">&#x5B9A;&#x4E49; Annotation &#x65F6;&#xFF0C;<span class="meta">@Retention</span> &#x53EF;&#x6709;&#x53EF;&#x65E0;&#x3002;&#x82E5;&#x6CA1;&#x6709; <span class="meta">@Retention</span>&#xFF0C;&#x5219;&#x9ED8;&#x8BA4;&#x662F; RetentionPolicy.CLASS&#x3002;</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x5B9E;&#x4F8B;1&#xFF1A;&#x53CD;&#x5C04;&#x83B7;&#x53D6;&#x6CE8;&#x89E3;"><a href="#&#x5B9E;&#x4F8B;1&#xFF1A;&#x53CD;&#x5C04;&#x83B7;&#x53D6;&#x6CE8;&#x89E3;" class="headerlink" title="&#x5B9E;&#x4F8B;1&#xFF1A;&#x53CD;&#x5C04;&#x83B7;&#x53D6;&#x6CE8;&#x89E3;"></a>&#x5B9E;&#x4F8B;1&#xFF1A;&#x53CD;&#x5C04;&#x83B7;&#x53D6;&#x6CE8;&#x89E3;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.FIELD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyField {</span><br><span class="line">    <span class="function">String <span class="title">description</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">length</span><span class="params">()</span></span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyFieldTest</span> </span>{</span><br><span class="line">    <span class="meta">@MyField(description = &quot;&#x7528;&#x6237;&#x540D;&quot;, length = 12)</span></span><br><span class="line">    <span class="keyword">private</span> String username;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@MyField(description = &quot;&#x5BC6;&#x7801;&quot;, length = 13)</span></span><br><span class="line">    <span class="keyword">private</span> String password;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Test</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testMyField</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="comment">// &#x83B7;&#x53D6;&#x7C7B;&#x6A21;&#x677F;</span></span><br><span class="line">        Class c = MyFieldTest.class;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Field f :</span><br><span class="line">                c.getDeclaredFields()) {</span><br><span class="line">            <span class="keyword">if</span> (f.isAnnotationPresent(MyField.class)) {</span><br><span class="line">                MyField annotation = f.getAnnotation(MyField.class);</span><br><span class="line">                System.out.println(f.getName() + <span class="string">&quot; &quot;</span> + annotation.description() + <span class="string">&quot; &quot;</span> + annotation.length());</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">username &#x7528;&#x6237;&#x540D; <span class="number">12</span></span><br><span class="line">password &#x5BC6;&#x7801; <span class="number">13</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x5E94;&#x7528;&#x573A;&#x666F;1&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;-&#x62E6;&#x622A;&#x5668;-&#x5B9E;&#x73B0;&#x767B;&#x5F55;&#x6821;&#x9A8C;"><a href="#&#x5E94;&#x7528;&#x573A;&#x666F;1&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;-&#x62E6;&#x622A;&#x5668;-&#x5B9E;&#x73B0;&#x767B;&#x5F55;&#x6821;&#x9A8C;" class="headerlink" title="&#x5E94;&#x7528;&#x573A;&#x666F;1&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;+&#x62E6;&#x622A;&#x5668; &#x5B9E;&#x73B0;&#x767B;&#x5F55;&#x6821;&#x9A8C;"></a>&#x5E94;&#x7528;&#x573A;&#x666F;1&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;+&#x62E6;&#x622A;&#x5668; &#x5B9E;&#x73B0;&#x767B;&#x5F55;&#x6821;&#x9A8C;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> LoginRequired {</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IndexController</span> </span>{</span><br><span class="line">    <span class="meta">@GetMapping(&quot;/sourceA&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sourceA</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;sourceA&quot;</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="meta">@LoginRequired</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/sourceB&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">sourceB</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;sourceB&quot;</span>;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x6CA1;&#x6709;&#x4F7F;&#x7528;<code>@LoginRequired</code>&#x76F4;&#x63A5;&#x53EF;&#x4EE5;&#x8BBF;&#x95EE;&#xFF0C;&#x4F7F;&#x7528;&#x4E4B;&#x540E;&#xFF0C;&#x53EF;&#x4EE5;&#x5728;&#x62E6;&#x622A;&#x5668;&#x4E2D;&#x83B7;&#x53D6;&#x8FD9;&#x4E2A;&#x6CE8;&#x89E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">handlerMethod.getMethod().getAnnotation(LoginRequired.class);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SourceAccessInterceptor</span> <span class="keyword">implements</span> <span class="title">HandlerInterceptor</span> </span>{</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line">        System.out.println(<span class="string">&quot;&#x8FDB;&#x5165;&#x62E6;&#x622A;&#x5668;&#x4E86;&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// &#x53CD;&#x5C04;&#x83B7;&#x53D6;&#x65B9;&#x6CD5;&#x4E0A;&#x7684;LoginRequired&#x6CE8;&#x89E3;</span></span><br><span class="line">        HandlerMethod handlerMethod = (HandlerMethod) handler;</span><br><span class="line">        LoginRequired loginRequired = handlerMethod.getMethod().getAnnotation(LoginRequired.class);</span><br><span class="line">        <span class="keyword">if</span> (loginRequired == <span class="keyword">null</span>) {</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        }</span><br><span class="line">        response.setContentType(<span class="string">&quot;application/json;charset=utf-8&quot;</span>);</span><br><span class="line">        response.getWriter().print(<span class="string">&quot;&#x4F60;&#x8BBF;&#x95EE;&#x7684;&#x8D44;&#x6E90;&#x9700;&#x8981;&#x767B;&#x5F55;&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView)</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line">    }</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterCompletion</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)</span> <span class="keyword">throws</span> Exception </span>{</span><br><span class="line"></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">InterceptorTrainConfigurer</span> <span class="keyword">implements</span> <span class="title">WebMvcConfigurer</span> </span>{</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> </span>{</span><br><span class="line">        registry.addInterceptor(<span class="keyword">new</span> SourceAccessInterceptor()).addPathPatterns(<span class="string">&quot;/**&quot;</span>);</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x5E94;&#x7528;&#x573A;&#x666F;2&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;-AOP&#x5B9E;&#x73B0;&#x65E5;&#x5FD7;&#x6253;&#x5370;"><a href="#&#x5E94;&#x7528;&#x573A;&#x666F;2&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;-AOP&#x5B9E;&#x73B0;&#x65E5;&#x5FD7;&#x6253;&#x5370;" class="headerlink" title="&#x5E94;&#x7528;&#x573A;&#x666F;2&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;+AOP&#x5B9E;&#x73B0;&#x65E5;&#x5FD7;&#x6253;&#x5370;"></a>&#x5E94;&#x7528;&#x573A;&#x666F;2&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;+AOP&#x5B9E;&#x73B0;&#x65E5;&#x5FD7;&#x6253;&#x5370;</h3><p>&#x5148;&#x5BFC;&#x5165;&#x5207;&#x9762;&#x9700;&#x8981;&#x7684;&#x4F9D;&#x8D56;&#x5305;</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x6CE8;&#x89E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.METHOD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> MyLog {</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x5B9A;&#x4E49;&#x4E00;&#x4E2A;&#x5207;&#x9762;&#x7C7B;&#xFF0C;&#x89C1;&#x5982;&#x4E0B;&#x4EE3;&#x7801;&#x6CE8;&#x91CA;&#x7406;&#x89E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">MyLogAspect</span> </span>{</span><br><span class="line">    <span class="meta">@Pointcut(&quot;@annotation(com.example.annotation.anno.MyLog)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">logPointCut</span><span class="params">()</span> </span>{</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3. &#x73AF;&#x7ED5;&#x901A;&#x77E5;</span></span><br><span class="line">    <span class="meta">@Around(&quot;logPointCut()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">logAround</span><span class="params">(ProceedingJoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable </span>{</span><br><span class="line">        <span class="comment">// &#x83B7;&#x53D6;&#x65B9;&#x6CD5;&#x540D;&#x79F0;</span></span><br><span class="line">        String methodName = joinPoint.getSignature().getName();</span><br><span class="line">        <span class="comment">// &#x83B7;&#x53D6;&#x5165;&#x53C2;</span></span><br><span class="line">        Object[] param = joinPoint.getArgs();</span><br><span class="line"></span><br><span class="line">        StringBuilder sb = <span class="keyword">new</span> StringBuilder();</span><br><span class="line">        <span class="keyword">for</span> (Object o : param) {</span><br><span class="line">            sb.append(o + <span class="string">&quot;; &quot;</span>);</span><br><span class="line">        }</span><br><span class="line">        System.out.println(<span class="string">&quot;&#x8FDB;&#x5165;[&quot;</span> + methodName + <span class="string">&quot;]&#x65B9;&#x6CD5;,&#x53C2;&#x6570;&#x4E3A;:&quot;</span> + sb.toString());</span><br><span class="line">        <span class="keyword">return</span> joinPoint.proceed();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>IndexController&#x4E2D;&#x5199;&#x4E00;&#x4E2A;sourceC&#x8FDB;&#x884C;&#x6D4B;&#x8BD5;&#xFF0C;&#x52A0;&#x4E0A;&#x6211;&#x4EEC;&#x7684;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@MyLog</span></span><br><span class="line"><span class="meta">@GetMapping(&quot;/sourceC/{source_name}&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">sourceC</span><span class="params">(<span class="meta">@PathVariable(&quot;source_name&quot;)</span> String sourceName)</span></span>{</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;&#x4F60;&#x6B63;&#x5728;&#x8BBF;&#x95EE;sourceC&#x8D44;&#x6E90;&quot;</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;&#x2014;&#x53C2;&#x6570;&#x6821;&#x9A8C;"><a href="#&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;&#x2014;&#x53C2;&#x6570;&#x6821;&#x9A8C;" class="headerlink" title="&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;&#x2014;&#x53C2;&#x6570;&#x6821;&#x9A8C;"></a>&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;&#x2014;&#x53C2;&#x6570;&#x6821;&#x9A8C;</h3><h4 id="&#x4F9D;&#x8D56;"><a href="#&#x4F9D;&#x8D56;" class="headerlink" title="&#x4F9D;&#x8D56;"></a>&#x4F9D;&#x8D56;</h4><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.18.12<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-aop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="&#x58F0;&#x660E;&#x53C2;&#x6570;&#x6CE8;&#x89E3;"><a href="#&#x58F0;&#x660E;&#x53C2;&#x6570;&#x6CE8;&#x89E3;" class="headerlink" title="&#x58F0;&#x660E;&#x53C2;&#x6570;&#x6CE8;&#x89E3;"></a>&#x58F0;&#x660E;&#x53C2;&#x6570;&#x6CE8;&#x89E3;</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target({ElementType.PARAMETER})</span> <span class="comment">// PARAMETER &#x53C2;&#x6570;</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> ValidCom {</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h4 id="&#x58F0;&#x660E;&#x5B57;&#x6BB5;&#x6CE8;&#x89E3;"><a href="#&#x58F0;&#x660E;&#x5B57;&#x6BB5;&#x6CE8;&#x89E3;" class="headerlink" title="&#x58F0;&#x660E;&#x5B57;&#x6BB5;&#x6CE8;&#x89E3;"></a>&#x58F0;&#x660E;&#x5B57;&#x6BB5;&#x6CE8;&#x89E3;</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span> <span class="comment">// FIELD </span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Length {</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxLength</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">minLength</span><span class="params">()</span> <span class="keyword">default</span> 0</span>;</span><br><span class="line">    <span class="function">String <span class="title">message</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span> <span class="comment">// FIELD</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> NotNull {</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Target(ElementType.FIELD)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Value {</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">maxValue</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">minValue</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">String <span class="title">message</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h4 id="AOP-&#x5207;&#x5165;"><a href="#AOP-&#x5207;&#x5165;" class="headerlink" title="AOP &#x5207;&#x5165;"></a>AOP &#x5207;&#x5165;</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValidComAspect</span> </span>{</span><br><span class="line">    <span class="meta">@Pointcut(&quot;within(com.example.annotation.controller.IndexController)&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">validComCut</span><span class="params">()</span> </span>{</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Around(&quot;validComCut()&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">validComCutAround</span><span class="params">(ProceedingJoinPoint joinPoint)</span> <span class="keyword">throws</span> Throwable </span>{</span><br><span class="line"></span><br><span class="line">        Object[] args = joinPoint.getArgs(); <span class="comment">// &#x83B7;&#x53D6;&#x6240;&#x6709;&#x7684;&#x53C2;&#x6570; PersonVo(name=hahah, age=11)</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (args.length == <span class="number">0</span>) {</span><br><span class="line">            <span class="keyword">return</span> joinPoint.proceed(args);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        Signature signature = joinPoint.getSignature(); <span class="comment">// String com.example.annotation.controller.IndexController.index(PersonVo)</span></span><br><span class="line"></span><br><span class="line">        Method method = ((MethodSignature) signature).getMethod(); <span class="comment">// &#x83B7;&#x53D6;&#x65B9;&#x6CD5; public java.lang.String com.example.annotation.controller.IndexController.index(com.example.annotation.dto.PersonVo)</span></span><br><span class="line"></span><br><span class="line">        Annotation[][] parameterAnnotations = method.getParameterAnnotations();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; parameterAnnotations.length; i++) {</span><br><span class="line">            Object object = args[i];</span><br><span class="line">            Annotation[] paramAnn = parameterAnnotations[i];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (object == <span class="keyword">null</span> || paramAnn.length == <span class="number">0</span>) {</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            }</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (Annotation annotation :</span><br><span class="line">                    parameterAnnotations[i]) {</span><br><span class="line">                <span class="keyword">if</span> (annotation.annotationType().equals(ValidCom.class)) {</span><br><span class="line">                    <span class="comment">// &#x6821;&#x9A8C;</span></span><br><span class="line">                    validParam(object);</span><br><span class="line">                }</span><br><span class="line"></span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> joinPoint.proceed();</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">validParam</span><span class="params">(Object object)</span> <span class="keyword">throws</span> IllegalAccessException </span>{</span><br><span class="line">        Field[] declaredFields = object.getClass().getDeclaredFields();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (Field field :</span><br><span class="line">                declaredFields) {</span><br><span class="line">            Annotation[] declaredAnnotations = field.getDeclaredAnnotations();</span><br><span class="line">            <span class="keyword">for</span> (Annotation anno :</span><br><span class="line">                    declaredAnnotations) {</span><br><span class="line">                <span class="keyword">if</span> (anno.annotationType().equals(NotNull.class)) {</span><br><span class="line">                    field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    Object o = field.get(object);</span><br><span class="line">                    System.out.println(o);</span><br><span class="line">                    Assert.notNull(o, field.getName() + <span class="string">&quot;&#x4E0D;&#x53EF;&#x4E3A;&#x7A7A;&quot;</span>);</span><br><span class="line">                }</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (anno.annotationType().equals(Length.class)) {</span><br><span class="line">                    Length length = field.getAnnotation(Length.class);</span><br><span class="line">                    field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    String o = (String) field.get(object);</span><br><span class="line">                    Assert.isTrue(o.length() &lt;= length.maxLength(), length.message());</span><br><span class="line">                }</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (anno.annotationType().equals(Value.class)) {</span><br><span class="line">                    Value value = field.getAnnotation(Value.class);</span><br><span class="line">                    field.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">                    Integer o = (Integer) field.get(object);</span><br><span class="line">                    Assert.isTrue(o &lt;= value.maxValue() &amp;&amp; o &gt;= value.minValue(), value.message());</span><br><span class="line">                }</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h4 id="&#x5B9E;&#x4F53;&#x7C7B;"><a href="#&#x5B9E;&#x4F53;&#x7C7B;" class="headerlink" title="&#x5B9E;&#x4F53;&#x7C7B;"></a>&#x5B9E;&#x4F53;&#x7C7B;</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">PersonVo</span> </span>{</span><br><span class="line">    <span class="meta">@NotNull</span></span><br><span class="line">    <span class="meta">@Length(maxLength = 10, minLength = 1, message = &quot;&#x540D;&#x5B57;&#x957F;&#x5EA6;&#x4E0D;&#x5728;&#x8303;&#x56F4;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="meta">@Value(minValue = 18, maxValue = 28, message = &quot;&#x5E74;&#x9F84;&#x957F;&#x5EA6;&#x4E0D;&#x518D;&#x8303;&#x56F4;&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h4 id="Controller"><a href="#Controller" class="headerlink" title="Controller"></a>Controller</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IndexController</span> <span class="keyword">extends</span> <span class="title">BasicController</span> </span>{</span><br><span class="line"></span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;index&quot;, method = RequestMethod.POST)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">index</span><span class="params">(<span class="meta">@ValidCom</span> <span class="meta">@RequestBody</span> PersonVo personVo)</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> personVo.getName() + <span class="string">&quot; &quot;</span> + personVo.getAge();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h4 id="BasicController"><a href="#BasicController" class="headerlink" title="BasicController"></a>BasicController</h4><p>&#xFF08;&#x4E0D;&#x662F;&#x5FC5;&#x987B;&#xFF0C;&#x53EA;&#x662F;&#x60F3;&#x589E;&#x52A0;&#x5F02;&#x5E38;&#x5904;&#x7406;&#x7684;&#x7C7B;&#xFF0C;&#x63A5;&#x53E3;&#x5F97;&#x5230;&#x7684;&#x8FD4;&#x56DE;&#x7ED3;&#x679C;&#x66F4;&#x597D;&#x770B;&#x70B9;&#xFF09;</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public <span class="class"><span class="keyword">class</span> <span class="title">BasicController</span> </span>{</span><br><span class="line">    @ExceptionHandler({IllegalArgumentException.class})</span><br><span class="line">    public</span><br><span class="line">    @ResponseBody</span><br><span class="line">    Response&lt;<span class="built_in">String</span>&gt; <span class="function"><span class="title">handleIllegalArgumentException</span>(<span class="params">HttpServletRequest req, IllegalArgumentException exception</span>)</span> {</span><br><span class="line">        <span class="keyword">return</span> Response.FAIL(<span class="number">500</span>, exception.getMessage());</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Response</span>&lt;<span class="title">E</span>&gt; </span>{</span><br><span class="line">    <span class="keyword">private</span> String status;</span><br><span class="line">    <span class="keyword">private</span> E result;</span><br><span class="line">    <span class="keyword">private</span> Integer error_code;</span><br><span class="line">    <span class="keyword">private</span> String error_msg;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> current_time;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">long</span> <span class="title">getCurrent_time</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.current_time;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setCurrent_time</span><span class="params">(<span class="keyword">long</span> current_time)</span> </span>{</span><br><span class="line">        <span class="keyword">this</span>.current_time = current_time;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Response</span><span class="params">(String status, E result, Integer error_code, String error_msg)</span> </span>{</span><br><span class="line">        <span class="keyword">this</span>.status = status;</span><br><span class="line">        <span class="keyword">this</span>.result = result;</span><br><span class="line">        <span class="keyword">this</span>.error_code = error_code;</span><br><span class="line">        <span class="keyword">this</span>.error_msg = error_msg;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getStatus</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.status;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setStatus</span><span class="params">(String status)</span> </span>{</span><br><span class="line">        <span class="keyword">this</span>.status = status;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> E <span class="title">getResult</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.result;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setResult</span><span class="params">(E result)</span> </span>{</span><br><span class="line">        <span class="keyword">this</span>.result = result;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Integer <span class="title">getError_code</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.error_code;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setError_code</span><span class="params">(Integer error_code)</span> </span>{</span><br><span class="line">        <span class="keyword">this</span>.error_code = error_code;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getError_msg</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.error_msg;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setError_msg</span><span class="params">(String error_msg)</span> </span>{</span><br><span class="line">        <span class="keyword">this</span>.error_msg = error_msg;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> &lt;E&gt; <span class="function">Response&lt;E&gt; <span class="title">SUCCESS</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> SUCCESS((E) <span class="keyword">null</span>);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> &lt;E&gt; <span class="function">Response&lt;E&gt; <span class="title">SUCCESS</span><span class="params">(E result)</span> </span>{</span><br><span class="line">        Response response = <span class="keyword">new</span> Response(<span class="string">&quot;success&quot;</span>, result, (Integer) <span class="keyword">null</span>, (String) <span class="keyword">null</span>);</span><br><span class="line">        response.setCurrent_time(System.currentTimeMillis());</span><br><span class="line">        <span class="keyword">return</span> response;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> &lt;E&gt; <span class="function">Response&lt;E&gt; <span class="title">FAIL</span><span class="params">(Integer error_code, String error_msg)</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Response(<span class="string">&quot;fail&quot;</span>, (Object) <span class="keyword">null</span>, error_code, error_msg);</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Response{status=&apos;&quot;</span> + <span class="keyword">this</span>.status + <span class="string">&apos;\&apos;&apos;</span> + <span class="string">&quot;, result=&quot;</span> + <span class="keyword">this</span>.result + <span class="string">&quot;, error_code=&quot;</span> + <span class="keyword">this</span>.error_code + <span class="string">&quot;, error_msg=&apos;&quot;</span> + <span class="keyword">this</span>.error_msg + <span class="string">&apos;\&apos;&apos;</span> + <span class="string">&apos;}&apos;</span>;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h2 id="&#x5E38;&#x89C1;&#x6CE8;&#x89E3;"><a href="#&#x5E38;&#x89C1;&#x6CE8;&#x89E3;" class="headerlink" title="&#x5E38;&#x89C1;&#x6CE8;&#x89E3;"></a>&#x5E38;&#x89C1;&#x6CE8;&#x89E3;</h2><h3 id="PostConstruct"><a href="#PostConstruct" class="headerlink" title="@PostConstruct"></a>@PostConstruct</h3><p>&#x8FD9;&#x662F;<code>Java</code>&#x81EA;&#x5DF1;&#x7684;&#x6CE8;&#x89E3;&#xFF0C;<code>Java</code>&#x6CE8;&#x89E3;&#x7684;&#x8BF4;&#x660E;&#xFF1A;<code>@PostConstruct</code>&#x8BE5;&#x6CE8;&#x89E3;&#x88AB;&#x7528;&#x6765;&#x4FEE;&#x9970;&#x4E00;&#x4E2A;&#x975E;&#x9759;&#x6001;&#x7684;<code>void()</code>&#x65B9;&#x6CD5;&#x3002;&#x88AB;<code>@PostConstruct</code>&#x4FEE;&#x9970;&#x7684;&#x65B9;&#x6CD5;&#x4F1A;&#x5728;&#x670D;&#x52A1;&#x5668;&#x52A0;&#x8F7D;<code>Servlet</code>&#x7684;&#x65F6;&#x5019;&#x8FD0;&#x884C;&#xFF0C;&#x5E76;&#x4E14;&#x53EA;&#x4F1A;&#x88AB;&#x670D;&#x52A1;&#x5668;&#x6267;&#x884C;&#x4E00;&#x6B21;&#x3002;<code>PostConstruct</code>&#x5728;&#x6784;&#x9020;&#x51FD;&#x6570;&#x4E4B;&#x540E;&#x6267;&#x884C;&#xFF0C;<code>init()</code>&#x65B9;&#x6CD5;&#x524D;&#x6267;&#x884C;&#x3002;</p>
+<p>&#x901A;&#x5E38;&#x6211;&#x4EEC;&#x4F1A;&#x662F;&#x5728;<code>Spring</code>&#x6846;&#x67B6;&#x4E2D;&#x4F7F;&#x7528;&#x5230;<code>@PostConstruct</code>&#x6CE8;&#x89E3;&#xFF0C;&#x8BE5;&#x6CE8;&#x89E3;&#x7684;&#x65B9;&#x6CD5;&#x5728;&#x6574;&#x4E2A;<code>Bean</code>&#x521D;&#x59CB;&#x5316;&#x4E2D;&#x7684;&#x6267;&#x884C;&#x987A;&#x5E8F;&#xFF1A;</p>
+<p><code>Constructor</code>&#xFF08;&#x6784;&#x9020;&#x65B9;&#x6CD5;&#xFF09;-&gt; <code>@Autowired</code>&#xFF08;&#x4F9D;&#x8D56;&#x6CE8;&#x5165;&#xFF09; -&gt; <code>@PostConstruct</code>&#xFF08;&#x6CE8;&#x91CA;&#x7684;&#x65B9;&#x6CD5;&#xFF09;</p>
+<h3 id="JsonUnwrapped"><a href="#JsonUnwrapped" class="headerlink" title="@JsonUnwrapped"></a>@JsonUnwrapped</h3><blockquote>
+<p>com.fasterxml.jackson.annotation</p>
+</blockquote>
+<p>&#x5B9A;&#x4E49;&#x5728;&#x5B57;&#x6BB5;&#x4E0A;&#xFF0C;&#x5C55;&#x5F00;&#x5B57;&#x6BB5;</p>
+<h3 id="JsonNaming"><a href="#JsonNaming" class="headerlink" title="@JsonNaming"></a>@JsonNaming</h3><blockquote>
+<p> com.fasterxml.jackson.databind.annotation</p>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonNaming(<span class="params">PropertyNamingStrategy.SnakeCaseStrategy.<span class="keyword">class</span></span>)</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x5B57;&#x6BB5;&#x9A7C;&#x5CF0;&#x547D;&#x540D;&#x8F6C;&#x4E3A;&#x4E0B;&#x5212;&#x7EBF;</p>
+<h3 id="JsonInclude"><a href="#JsonInclude" class="headerlink" title="@JsonInclude"></a>@JsonInclude</h3><blockquote>
+<p>com.fasterxml.jackson.annotation</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@JsonInclude(JsonInclude.Include.NON_NULL)</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x5B57;&#x6BB5;&#x4E3A;&#x7A7A;&#x4E0D;&#x8F6C;</p>
+<h3 id="FieldDefaults"><a href="#FieldDefaults" class="headerlink" title="@FieldDefaults"></a>@FieldDefaults</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@FieldDefaults(level = AccessLevel.PRIVATE)</span></span><br></pre></td></tr></table></figure>
+
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/06/19/SpringSecurity/" data-toggle="tooltip" data-placement="top" title="SpringSecurity单点登录">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/06/08/mongodb/" data-toggle="tooltip" data-placement="top" title="MongoDB">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Java&#x6CE8;&#x89E3;-Annotation"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Java&amp;#x6CE8;&amp;#x89E3;(Annotation)</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x5185;&#x7F6E;&#x7684;&#x6CE8;&#x89E3;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x5185;&amp;#x7F6E;&amp;#x7684;&amp;#x6CE8;&amp;#x89E3;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x4F5C;&#x7528;&#x5728;&#x4EE3;&#x7801;&#x7684;&#x6CE8;&#x89E3;&#x662F;"><span class="toc-nav-number">1.1.1.</span> <span class="toc-nav-text">&amp;#x4F5C;&amp;#x7528;&amp;#x5728;&amp;#x4EE3;&amp;#x7801;&amp;#x7684;&amp;#x6CE8;&amp;#x89E3;&amp;#x662F;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x4F5C;&#x7528;&#x5728;&#x5176;&#x4ED6;&#x6CE8;&#x89E3;&#x7684;&#x6CE8;&#x89E3;&#xFF08;&#x6216;&#x8005;&#x8BF4;&#x662F;&#x5143;&#x6CE8;&#x89E3;&#xFF09;"><span class="toc-nav-number">1.1.2.</span> <span class="toc-nav-text">&amp;#x4F5C;&amp;#x7528;&amp;#x5728;&amp;#x5176;&amp;#x4ED6;&amp;#x6CE8;&amp;#x89E3;&amp;#x7684;&amp;#x6CE8;&amp;#x89E3;&amp;#xFF08;&amp;#x6216;&amp;#x8005;&amp;#x8BF4;&amp;#x662F;&amp;#x5143;&amp;#x6CE8;&amp;#x89E3;&amp;#xFF09;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x4ECE;Java-7&#x5F00;&#x59CB;&#xFF0C;&#x989D;&#x5916;&#x6DFB;&#x52A0;&#x4E86;3&#x4E2A;&#x6CE8;&#x89E3;"><span class="toc-nav-number">1.1.3.</span> <span class="toc-nav-text">&amp;#x4ECE;Java 7&amp;#x5F00;&amp;#x59CB;&amp;#xFF0C;&amp;#x989D;&amp;#x5916;&amp;#x6DFB;&amp;#x52A0;&amp;#x4E86;3&amp;#x4E2A;&amp;#x6CE8;&amp;#x89E3;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x6CE8;&amp;#x89E3;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x793A;&#x4F8B;"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">&amp;#x793A;&amp;#x4F8B;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#interface"><span class="toc-nav-number">1.2.1.1.</span> <span class="toc-nav-text">@interface</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Documented"><span class="toc-nav-number">1.2.1.2.</span> <span class="toc-nav-text">@Documented</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Target-ElementType-TYPE"><span class="toc-nav-number">1.2.1.3.</span> <span class="toc-nav-text">@Target(ElementType.TYPE)</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Retention-RetentionPolicy-RUNTIME"><span class="toc-nav-number">1.2.1.4.</span> <span class="toc-nav-text">@Retention(RetentionPolicy.RUNTIME)</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x5B9E;&#x4F8B;1&#xFF1A;&#x53CD;&#x5C04;&#x83B7;&#x53D6;&#x6CE8;&#x89E3;"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">&amp;#x5B9E;&amp;#x4F8B;1&amp;#xFF1A;&amp;#x53CD;&amp;#x5C04;&amp;#x83B7;&amp;#x53D6;&amp;#x6CE8;&amp;#x89E3;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x5E94;&#x7528;&#x573A;&#x666F;1&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;-&#x62E6;&#x622A;&#x5668;-&#x5B9E;&#x73B0;&#x767B;&#x5F55;&#x6821;&#x9A8C;"><span class="toc-nav-number">1.2.3.</span> <span class="toc-nav-text">&amp;#x5E94;&amp;#x7528;&amp;#x573A;&amp;#x666F;1&amp;#xFF1A;&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x6CE8;&amp;#x89E3;+&amp;#x62E6;&amp;#x622A;&amp;#x5668; &amp;#x5B9E;&amp;#x73B0;&amp;#x767B;&amp;#x5F55;&amp;#x6821;&amp;#x9A8C;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x5E94;&#x7528;&#x573A;&#x666F;2&#xFF1A;&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;-AOP&#x5B9E;&#x73B0;&#x65E5;&#x5FD7;&#x6253;&#x5370;"><span class="toc-nav-number">1.2.4.</span> <span class="toc-nav-text">&amp;#x5E94;&amp;#x7528;&amp;#x573A;&amp;#x666F;2&amp;#xFF1A;&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x6CE8;&amp;#x89E3;+AOP&amp;#x5B9E;&amp;#x73B0;&amp;#x65E5;&amp;#x5FD7;&amp;#x6253;&amp;#x5370;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x81EA;&#x5B9A;&#x4E49;&#x6CE8;&#x89E3;&#x2014;&#x53C2;&#x6570;&#x6821;&#x9A8C;"><span class="toc-nav-number">1.2.5.</span> <span class="toc-nav-text">&amp;#x81EA;&amp;#x5B9A;&amp;#x4E49;&amp;#x6CE8;&amp;#x89E3;&amp;#x2014;&amp;#x53C2;&amp;#x6570;&amp;#x6821;&amp;#x9A8C;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x4F9D;&#x8D56;"><span class="toc-nav-number">1.2.5.1.</span> <span class="toc-nav-text">&amp;#x4F9D;&amp;#x8D56;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x58F0;&#x660E;&#x53C2;&#x6570;&#x6CE8;&#x89E3;"><span class="toc-nav-number">1.2.5.2.</span> <span class="toc-nav-text">&amp;#x58F0;&amp;#x660E;&amp;#x53C2;&amp;#x6570;&amp;#x6CE8;&amp;#x89E3;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x58F0;&#x660E;&#x5B57;&#x6BB5;&#x6CE8;&#x89E3;"><span class="toc-nav-number">1.2.5.3.</span> <span class="toc-nav-text">&amp;#x58F0;&amp;#x660E;&amp;#x5B57;&amp;#x6BB5;&amp;#x6CE8;&amp;#x89E3;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#AOP-&#x5207;&#x5165;"><span class="toc-nav-number">1.2.5.4.</span> <span class="toc-nav-text">AOP &amp;#x5207;&amp;#x5165;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x5B9E;&#x4F53;&#x7C7B;"><span class="toc-nav-number">1.2.5.5.</span> <span class="toc-nav-text">&amp;#x5B9E;&amp;#x4F53;&amp;#x7C7B;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Controller"><span class="toc-nav-number">1.2.5.6.</span> <span class="toc-nav-text">Controller</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#BasicController"><span class="toc-nav-number">1.2.5.7.</span> <span class="toc-nav-text">BasicController</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x5E38;&#x89C1;&#x6CE8;&#x89E3;"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">&amp;#x5E38;&amp;#x89C1;&amp;#x6CE8;&amp;#x89E3;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#PostConstruct"><span class="toc-nav-number">1.3.1.</span> <span class="toc-nav-text">@PostConstruct</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#JsonUnwrapped"><span class="toc-nav-number">1.3.2.</span> <span class="toc-nav-text">@JsonUnwrapped</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#JsonNaming"><span class="toc-nav-number">1.3.3.</span> <span class="toc-nav-text">@JsonNaming</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#JsonInclude"><span class="toc-nav-number">1.3.4.</span> <span class="toc-nav-text">@JsonInclude</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#FieldDefaults"><span class="toc-nav-number">1.3.5.</span> <span class="toc-nav-text">@FieldDefaults</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/06/10/Java%E6%B3%A8%E8%A7%A3/";
+    var disqus_url = "http://example.com/2020/06/10/Java%E6%B3%A8%E8%A7%A3/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

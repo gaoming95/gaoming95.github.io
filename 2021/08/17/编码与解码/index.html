@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          编码与解码 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2021/08/17/编码与解码/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                    <h1>编码与解码</h1>
+                    <h2 class="subheading">编码：将字符转为字节序列 解码：将字节序列转为字符</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2021-08-17
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="&#x7F16;&#x7801;&#x4E0E;&#x89E3;&#x7801;"><a href="#&#x7F16;&#x7801;&#x4E0E;&#x89E3;&#x7801;" class="headerlink" title="&#x7F16;&#x7801;&#x4E0E;&#x89E3;&#x7801;"></a>&#x7F16;&#x7801;&#x4E0E;&#x89E3;&#x7801;</h1><h2 id="&#x7F16;&#x7801;"><a href="#&#x7F16;&#x7801;" class="headerlink" title="&#x7F16;&#x7801;"></a>&#x7F16;&#x7801;</h2><p>&#x4EBA;&#x7C7B;&#x5148;&#x6709;&#x4E86;&#x81EA;&#x5DF1;&#x7684;&#x8BED;&#x8A00;&#xFF0C;&#x4EA4;&#x6D41;&#x4E86;&#x82E5;&#x5E72;&#x4E2A;&#x4E16;&#x7EAA;&#xFF0C;&#x7136;&#x540E;&#x51FA;&#x73B0;&#x4E86;&#x8BA1;&#x7B97;&#x673A;&#x3002;&#x53EF;&#x60DC;&#x8BA1;&#x7B97;&#x673A;&#x53EA;&#x8BA4;<code>0</code>&#x548C;<code>1</code>&#xFF0C;&#x4EBA;&#x7C7B;&#x53EA;&#x80FD;&#x8BA4;&#x6587;&#x5B57;&#xFF0C;&#x53CC;&#x65B9;&#x90FD;&#x4E0D;&#x80FD;&#x59A5;&#x534F;&#xFF0C;&#x90A3;&#x5C31;&#x5FC5;&#x987B;&#x8981;&#x6709;&#x4E00;&#x4E2A;&#x4ECE;&#x6587;&#x5B57;&#x5230;<code>0&#x3001;1</code>&#x7684;&#x6620;&#x5C04;&#x4E86;&#x3002;&#x4ECE;&#x6587;&#x5B57;&#x5230;<code>0&#x3001;1</code>&#x7684;&#x6620;&#x5C04;&#x79F0;&#x4E3A;&#x7F16;&#x7801;&#xFF0C;&#x53CD;&#x8FC7;&#x6765;&#x4ECE;<code>0&#x3001;1</code>&#x5230;&#x6587;&#x5B57;&#x53EB;&#x89E3;&#x7801;</p>
+<p><strong>&#x7F16;&#x7801;</strong>&#xFF1A;&#x5C06;&#x5B57;&#x7B26;&#x8F6C;&#x4E3A;&#x5B57;&#x8282;&#x5E8F;&#x5217;&#xFF08;<code>abcdefg</code>-&gt;<code>0101010&#x2026;10010</code>&#xFF09;<br><strong>&#x89E3;&#x7801;</strong>&#xFF1A;&#x5C06;&#x5B57;&#x8282;&#x5E8F;&#x5217;&#x8F6C;&#x4E3A;&#x5B57;&#x7B26;&#xFF08;<code>1001010&#x2026;10010110</code>-&gt; <code>abcdefg</code>&#xFF09;</p>
+<h3 id="ASCII&#x7F16;&#x7801;"><a href="#ASCII&#x7F16;&#x7801;" class="headerlink" title="ASCII&#x7F16;&#x7801;"></a>ASCII&#x7F16;&#x7801;</h3><p>&#x8BA1;&#x7B97;&#x673A;&#xFF0C;&#x5B83;&#x53EA;&#x8BA4;&#x8BC6;<code>0</code>&#x548C;<code>1</code>&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x9AD8;&#x4F4E;&#x7535;&#x5E73;&#x3002;&#x4E8E;&#x662F;&#x60F3;&#x8BA9;&#x8BA1;&#x7B97;&#x673A;&#x8BC6;&#x522B;&#x6211;&#x4EEC;&#x4EBA;&#x7C7B;&#x7684;&#x8BED;&#x8A00;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x5B57;&#x7B26;&#xFF0C;&#x5219;&#x9700;&#x8981;&#x4E00;&#x4E2A;&#x5BF9;&#x5E94;&#x5173;&#x7CFB;&#x3002;&#x7531;&#x4E8E;&#x8BA1;&#x7B97;&#x673A;&#x5728;&#x7F8E;&#x56FD;&#x8BDE;&#x751F;&#xFF0C;&#x4E8E;&#x662F;&#x7F8E;&#x56FD;&#x7ED9;&#x4E86;&#x4E00;&#x4E2A;&#x5BF9;&#x5E94;&#x5173;&#x7CFB;&#x8868;&#xFF0C;&#x79F0;&#x4E3A;<code>ASCII</code>&#x7F16;&#x7801;</p>
+<p><img src="/2021/08/17/%E7%BC%96%E7%A0%81%E4%B8%8E%E8%A7%A3%E7%A0%81/20190408173150892-16291862993903.jpg" alt="20190408173150892"></p>
+<p>&#x8BA1;&#x7B97;&#x673A;&#x91CC;&#x53EA;&#x6709;<code>0</code>&#x548C;<code>1</code>&#xFF0C;&#x600E;&#x4E48;&#x6765;&#x8868;&#x793A;<code>Hello World</code>&#x5462;&#xFF08;&#x5047;&#x5982;&#x6211;&#x4EEC;&#x5728;&#x7F8E;&#x56FD;&#xFF09;&#xFF0C;&#x90A3;&#x5C31;&#x9700;&#x8981;&#x5C06;&#x5B57;&#x6BCD;&#x6570;&#x5B57;&#x53CA;&#x6807;&#x70B9;&#x7B26;&#x53F7;&#x7F16;&#x4E00;&#x4E2A;&#x53F7;&#x3002;&#x4E00;&#x4E2A;&#x5B57;&#x8282;&#x53EF;&#x4EE5;&#x8868;&#x793A;<code>256</code>&#x4E2A;&#x6570;&#x5B57;&#xFF0C;&#x8868;&#x793A;&#x5B57;&#x6BCD;&#x6570;&#x5B57;&#x6807;&#x70B9;&#x8DB3;&#x591F;&#x4E86;&#xFF0C;&#x6240;&#x4EE5;&#x7528;&#x4E00;&#x4E2A;&#x5B57;&#x8282;&#x5C31;&#x53EF;&#x4EE5;&#x5BF9;&#x5E94;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x4E86;&#x3002;&#x8FD9;&#x6837;&#x4E00;&#x6765;&#x8BA1;&#x7B97;&#x673A;&#x5728;&#x663E;&#x793A;&#x6587;&#x5B57;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x5148;&#x5C06;<code>0</code>&#x3001;<code>1</code>&#x89E3;&#x7801;&#x6210;&#x5BF9;&#x5E94;&#x7684;&#x6587;&#x5B57;&#xFF0C;&#x7136;&#x540E;&#x5728;&#x5C4F;&#x5E55;&#x4E0A;&#x6E32;&#x67D3;&#x51FA;&#x6765;&#x5C31;&#x53EF;&#x4EE5;&#x4E86;&#x3002;&#x6211;&#x4EEC;&#x5C06;<code>Hello World</code>&#x53EB;&#x505A;&#x5B57;&#x7B26;&#xFF0C;&#x8BA1;&#x7B97;&#x673A;&#x5B9E;&#x9645;&#x5B58;&#x50A8;&#x7684;&#x662F;&#x5B57;&#x7B26;&#x5BF9;&#x5E94;&#x7684;&#x7F16;&#x53F7;&#xFF0C;&#x8FD9;&#x4E9B;&#x7F16;&#x53F7;&#x5C31;&#x53EB;&#x5B57;&#x8282;&#x6D41;&#x3002;</p>
+<p>.&#x4E0A;&#x8FB9;&#x8FD9;&#x79CD;&#x7F16;&#x7801;&#x5C31;&#x662F;ASCII&#x7801;&#xFF0C;&#x5982;&#x679C;&#x8BA1;&#x7B97;&#x673A;&#x53EA;&#x5728;&#x7F8E;&#x56FD;&#x7528;&#x6216;&#x8005;&#x53EA;&#x663E;&#x793A;&#x82F1;&#x8BED;&#xFF0C;&#x90A3;&#x7F16;&#x7801;&#x5C31;&#x662F;&#x900F;&#x660E;&#x7684;&#xFF0C;&#x8C01;&#x90FD;&#x4E0D;&#x9700;&#x8981;&#x53BB;&#x5173;&#x5FC3;&#x7F16;&#x7801;&#xFF0C;&#x4E00;&#x5207;&#x90FD;&#x89C9;&#x5F97;&#x7406;&#x6240;&#x5F53;&#x7136;&#x3002;</p>
+<p>&#x5404;&#x4E2A;&#x56FD;&#x5BB6;&#x4E3A;&#x4E86;&#x4F7F;&#x7528;&#x8BA1;&#x7B97;&#x673A;&#xFF0C;&#x4E5F;&#x9700;&#x8981;&#x672C;&#x56FD;&#x7684;&#x8BED;&#x8A00;&#x7B26;&#x53F7;&#x88AB;&#x8BA1;&#x7B97;&#x673A;&#x8BC6;&#x522B;&#xFF0C;&#x4E8E;&#x662F;&#x5404;&#x79CD;&#x7F16;&#x7801;&#x5C42;&#x51FA;&#x4E0D;&#x7A77;&#xFF1A;&#x4E2D;&#x56FD;&#x6709;<code>GBK</code>&#xFF0C;&#x65E5;&#x672C;&#x6709;<code>EUC-JP</code>&#xFF0C;&#x97E9;&#x56FD;&#x6709;<code>EUC-KR</code>&#xFF0C;&#x751A;&#x81F3;&#x4E00;&#x4E2A;&#x56FD;&#x5BB6;&#x4E5F;&#x4E0D;&#x53EA;&#x6709;&#x4E00;&#x79CD;&#x7F16;&#x7801;&#xFF0C;&#x6BD4;&#x5982;&#x4E2D;&#x56FD;&#x7E41;&#x4F53;&#x8FD8;&#x6709;<code>big5</code>&#x7B49;&#x7B49;&#x3002;&#x603B;&#x4E4B;&#x5C31;&#x662F;&#xFF0C;&#x6BCF;&#x4E2A;&#x56FD;&#x5BB6;&#x4E3A;&#x4E86;&#x8BA9;&#x8BA1;&#x7B97;&#x673A;&#x8BA4;&#x8BC6;&#x81EA;&#x5DF1;&#x56FD;&#x5BB6;&#x7684;&#x6587;&#x5B57;&#xFF0C;&#x90FD;&#x51FA;&#x4E86;&#x8BB8;&#x591A;&#x5BF9;&#x5E94;&#x7684;&#x7F16;&#x7801;&#x3002;</p>
+<p>&#x5F88;&#x663E;&#x7136;&#x8FD9;&#x6837;&#x505A;&#x5E76;&#x4E0D;&#x957F;&#x4E45;&#xFF0C;&#x6BCF;&#x4E2A;&#x56FD;&#x5BB6;&#x90FD;&#x6709;&#x81EA;&#x5DF1;&#x7684;&#x7F16;&#x7801;&#x5B9E;&#x5728;&#x6709;&#x70B9;&#x4E71;&#xFF0C;&#x8FDE;&#x4E24;&#x4E2A;&#x56FD;&#x5BB6;&#x7684;&#x8BED;&#x8A00;&#x90FD;&#x4E0D;&#x80FD;&#x653E;&#x5728;&#x4E00;&#x8D77;&#x3002;&#x6240;&#x4EE5;&#x53EF;&#x4EE5;&#x5C06;&#x4E16;&#x754C;&#x5F53;&#x6210;&#x4E00;&#x4E2A;&#x6574;&#x4F53;&#xFF0C;&#x628A;&#x6240;&#x6709;&#x7684;&#x6587;&#x5B57;&#x7EDF;&#x4E00;&#x7F16;&#x53F7;&#xFF0C;&#x8FD9;&#x65F6;&#x5019;&#x5C31;&#x51FA;&#x73B0;&#x4E86;<code>unicode</code>&#x7F16;&#x7801;&#x3002;</p>
+<h3 id="Unicode&#x7F16;&#x7801;"><a href="#Unicode&#x7F16;&#x7801;" class="headerlink" title="Unicode&#x7F16;&#x7801;"></a>Unicode&#x7F16;&#x7801;</h3><p>&#x6BCF;&#x4E2A;&#x56FD;&#x5BB6;&#x90FD;&#x5236;&#x5B9A;&#x4E86;&#x81EA;&#x5DF1;&#x7684;&#x7F16;&#x7801;&#xFF0C;&#x6BCF;&#x4E2A;&#x7F51;&#x7AD9;&#x90FD;&#x53EF;&#x4EE5;&#x5728;&#x81EA;&#x5DF1;&#x7684;&#x56FD;&#x5BB6;&#x8FD0;&#x884C;&#x826F;&#x597D;&#x3002;&#x4F46;&#x4E92;&#x8054;&#x7F51;&#x662F;&#x8BA9;&#x5168;&#x4E16;&#x754C;&#x8FDE;&#x6210;&#x4E86;&#x4E00;&#x4F53;&#xFF0C;&#x5F53;&#x672C;&#x56FD;&#x53D1;&#x51FA;&#x7684;&#x4FE1;&#x606F;&#x8D70;&#x5411;&#x56FD;&#x9645;&#x65F6;&#xFF0C;&#x591A;&#x8BED;&#x8A00;&#x73AF;&#x5883;&#x8BA9;&#x6BCF;&#x4E00;&#x79CD;&#x7F16;&#x7801;&#x90FD;&#x63AA;&#x624B;&#x4E0D;&#x53CA;&#x3002;&#x4E8E;&#x662F;&#x51FA;&#x73B0;&#x4E86;<code>unicode</code>&#x7F16;&#x7801;</p>
+<blockquote>
+<p>Unicode&#xFF08;&#x4E2D;&#x6587;&#xFF1A;&#x4E07;&#x56FD;&#x7801;&#x3001;&#x56FD;&#x9645;&#x7801;&#x3001;&#x7EDF;&#x4E00;&#x7801;&#x3001;&#x5355;&#x4E00;&#x7801;&#xFF09;&#x662F;&#x8BA1;&#x7B97;&#x673A;&#x79D1;&#x5B66;&#x9886;&#x57DF;&#x91CC;&#x7684;&#x4E00;&#x9879;&#x4E1A;&#x754C;&#x6807;&#x51C6;&#x3002;&#x5B83;&#x5BF9;&#x4E16;&#x754C;&#x4E0A;&#x5927;&#x90E8;&#x5206;&#x7684;&#x6587;&#x5B57;&#x7CFB;&#x7EDF;&#x8FDB;&#x884C;&#x4E86;&#x6574;&#x7406;&#x3001;&#x7F16;&#x7801;&#xFF0C;&#x4F7F;&#x5F97;&#x8BA1;&#x7B97;&#x673A;&#x53EF;&#x4EE5;&#x7528;&#x66F4;&#x4E3A;&#x7B80;&#x5355;&#x7684;&#x65B9;&#x5F0F;&#x6765;&#x5448;&#x73B0;&#x548C;&#x5904;&#x7406;&#x6587;&#x5B57;&#x3002;</p>
+<p>Unicode&#x4F34;&#x968F;&#x7740;&#x901A;&#x7528;&#x5B57;&#x7B26;&#x96C6;&#x7684;&#x6807;&#x51C6;&#x800C;&#x53D1;&#x5C55;&#xFF0C;&#x540C;&#x65F6;&#x4E5F;&#x4EE5;&#x300A;The Unicode Standard&#x300B;&#x4E66;&#x672C;&#x7684;&#x5F62;&#x5F0F;&#x5BF9;&#x5916;&#x53D1;&#x8868;&#x3002;Unicode&#x81F3;&#x4ECA;&#x4ECD;&#x5728;&#x4E0D;&#x65AD;&#x589E;&#x4FEE;&#xFF0C;&#x6BCF;&#x4E2A;&#x65B0;&#x7248;&#x672C;&#x90FD;&#x52A0;&#x5165;&#x66F4;&#x591A;&#x65B0;&#x7684;&#x5B57;&#x7B26;&#x3002;&#x5F53;&#x524D;&#x6700;&#x65B0;&#x7684;&#x7248;&#x672C;&#x4E3A;2019&#x5E74;3&#x6708;5&#x65E5;&#x516C;&#x5E03;&#x7684;12.0.0[2]&#xFF0C;&#x5DF2;&#x7ECF;&#x6536;&#x5F55;&#x8D85;&#x8FC7;13&#x4E07;&#x4E2A;&#x5B57;&#x7B26;&#xFF08;&#x7B2C;&#x5341;&#x4E07;&#x4E2A;&#x5B57;&#x7B26;&#x5728;2005&#x5E74;&#x83B7;&#x91C7;&#x7EB3;&#xFF09;&#x3002;Unicode&#x6DB5;&#x76D6;&#x7684;&#x6570;&#x636E;&#x9664;&#x4E86;&#x89C6;&#x89C9;&#x4E0A;&#x7684;&#x5B57;&#x5F62;&#x3001;&#x7F16;&#x7801;&#x65B9;&#x6CD5;&#x3001;&#x6807;&#x51C6;&#x7684;&#x5B57;&#x7B26;&#x7F16;&#x7801;&#x5916;&#xFF0C;&#x8FD8;&#x5305;&#x542B;&#x4E86;&#x5B57;&#x7B26;&#x7279;&#x6027;&#xFF0C;&#x5982;&#x5927;&#x5C0F;&#x5199;&#x5B57;&#x6BCD;&#x3002; &#x2014;&#x2014;&#x7EF4;&#x57FA;&#x767E;&#x79D1;</p>
+</blockquote>
+<p><code>unicode</code>&#x7F16;&#x7801;&#x5C31;&#x662F;&#x6536;&#x5F55;&#x4E86;&#x5168;&#x4E16;&#x754C;&#x7684;&#x6240;&#x6709;&#x5B57;&#x7B26;&#xFF0C;&#x7EDF;&#x4E00;&#x8FDB;&#x884C;&#x7F16;&#x7801;&#x3002;</p>
+<p>unicode&#x7F16;&#x7801;&#x7528;&#x4E86;&#x4E24;&#x4E2A;&#x5B57;&#x8282;&#x6765;&#x8868;&#x793A;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x3002;&#x5176;&#x5B9E;&#xFF0C;&#x7F16;&#x7801;&#x7684;&#x53D1;&#x5C55;&#x8FC7;&#x7A0B;&#x5E76;&#x6CA1;&#x6709;&#x8FD9;&#x4E48;&#x987A;&#x5229;&#xFF0C;&#x4E2D;&#x95F4;&#x8FD8;&#x662F;&#x51FA;&#x73B0;&#x4E86;&#x5F88;&#x591A;&#x5176;&#x4ED6;&#x7684;&#x7F16;&#x7801;&#x3002;&#x90A3;&#x95EE;&#x9898;&#x5C82;&#x4E0D;&#x662F;&#x89E3;&#x51B3;&#x4E86;&#xFF0C;&#x5927;&#x5BB6;&#x90FD;&#x7528;<code>unicode</code>&#x4E0D;&#x5C31;&#x5B8C;&#x4E8B;&#x4E86;&#x5417;&#xFF0C;&#x54EA;&#x6709;&#x8FD9;&#x4E48;&#x7B80;&#x5355;&#x5462;&#xFF0C;<code>unicode</code>&#x51FA;&#x73B0;&#x4E4B;&#x524D;&#x8BA1;&#x7B97;&#x673A;&#x9886;&#x57DF;&#x5DF2;&#x7ECF;&#x6709;&#x5F88;&#x591A;&#x6210;&#x578B;&#x7684;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x8F6F;&#x4EF6;&#x751A;&#x81F3;&#x6807;&#x51C6;&#xFF0C;&#x4E0D;&#x53EF;&#x80FD;&#x90FD;&#x7EDF;&#x4E00;&#x6539;&#x6210;<code>unicode</code>&#x7F16;&#x7801;&#x3002;&#x6240;&#x4EE5;&#x5230;&#x73B0;&#x5728;&#x8FD8;&#x662F;&#x4F1A;&#x9047;&#x5230;&#x7F16;&#x7801;&#x95EE;&#x9898;&#xFF0C;<code>unicode</code>&#x53EA;&#x662F;&#x7ED9;&#x6211;&#x4EEC;&#x63D0;&#x4F9B;&#x4E86;&#x4E00;&#x79CD;&#x7EDF;&#x4E00;&#x89E3;&#x91CA;&#x6240;&#x6709;&#x6587;&#x5B57;&#x7684;&#x7F16;&#x7801;&#x65B9;&#x6848;</p>
+<p><code>Unicode</code>&#x7684;&#x5B9E;&#x73B0;&#x65B9;&#x5F0F;&#x4E0D;&#x540C;&#x4E8E;&#x7F16;&#x7801;&#x65B9;&#x5F0F;&#x3002;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x7684;<code>Unicode</code>&#x7F16;&#x7801;&#x662F;&#x786E;&#x5B9A;&#x7684;&#xFF08;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x5B57;&#x7B26;&#x5BF9;&#x5E94;&#x7684;&#x6570;&#x5B57;&#x662F;&#x786E;&#x5B9A;&#x7684;&#xFF09;&#x3002;&#x4F46;&#x662F;&#x5728;&#x5B9E;&#x9645;&#x4F20;&#x8F93;&#x8FC7;&#x7A0B;&#x4E2D;&#xFF0C;&#x7531;&#x4E8E;&#x4E0D;&#x540C;&#x7CFB;&#x7EDF;&#x5E73;&#x53F0;&#x7684;&#x8BBE;&#x8BA1;&#x4E0D;&#x4E00;&#x5B9A;&#x4E00;&#x81F4;&#xFF0C;&#x4EE5;&#x53CA;&#x51FA;&#x4E8E;&#x8282;&#x7701;&#x7A7A;&#x95F4;&#x7684;&#x76EE;&#x7684;&#xFF0C;&#x5BF9;<code>Unicode</code>&#x7F16;&#x7801;&#x7684;&#x5B9E;&#x73B0;&#x65B9;&#x5F0F;&#x6709;&#x6240;&#x4E0D;&#x540C;&#xFF08;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#xFF0C;&#x8FD9;&#x4E2A;&#x6570;&#x5B57;&#x7528;&#x51E0;&#x4E2A;&#x5B57;&#x8282;&#x6765;&#x5B58;&#x6709;&#x6240;&#x4E0D;&#x540C;&#xFF09;&#x3002;<code>Unicode</code>&#x7684;&#x5B9E;&#x73B0;&#x65B9;&#x5F0F;&#x79F0;&#x4E3A;<code>Unicode</code>&#x8F6C;&#x6362;&#x683C;&#x5F0F;&#xFF08;<code>Unicode Transformation Format</code>&#xFF0C;&#x7B80;&#x79F0;&#x4E3A;<code>UTF</code>&#xFF09;&#x3002;&#x6BD4;&#x5982;<code>UTF-8</code>&#x3001;<code>UTF-16</code>&#x7B49;&#x3002;&#x53EF;&#x4EE5;&#x7B80;&#x5355;&#x7406;&#x89E3;&#xFF0C;<code>unicode</code>&#x662F;&#x4E00;&#x4E2A;&#x5B57;&#x7B26;&#x96C6;&#xFF0C;<code>utf8</code>&#x7B49;&#x662F;&#x8FD9;&#x4E2A;&#x5B57;&#x7B26;&#x96C6;&#x7684;&#x4E0D;&#x540C;&#x7F16;&#x7801;&#x89C4;&#x5219;&#x5B9E;&#x73B0;</p>
+<h3 id="UTF"><a href="#UTF" class="headerlink" title="UTF"></a>UTF</h3><p>&#x4E8B;&#x5B9E;&#x8BC1;&#x660E;&#xFF0C;&#x5BF9;&#x53EF;&#x4EE5;&#x7528;<code>ASCII</code>&#x8868;&#x793A;&#x7684;&#x5B57;&#x7B26;&#x4F7F;&#x7528;<code>UNICODE</code>&#x5E76;&#x4E0D;&#x9AD8;&#x6548;&#xFF0C;&#x56E0;&#x4E3A;<code>UNICODE</code>&#x6BD4;<code>ASCII</code>&#x5360;&#x7528;&#x5927;&#x4E00;&#x500D;&#x7684;&#x7A7A;&#x95F4;&#xFF0C;&#x800C;&#x5BF9;<code>ASCII</code>&#x6765;&#x8BF4;&#x9AD8;&#x5B57;&#x8282;&#x7684;<code>0</code>&#x5BF9;&#x4ED6;&#x6BEB;&#x65E0;&#x7528;&#x5904;&#x3002;&#x4E3A;&#x4E86;&#x89E3;&#x51B3;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#xFF0C;&#x5C31;&#x51FA;&#x73B0;&#x4E86;&#x4E00;&#x4E9B;&#x4E2D;&#x95F4;&#x683C;&#x5F0F;&#x7684;&#x5B57;&#x7B26;&#x96C6;&#xFF0C;&#x4ED6;&#x4EEC;&#x88AB;&#x79F0;&#x4E3A;&#x901A;&#x7528;&#x8F6C;&#x6362;&#x683C;&#x5F0F;&#xFF0C;&#x5373;<code>UTF&#xFF08;Unicode Transformation Format&#xFF09;</code>&#x3002;&#x76EE;&#x524D;&#x5B58;&#x5728;&#x7684;UTF&#x683C;&#x5F0F;&#x6709;&#xFF1A;<code>UTF-7</code>&#xFF0C;<code>UTF-7.5</code>&#xFF0C;<code>UTF-8</code>&#xFF0C;<code>UTF-16</code>&#xFF0C;&#x4EE5;&#x53CA; <code>UTF-32</code>&#x3002;</p>
+<p><code>UTF</code>&#xFF0C;&#x662F;<strong>U</strong>nicode <strong>T</strong>ransformation <strong>F</strong>ormat&#x7684;&#x7F29;&#x5199;&#xFF0C;&#x610F;&#x4E3A;<code>Unicode</code>&#x8F6C;&#x6362;&#x683C;&#x5F0F;&#x3002;</p>
+<p>&#x5176;&#x4E2D;&#xFF0C;<code>UTF-8</code>&#x662F;<code>UTF</code>&#x4E2D;&#x6700;&#x5E38;&#x7528;&#x7684;&#x8F6C;&#x6362;&#x683C;&#x5F0F;&#xFF0C;&#x662F;<code>UNICODE</code>&#x7684;&#x4E00;&#x79CD;&#x53D8;&#x957F;&#x5B57;&#x7B26;&#x7F16;&#x7801;</p>
+<p><code>UTF-8</code>&#xFF08;<code>8</code>&#x4F4D;&#x5143;&#xFF0C;<code>Universal Character Set/Unicode Transformation Format</code>&#xFF09;&#x662F;&#x9488;&#x5BF9;<code>Unicode</code>&#x7684;&#x4E00;&#x79CD;&#x53EF;&#x53D8;&#x957F;&#x5EA6;&#x5B57;&#x7B26;&#x7F16;&#x7801;&#x3002;&#x5B83;&#x53EF;&#x4EE5;&#x7528;&#x6765;&#x8868;&#x793A;<code>Unicode</code>&#x6807;&#x51C6;&#x4E2D;&#x7684;&#x4EFB;&#x4F55;&#x5B57;&#x7B26;&#xFF0C;&#x800C;&#x4E14;&#x5176;&#x7F16;&#x7801;&#x4E2D;&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x5B57;&#x8282;&#x4ECD;&#x4E0E;<code>ASCII</code>&#x76F8;&#x5BB9;&#xFF0C;&#x4F7F;&#x5F97;&#x539F;&#x6765;&#x5904;&#x7406;<code>ASCII</code>&#x5B57;&#x7B26;&#x7684;&#x8F6F;&#x4EF6;&#x65E0;&#x987B;&#x6216;&#x53EA;&#x8FDB;&#x884C;&#x5C11;&#x90E8;&#x5206;&#x4FEE;&#x6539;&#x540E;&#xFF0C;&#x4FBF;&#x53EF;&#x7EE7;&#x7EED;&#x4F7F;&#x7528;&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x5B83;&#x9010;&#x6E10;&#x6210;&#x4E3A;&#x7535;&#x5B50;&#x90AE;&#x4EF6;&#x3001;&#x7F51;&#x9875;&#x53CA;&#x5176;&#x4ED6;&#x5B58;&#x50A8;&#x6216;&#x4F20;&#x9001;&#x6587;&#x5B57;&#x7684;&#x5E94;&#x7528;&#x4E2D;&#xFF0C;&#x4F18;&#x5148;&#x91C7;&#x7528;&#x7684;&#x7F16;&#x7801;</p>
+<blockquote>
+<p>&#x5728;&#x6240;&#x6709;&#x5B57;&#x7B26;&#x96C6;&#x4E2D;&#xFF0C;&#x6700;&#x77E5;&#x540D;&#x7684;&#x53EF;&#x80FD;&#x8981;&#x6570;&#x88AB;&#x79F0;&#x4E3A;ASCII&#x7684;8&#x4F4D;&#x5B57;&#x7B26;&#x96C6;&#x4E86;&#x3002;&#x5B83;&#x662F;&#x7F8E;&#x56FD;&#x6807;&#x51C6;&#x4FE1;&#x606F;&#x4EA4;&#x6362;&#x4EE3;&#x7801;&#xFF08;American Standard Code for Information Interchange&#xFF09;&#x7684;&#x7F29;&#x5199;, &#x4E3A;&#x7F8E;&#x56FD;&#x82F1;&#x8BED;&#x901A;&#x4FE1;&#x6240;&#x8BBE;&#x8BA1;&#x3002;&#x5B83;&#x7531;128&#x4E2A;&#x5B57;&#x7B26;&#x7EC4;&#x6210;&#xFF0C;&#x5305;&#x62EC;&#x5927;&#x5C0F;&#x5199;&#x5B57;&#x6BCD;&#x3001;&#x6570;&#x5B57;0-9&#x3001;&#x6807;&#x70B9;&#x7B26;&#x53F7;&#x3001;&#x975E;&#x6253;&#x5370;&#x5B57;&#x7B26;&#xFF08;&#x6362;&#x884C;&#x7B26;&#x3001;&#x5236;&#x8868;&#x7B26;&#x7B49;4&#x4E2A;&#xFF09;&#x4EE5;&#x53CA;&#x63A7;&#x5236;&#x5B57;&#x7B26;&#xFF08;&#x9000;&#x683C;&#x3001;&#x54CD;&#x94C3;&#x7B49;&#xFF09;&#x7EC4;&#x6210;&#x3002;<br>&#x4F46;&#x662F;&#xFF0C;&#x7531;&#x4E8E;&#x5B83;&#x662F;&#x9488;&#x5BF9;&#x82F1;&#x8BED;&#x8BBE;&#x8BA1;&#x7684;&#xFF0C;&#x5F53;&#x5904;&#x7406;&#x5E26;&#x6709;&#x97F3;&#x8C03;&#x6807;&#x53F7;&#xFF08;&#x5F62;&#x5982;&#x6C49;&#x8BED;&#x7684;&#x62FC;&#x97F3;&#xFF09;&#x7684;&#x4E9A;&#x6D32;&#x6587;&#x5B57;&#x65F6;&#x5C31;&#x4F1A;&#x51FA;&#x73B0;&#x95EE;&#x9898;&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x521B;&#x5EFA;&#x51FA;&#x4E86;&#x4E00;&#x4E9B;&#x5305;&#x62EC;256&#x4E2A;&#x5B57;&#x7B26;&#x7684;&#x7531;ASCII&#x6269;&#x5C55;&#x7684;&#x5B57;&#x7B26;&#x96C6;&#x3002;&#x5176;&#x4E2D;&#x6709;&#x4E00;&#x79CD;&#x901A;&#x5E38;&#x88AB;&#x79F0;&#x4E3A;IBM&#x5B57;&#x7B26;&#x96C6;&#xFF0C;&#x5B83;&#x628A;&#x503C;&#x4E3A;128-255&#x4E4B;&#x95F4;&#x7684;&#x5B57;&#x7B26;&#x7528;&#x4E8E;&#x753B;&#x56FE;&#x548C;&#x753B;&#x7EBF;&#xFF0C;&#x4EE5;&#x53CA;&#x4E00;&#x4E9B;&#x7279;&#x6B8A;&#x7684;&#x6B27;&#x6D32;&#x5B57;&#x7B26;&#x3002;&#x53E6;&#x4E00;&#x79CD;8&#x4F4D;&#x5B57;&#x7B26;&#x96C6;&#x662F;ISO 8859-1Latin 1&#xFF0C;&#x4E5F;&#x7B80;&#x79F0;&#x4E3A;ISOLatin-1&#x3002;&#x5B83;&#x628A;&#x4F4D;&#x4E8E;128-255&#x4E4B;&#x95F4;&#x7684;&#x5B57;&#x7B26;&#x7528;&#x4E8E;&#x62C9;&#x4E01;&#x5B57;&#x6BCD;&#x8868;&#x4E2D;&#x7279;&#x6B8A;&#x8BED;&#x8A00;&#x5B57;&#x7B26;&#x7684;&#x7F16;&#x7801;&#xFF0C;&#x4E5F;&#x56E0;&#x6B64;&#x800C;&#x5F97;&#x540D;&#x3002;&#x6B27;&#x6D32;&#x8BED;&#x8A00;&#x4E0D;&#x662F;&#x5730;&#x7403;&#x4E0A;&#x7684;&#x552F;&#x4E00;&#x8BED;&#x8A00;&#xFF0C;&#x56E0;&#x6B64;&#x4E9A;&#x6D32;&#x548C;&#x975E;&#x6D32;&#x8BED;&#x8A00;&#x5E76;&#x4E0D;&#x80FD;&#x88AB;8&#x4F4D;&#x5B57;&#x7B26;&#x96C6;&#x6240;&#x652F;&#x6301;&#x3002;&#x4EC5;&#x6C49;&#x8BED;&#x5B57;&#x6BCD;&#x8868;&#xFF08;&#x6216;pictograms&#xFF09;&#x5C31;&#x6709;80000&#x4EE5;&#x4E0A;&#x4E2A;&#x5B57;&#x7B26;&#x3002;&#x4F46;&#x662F;&#x628A;&#x6C49;&#x8BED;&#x3001;&#x65E5;&#x8BED;&#x548C;&#x8D8A;&#x5357;&#x8BED;&#x7684;&#x4E00;&#x4E9B;&#x76F8;&#x4F3C;&#x7684;&#x5B57;&#x7B26;&#x7ED3;&#x5408;&#x8D77;&#x6765;&#xFF0C;&#x5728;&#x4E0D;&#x540C;&#x7684;&#x8BED;&#x8A00;&#x91CC;&#xFF0C;&#x4F7F;&#x4E0D;&#x540C;&#x7684;&#x5B57;&#x7B26;&#x4EE3;&#x8868;&#x4E0D;&#x540C;&#x7684;&#x5B57;&#xFF0C;&#x8FD9;&#x6837;&#x53EA;&#x7528;2&#x4E2A;&#x5B57;&#x8282;&#x5C31;&#x53EF;&#x4EE5;&#x7F16;&#x7801;&#x5730;&#x7403;&#x4E0A;&#x51E0;&#x4E4E;&#x6240;&#x6709;&#x5730;&#x533A;&#x7684;&#x6587;&#x5B57;&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x521B;&#x5EFA;&#x4E86;UNICODE&#x7F16;&#x7801;&#x3002;&#x5B83;&#x901A;&#x8FC7;&#x589E;&#x52A0;&#x4E00;&#x4E2A;&#x9AD8;&#x5B57;&#x8282;&#x5BF9;ISO Latin-1&#x5B57;&#x7B26;&#x96C6;&#x8FDB;&#x884C;&#x6269;&#x5C55;&#xFF0C;&#x5F53;&#x8FD9;&#x4E9B;&#x9AD8;&#x5B57;&#x8282;&#x4F4D;&#x4E3A;0&#x65F6;&#xFF0C;&#x4F4E;&#x5B57;&#x8282;&#x5C31;&#x662F;ISO Latin-1&#x5B57;&#x7B26;&#x3002;UNICODE&#x652F;&#x6301;&#x6B27;&#x6D32;&#x3001;&#x975E;&#x6D32;&#x3001;&#x4E2D;&#x4E1C;&#x3001;&#x4E9A;&#x6D32;&#xFF08;&#x5305;&#x62EC;&#x7EDF;&#x4E00;&#x6807;&#x51C6;&#x7684;&#x4E1C;&#x4E9A;&#x8C61;&#x5F62;&#x6C49;&#x5B57;&#x548C;&#x97E9;&#x56FD;&#x8868;&#x97F3;&#x6587;&#x5B57;&#xFF09;&#x3002;&#x4F46;&#x662F;&#xFF0C;UNICODE&#x5E76;&#x6CA1;&#x6709;&#x63D0;&#x4F9B;&#x5BF9;&#x8BF8;&#x5982;Braille(&#x76F2;&#x6587;),Cherokee, Ethiopic(&#x57C3;&#x585E;&#x4FC4;&#x6BD4;&#x4E9A;&#x8BED;), Khmer(&#x9AD8;&#x68C9;&#x8BED;), Mongolian(&#x8499;&#x53E4;&#x8BED;), Hmong(&#x82D7;&#x8BED;), Tai Lu, Tai Mau&#x6587;&#x5B57;&#x7684;&#x652F;&#x6301;&#x3002;&#x540C;&#x65F6;&#x5B83;&#x4E5F;&#x4E0D;&#x652F;&#x6301;&#x5982;Ahom(&#x963F;&#x970D;&#x59C6;&#x8BED;), Akkadian(&#x963F;&#x5361;&#x5FB7;&#x8BED;), Aramaic(&#x963F;&#x62C9;&#x7C73;&#x8BED;), Babylonian Cuneiform(&#x53E4;&#x5DF4;&#x6BD4;&#x4F26;&#x6954;&#x5F62;&#x6587;&#x5B57;), Balti(&#x5DF4;&#x5C14;&#x8482;&#x8BED;), Brahmi(&#x5A46;&#x7F57;&#x7C73;&#x6587;), Etruscan(&#x4F0A;&#x7279;&#x62C9;&#x65AF;&#x574E;&#x8BED;), Hittite(&#x8D6B;&#x68AF;&#x8BED;/&#x897F;&#x53F0;&#x8BED;), Javanese(&#x722A;&#x54C7;&#x8BED;)&#xFF0C;Numidian(&#x52AA;&#x7C73;&#x5E95;&#x4E9A;&#x8BED;), Old Persian Cuneiform(&#x53E4;&#x6CE2;&#x65AF;&#x6954;&#x5F62;&#x6587;&#x5B57;)&#xFF0C;Syrian(&#x53D9;&#x5229;&#x4E9A;&#x8BED;)&#x4E4B;&#x7C7B;&#x7684;&#x53E4;&#x8001;&#x6587;&#x5B57;&#x3002;<br>Unicode&#x53EA;&#x662F;&#x4E00;&#x7EC4;&#x5B57;&#x7B26;&#x8BBE;&#x5B9A;&#x6216;&#x8005;&#x8BF4;&#x662F;&#x4ECE;&#x6570;&#x5B57;&#x548C;&#x5B57;&#x7B26;&#x4E4B;&#x95F4;&#x7684;&#x903B;&#x8F91;&#x6620;&#x5C04;&#x7684;&#x6982;&#x5FF5;&#x7F16;&#x7801;&#xFF0C;&#x4F46;&#x662F;&#x5B83;&#x5E76;&#x6CA1;&#x6709;&#x6307;&#x5B9A;&#x4EE3;&#x7801;&#x70B9;&#x5982;&#x4F55;&#x5728;&#x8BA1;&#x7B97;&#x673A;&#x4E0A;&#x5B58;&#x50A8;&#x3002;UCS4&#x3001;UTF-8&#x3001;UTF-16&#xFF08;UTF&#x540E;&#x7684;&#x6570;&#x5B57;&#x4EE3;&#x8868;&#x7F16;&#x7801;&#x7684;&#x6700;&#x5C0F;&#x5355;&#x4F4D;&#xFF0C;&#x5982;UTF-8&#x8868;&#x793A;&#x6700;&#x5C0F;&#x5355;&#x4F4D;1&#x5B57;&#x8282;&#xFF08;=8 bits&#xFF09;,&#x6240;&#x4EE5;&#x5B83;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;1&#x3001;2&#x3001;3&#x5B57;&#x8282;&#x7B49;&#x8FDB;&#x884C;&#x7F16;&#x7801;&#xFF0C;UTF-16&#x8868;&#x793A;&#x6700;&#x5C0F;&#x5355;&#x4F4D;2&#x5B57;&#x8282;&#xFF0C;&#x6240;&#x4EE5;&#x5B83;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;2&#x3001;4&#x5B57;&#x8282;&#x8FDB;&#x884C;&#x7F16;&#x7801;&#xFF09;&#x90FD;&#x662F;Unicode&#x7684;&#x7F16;&#x7801;&#x65B9;&#x6848;&#x3002;&#x5176;&#x4E2D;UTF-8&#x56E0;&#x53EF;&#x4EE5;&#x517C;&#x5BB9;ASCII&#x800C;&#x88AB;&#x5E7F;&#x6CDB;&#x4F7F;&#x7528;</p>
+</blockquote>
+<h2 id="&#x4E71;&#x7801;"><a href="#&#x4E71;&#x7801;" class="headerlink" title="&#x4E71;&#x7801;"></a>&#x4E71;&#x7801;</h2><p>&#x7F16;&#x7801;&#x4E4B;&#x6240;&#x4EE5;&#x53D7;&#x5230;&#x5173;&#x6CE8;&#xFF0C;&#x4E71;&#x7801;&#x51E0;&#x4E4E;&#x8D77;&#x5230;&#x4E86;&#x51B3;&#x5B9A;&#x6027;&#x7684;&#x4F5C;&#x7528;</p>
+<p>&#x51FA;&#x73B0;&#x4E71;&#x7801;&#x7684;&#x539F;&#x56E0;&#x5C31;&#x662F;&#x6587;&#x672C;&#x5B57;&#x7B26;&#x7F16;&#x7801;&#x8FC7;&#x7A0B;&#x4E0E;&#x5B57;&#x8282;&#x6D41;&#x89E3;&#x7801;&#x8FC7;&#x7A0B;&#x4F7F;&#x7528;&#x4E86;&#x4E0D;&#x540C;&#x7684;&#x7F16;&#x7801;&#x683C;&#x5F0F;&#xFF0C;&#x8FD9;&#x4E2A;&#x5F80;&#x5F80;&#x5F52;&#x548E;&#x4E8E;&#x89E3;&#x7801;&#x683C;&#x5F0F;&#x9009;&#x62E9;&#x9519;&#x8BEF;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x5728;&#x89E3;&#x7801;&#x7684;&#x8FC7;&#x7A0B;&#x4E2D;&#x51FA;&#x73B0;&#x4E86;&#x95EE;&#x9898;&#x3002;&#x5982;&#x679C;&#x6211;&#x7684;&#x5B57;&#x7B26;&#x662F;&#x7528;<code>utf-8</code>&#x7F16;&#x7801;&#xFF0C;&#x4F60;&#x7528;<code>GBK</code>&#x89E3;&#x7801;&#x90A3;&#x80AF;&#x5B9A;&#x51FA;&#x95EE;&#x9898;&#x3002;&#x56E0;&#x4E3A;&#x6587;&#x5B57;&#x6309;&#x7167;<code>utf-8</code>&#x7684;&#x7F16;&#x7801;&#x89C4;&#x5219;&#x7F16;&#x6210;&#x7684;<code>0&#x3001;1</code>&#xFF0C;&#x6309;&#x7167;<code>GBK</code>&#x7684;&#x89C4;&#x5219;&#x89E3;&#x7801;&#x56DE;&#x6765;&#x7684;&#x6587;&#x5B57;&#x5E76;&#x4E0D;&#x662F;&#x539F;&#x6765;&#x7684;&#x6587;&#x5B57;&#xFF0C;&#x8FD9;&#x65F6;&#x5019;&#x5C31;&#x4F1A;&#x51FA;&#x73B0;&#x4E71;&#x7801;&#x4E86;&#x3002;&#x8FD9;&#x79CD;&#x95EE;&#x9898;&#x4F1A;&#x51FA;&#x73B0;&#x5728;&#x6587;&#x4EF6;&#x8BFB;&#x5199;&#x3001;&#x7F51;&#x7EDC;&#x7F16;&#x7801;&#x4F20;&#x8F93;&#x3001;&#x6570;&#x636E;&#x5E93;&#x5B58;&#x53D6;&#x4E0A;&#x3002;&#x53EA;&#x8981;&#x7275;&#x6D89;&#x5230;&#x5B57;&#x7B26;&#x90FD;&#x6709;&#x53EF;&#x80FD;&#x51FA;&#x73B0;&#x4E71;&#x7801;&#xFF0C;&#x56E0;&#x4E3A;&#x53EA;&#x8981;&#x6709;&#x5B57;&#x7B26;&#x5C31;&#x4F1A;&#x6709;&#x89E3;&#x7801;&#x8FC7;&#x7A0B;&#x3002;</p>
+<p>&#x8FD8;&#x6709;&#x4E00;&#x79CD;&#x60C5;&#x51B5;&#x5C31;&#x662F;&#x6587;&#x4EF6;&#x538B;&#x6839;&#x4E0D;&#x662F;&#x6587;&#x672C;&#x6587;&#x4EF6;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x6839;&#x672C;&#x5C31;&#x6CA1;&#x6709;&#x7ECF;&#x8FC7;&#x7F16;&#x7801;&#x8FD9;&#x4E2A;&#x8FC7;&#x7A0B;&#xFF0C;&#x90A3;&#x4F60;&#x53BB;&#x89E3;&#x7801;&#x5F53;&#x7136;&#x4E71;&#x7801;&#x4E86;&#x3002;&#x6BD4;&#x5982;<code>64</code>&#xFF0C;&#x4F60;&#x5982;&#x679C;&#x770B;&#x505A;&#x6587;&#x672C;&#x5B57;&#x7B26;&#x5C31;&#x662F;<code>6</code>&#x548C;<code>4</code>&#x4E24;&#x4E2A;&#x5B57;&#x7B26;&#xFF0C;&#x53EF;&#x4EE5;&#x5BF9;&#x5E94;&#x7F16;&#x7801;&#x683C;&#x5F0F;&#x8FDB;&#x884C;&#x7F16;&#x7801;&#x3002;&#x5982;&#x679C;&#x770B;&#x505A;&#x662F;&#x6570;&#x5B57;<code>64</code>&#xFF0C;&#x90A3;&#x5BF9;&#x5E94;&#x7684;&#x5B58;&#x50A8;&#x7ED3;&#x6784;&#x662F;<code>01000000</code>&#xFF0C;&#x5C31;&#x6CA1;&#x6709;&#x7F16;&#x7801;&#x8FC7;&#x7A0B;&#xFF0C;&#x4E5F;&#x5C31;&#x4E0D;&#x9700;&#x8981;&#x53BB;&#x89E3;&#x7801;</p>
+<p>&#x8981;&#x641E;&#x6E05;&#x695A;&#x7684;&#x4E00;&#x70B9;&#x5C31;&#x662F;&#x540C;&#x6837;&#x7684;&#x6587;&#x672C;&#x5B57;&#x7B26;&#xFF0C;&#x7ECF;&#x8FC7;&#x4E0D;&#x540C;&#x7684;&#x7F16;&#x7801;&#xFF0C;&#x5728;&#x5B58;&#x50A8;&#x7ED3;&#x6784;&#x4E0A;&#x662F;&#x4E0D;&#x4E00;&#x6837;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x4EE3;&#x8868;&#x7684;&#x5B57;&#x7B26;&#x662F;&#x4E00;&#x6837;&#x7684;&#xFF0C;&#x4E0D;&#x540C;&#x7F16;&#x7801;&#x771F;&#x6B63;&#x7684;&#x533A;&#x522B;&#x5728;&#x4E8E;&#x5B58;&#x50A8;&#x7ED3;&#x6784;&#x3002;&#x53CD;&#x8FC7;&#x6765;&#xFF0C;&#x76F8;&#x540C;&#x7684;&#x5B58;&#x50A8;&#x7ED3;&#x6784;&#xFF0C;&#x7ECF;&#x8FC7;&#x4E0D;&#x540C;&#x7684;&#x89E3;&#x7801;&#xFF0C;&#x5BF9;&#x5E94;&#x7684;&#x6587;&#x672C;&#x5B57;&#x7B26;&#x5E76;&#x4E0D;&#x4E00;&#x6837;&#xFF0C;&#x4F46;&#x662F;&#x5728;&#x5185;&#x5B58;&#x4E0A;&#x7ED3;&#x6784;&#x4E0A;&#x5E76;&#x6CA1;&#x6709;&#x6539;&#x53D8;&#x3002;&#x5982;&#x679C;&#x78B0;&#x5230;&#x4E71;&#x7801;&#xFF0C;&#x4E0D;&#x8981;&#x614C;&#x5F20;&#xFF0C;&#x56E0;&#x4E3A;&#x539F;&#x59CB;&#x5B58;&#x50A8;&#x7ED3;&#x6784;&#x4E00;&#x52A8;&#x6CA1;&#x52A8;&#xFF0C;&#x53EA;&#x4E0D;&#x8FC7;&#x7528;&#x9519;&#x4E86;&#x89E3;&#x7801;&#x65B9;&#x5F0F;&#x3002;&#x5C31;&#x50CF;&#x4E00;&#x5343;&#x4E2A;&#x8BFB;&#x8005;&#x6709;&#x4E00;&#x5343;&#x4E2A;&#x54C8;&#x59C6;&#x96F7;&#x7279;&#x4E00;&#x6837;&#xFF0C;&#x771F;&#x5B9E;&#x7684;&#x54C8;&#x59C6;&#x96F7;&#x7279;&#x5C31;&#x5728;&#x90A3;&#x91CC;&#x3002;</p>
+<p>&#x4E71;&#x7801;&#x662F;&#x663E;&#x793A;&#x5728;&#x5C4F;&#x5E55;&#x4E0A;&#x624D;&#x88AB;&#x8BA4;&#x4E3A;&#x662F;&#x4E71;&#x7801;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x8BF4;&#x4E71;&#x7801;&#x53D6;&#x51B3;&#x4E8E;&#x4EBA;&#x7684;&#x611F;&#x5B98;&#xFF0C;&#x4E71;&#x7801;&#x53EA;&#x6709;&#x4EBA;&#x624D;&#x77E5;&#x9053;&#xFE50;&#x8BA1;&#x7B97;&#x673A;&#x4E0D;&#x8BA4;&#x4E3A;&#x8FD9;&#x662F;&#x4E71;&#x7801;&#x3002;</p>
+<h2 id="&#x53C2;&#x8003;&#x6587;&#x732E;"><a href="#&#x53C2;&#x8003;&#x6587;&#x732E;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x732E;"></a>&#x53C2;&#x8003;&#x6587;&#x732E;</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/luguo3000/p/3592562.html">&#x4ECE;&#x539F;&#x7406;&#x4E0A;&#x641E;&#x5B9A;&#x7F16;&#x7801;&#xFF08;&#x4E00;&#xFF09;&#x2013; &#x521D;&#x8BC6;&#x7F16;&#x7801;</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_33240946/article/details/88936379">&#x7F16;&#x7801;&#x548C;&#x89E3;&#x7801;</a></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2021/08/25/Redisson/" data-toggle="tooltip" data-placement="top" title="Redisson">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2021/07/09/Stream流常规用法/" data-toggle="tooltip" data-placement="top" title="Stream流常规用法">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#&#x7F16;&#x7801;&#x4E0E;&#x89E3;&#x7801;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">&amp;#x7F16;&amp;#x7801;&amp;#x4E0E;&amp;#x89E3;&amp;#x7801;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x7F16;&#x7801;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x7F16;&amp;#x7801;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#ASCII&#x7F16;&#x7801;"><span class="toc-nav-number">1.1.1.</span> <span class="toc-nav-text">ASCII&amp;#x7F16;&amp;#x7801;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Unicode&#x7F16;&#x7801;"><span class="toc-nav-number">1.1.2.</span> <span class="toc-nav-text">Unicode&amp;#x7F16;&amp;#x7801;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#UTF"><span class="toc-nav-number">1.1.3.</span> <span class="toc-nav-text">UTF</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x4E71;&#x7801;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">&amp;#x4E71;&amp;#x7801;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x53C2;&#x8003;&#x6587;&#x732E;"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">&amp;#x53C2;&amp;#x8003;&amp;#x6587;&amp;#x732E;</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2021/08/17/%E7%BC%96%E7%A0%81%E4%B8%8E%E8%A7%A3%E7%A0%81/";
+    var disqus_url = "http://example.com/2021/08/17/%E7%BC%96%E7%A0%81%E4%B8%8E%E8%A7%A3%E7%A0%81/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

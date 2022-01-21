@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/page/4/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 ">
+                <div class="site-heading">
+                    <h1>Gao Ming’s Blog</h1>
+                    <!--<hr class="small">-->
+                    <span class="subheading">Java后端开发，Python自然语言处理，爬虫等技术博客</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                post-container
+            ">
+            
+                <!-- Main Content -->
+
+
+<div class="post-preview">
+
+    <a href="/2021/08/26/Cat/">
+        <h2 class="post-title">
+            Cat
+        </h2>
+        <h3 class="post-subtitle">
+            CAT（Central Application Tracking），是美团点评基于 Java 开发的一套开源的分布式实时监控系统。美团点评基础架构部希望在基础存储、高性能通信、大规模在线访问、服务治理、实时监控、容器化及集群智能调度等领域提供业界领先的、统一的解决方案，CAT 目前在美团点评的产品定位是应用层的统一监控组件，在中间件（RPC、数据库、缓存、MQ 等）框架中得到广泛应用，为各业务线提供系统的性能指标、健康状况、实时告警等服务
+        </h3>
+        <div class="post-content-preview">
+            CatCAT&#xFF08;Central Application Tracking&#xFF09;&#xFF0C;&#x662F;&#x7F8E;&#x56E2;&#x70B9;&#x8BC4;&#x57FA;&#x4E8E; Java &#x5F00;&#x53D1;&#x7684;&#x4E00;&#x5957;&#x5F00;&#x6E90;&#x7684;&#x5206;&#x5E......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2021-08-26
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2021/08/25/Redisson/">
+        <h2 class="post-title">
+            Redisson
+        </h2>
+        <h3 class="post-subtitle">
+            Redisson是Redis官方推荐的Java版的Redis客户端。它提供的功能非常多，也非常强大，此处我们只用它的分布式锁功能
+        </h3>
+        <div class="post-content-preview">
+            Redissonredisson
+redisson&#x539F;&#x7406;&#x9AD8;&#x6548;&#x5206;&#x5E03;&#x5F0F;&#x9501;&#x5F53;&#x6211;&#x4EEC;&#x5728;&#x8BBE;&#x8BA1;&#x5206;&#x5E03;&#x5F0F;&#x9501;&#x7684;&#x65F6;&#x5019;&#xF......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2021-08-25
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2021/08/17/编码与解码/">
+        <h2 class="post-title">
+            编码与解码
+        </h2>
+        <h3 class="post-subtitle">
+            编码：将字符转为字节序列 解码：将字节序列转为字符
+        </h3>
+        <div class="post-content-preview">
+            &#x7F16;&#x7801;&#x4E0E;&#x89E3;&#x7801;&#x7F16;&#x7801;&#x4EBA;&#x7C7B;&#x5148;&#x6709;&#x4E86;&#x81EA;&#x5DF1;&#x7684;&#x8BED;&#x8A00;&#xFF0C;&#x4EA4;&#x6D41;&#x4E86;&#x82E5;&#x5E72;&#x4E2A;&#x4E......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2021-08-17
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2021/07/09/Stream流常规用法/">
+        <h2 class="post-title">
+            Stream流常规用法
+        </h2>
+        <h3 class="post-subtitle">
+            A sequence of elements supporting sequential and parallel aggregate operations
+        </h3>
+        <div class="post-content-preview">
+            Stream&#x6D41;&#x5E38;&#x89C4;&#x7528;&#x6CD5;JDK8&#x5BF9;Stream&#x63A5;&#x53E3;&#x7684;&#x5B9A;&#x4E49;&#xFF0C;Stream&#x63A5;&#x53E3;&#x7EE7;&#x627F;BaseStream&#x63A5;&#x53E3;
+1public interface St......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2021-07-09
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2021/02/11/BackdoorController/">
+        <h2 class="post-title">
+            BcakdoorController
+        </h2>
+        <h3 class="post-subtitle">
+            动态代理，执行项目中任意代码
+        </h3>
+        <div class="post-content-preview">
+            BackdoorController&#x52A8;&#x6001;&#x4EE3;&#x7406;&#xFF0C;&#x6267;&#x884C;&#x9879;&#x76EE;&#x4E2D;&#x4EFB;&#x610F;&#x4EE3;&#x7801;
+Demo
+
+
+&#x4EE3;&#x7801;1234567891011121314151617181920212223242526......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2021-02-11
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2021/01/18/多线程-线程状态/">
+        <h2 class="post-title">
+            多线程-线程状态
+        </h2>
+        <h3 class="post-subtitle">
+            新建，运行，限期等待，无限期等待，阻塞，结束
+        </h3>
+        <div class="post-content-preview">
+            &#x591A;&#x7EBF;&#x7A0B;-&#x7EBF;&#x7A0B;&#x72B6;&#x6001;&#x7EBF;&#x7A0B;&#x7684;6&#x79CD;&#x72B6;&#x6001;1234567891011121314151617181920212223242526272829303132333435363738394041424344454647484950......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2021-01-18
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2021/01/17/代理模式/">
+        <h2 class="post-title">
+            代理模式
+        </h2>
+        <h3 class="post-subtitle">
+            代理模式给某一个对象提供一个代理对象，并由代理对象控制对原对象的引用
+        </h3>
+        <div class="post-content-preview">
+            &#x4EE3;&#x7406;&#x6A21;&#x5F0F;&#x4EE3;&#x7406;&#x6A21;&#x5F0F;&#x7ED9;&#x67D0;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x63D0;&#x4F9B;&#x4E00;&#x4E0B;&#x4EE3;&#x7406;&#x5BF9;&#x8C61;&#xFF0C;&#x5E76;&#x75......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2021-01-17
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2021/01/15/Devops/">
+        <h2 class="post-title">
+            Devops
+        </h2>
+        <h3 class="post-subtitle">
+            DevOps是一组过程、方法与系统的统称，用于促进开发（应用程序/软件工程）、技术运营和质量保障（QA）部门之间的沟通、协作与整合。它的出现是由于软件行业日益清晰地认识到：为了按时交付软件产品和服务，开发和运营工作必须紧密合作
+        </h3>
+        <div class="post-content-preview">
+            DevopsDevops&#x4ECB;&#x7ECD;
+DevOps&#x8FD9;&#x4E2A;&#x8BCD;&#x6765;&#x6E90;&#x4E8E;2009&#x5E74;&#x5728;&#x6BD4;&#x5229;&#x65F6;&#x6839;&#x7279;&#x5E02;&#x4E3E;&#x529E;&#x7684;&#x9996;&#x5C4A;DevOps......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2021-01-15
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2020/12/02/Go语言基础/">
+        <h2 class="post-title">
+            Go语言基础
+        </h2>
+        <h3 class="post-subtitle">
+            Go 是一个开源的编程语言，它能让构造简单、可靠且高效的软件变得容易。Go是从2007年末由Robert Griesemer, Rob Pike, Ken Thompson主持开发，后来还加入了Ian Lance Taylor, Russ Cox等人，并最终于2009年11月开源，在2012年早些时候发布了Go 1稳定版本。现在Go的开发已经是完全开放的，并且拥有一个活跃的社区
+        </h3>
+        <div class="post-content-preview">
+            Go&#x8BED;&#x8A00;&#x57FA;&#x7840;123456package main // &#x5B9A;&#x4E49;&#x4E86;&#x5305;&#x540D;&#xFF0C;&#x5FC5;&#x987B;&#x5728;&#x6E90;&#x6587;&#x4EF6;&#x4E2D;&#x7684;&#x975E;&#x6CE8;&#x91CA;&#x76......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2020-12-02
+    </p>
+
+</div>
+<hr>
+
+<div class="post-preview">
+
+    <a href="/2020/11/01/Git基础/">
+        <h2 class="post-title">
+            Git基础
+        </h2>
+        <h3 class="post-subtitle">
+            Git 是一个开源的分布式版本控制系统，用于敏捷高效地处理任何或小或大的项目。Git 是 Linus Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的版本控制软件。Git 与常用的版本控制工具 CVS, Subversion 等不同，它采用了分布式版本库的方式，不必服务器端软件支持
+        </h3>
+        <div class="post-content-preview">
+            Git&#x57FA;&#x7840;&#x901F;&#x67E5;&#x8868;
+
+&#x914D;&#x7F6E;1234567891011# &#x663E;&#x793A;&#x5F53;&#x524D;&#x7684;Git&#x914D;&#x7F6E;git config --list# &#x7F16;&#x8F91;git&#x914D;&#x7F6E;&#x6587;......
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by 高明 on
+        2020-11-01
+    </p>
+
+</div>
+<hr>
+
+
+
+<!-- Pager -->
+
+<ul class="pager">
+    
+        <li class="previous">
+            <a href="/page/3/">&larr; Newer Posts</a>
+        </li>
+    
+    
+        <li class="next">
+            <a href="/page/5/">Older Posts &rarr;</a>
+        </li>
+    
+</ul>
+
+
+
+                <!-- 如果开启评论功能 -->
+                
+
+            </div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                        
+                            
+                            <a href="/tags/#工具" title="工具" rel="3">工具</a>
+                            
+                        
+                            
+                            <a href="/tags/#机器学习" title="机器学习" rel="13">机器学习</a>
+                            
+                        
+                            
+                            <a href="/tags/#中间件" title="中间件" rel="6">中间件</a>
+                            
+                        
+                            
+                            <a href="/tags/#Java基础" title="Java基础" rel="12">Java基础</a>
+                            
+                        
+                            
+                            <a href="/tags/#运维" title="运维" rel="4">运维</a>
+                            
+                        
+                            
+                        
+                            
+                            <a href="/tags/#神经网络" title="神经网络" rel="6">神经网络</a>
+                            
+                        
+                            
+                            <a href="/tags/#Spring" title="Spring" rel="3">Spring</a>
+                            
+                        
+                            
+                            <a href="/tags/#应用框架" title="应用框架" rel="2">应用框架</a>
+                            
+                        
+                            
+                            <a href="/tags/#数据库" title="数据库" rel="4">数据库</a>
+                            
+                        
+                            
+                            <a href="/tags/#设计模式" title="设计模式" rel="7">设计模式</a>
+                            
+                        
+                            
+                            <a href="/tags/#剑指offer" title="剑指offer" rel="18">剑指offer</a>
+                            
+                        
+                            
+                            <a href="/tags/#多线程" title="多线程" rel="2">多线程</a>
+                            
+                        
+                            
+                            <a href="/tags/#深度学习" title="深度学习" rel="4">深度学习</a>
+                            
+                        
+                            
+                        
+                            
+                        
+                            
+                        
+                            
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+                    <hr><h5><a href="/about/">ABOUT ME</a></h5>
+                    <div class="short-about">
+
+                        
+                            <img src="/img/avatar.jpg" />
+                        
+
+                        
+                            <p>喜欢尝试，永不止步</p>
+                        
+                        <!-- Image to hack wechat -->
+                        
+
+                        <!-- SNS Link -->
+                        <ul class="list-inline">
+                            
+                            
+                            
+                                <li>
+                                    <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa  fa-stack-1x fa-inverse">知</i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+
+                            
+                                <li>
+                                    <a target="_blank" href="http://weibo.com/u/3874944289">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+
+                            
+
+                            
+                                <li>
+                                    <a target="_blank"  href="https://github.com/gaoming95">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+                            
+                            
+                            
+                                <li>
+                                    <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                                        <span class="fa-stack fa-lg">
+                                            <i class="fa fa-circle fa-stack-2x"></i>
+                                            <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                </li>
+                            
+                        </ul>
+                    </div>
+                </section>
+                
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+        
+    </div>
+</div>
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

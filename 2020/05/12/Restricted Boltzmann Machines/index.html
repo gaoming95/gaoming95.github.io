@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Restricted Boltzmann Machines - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/05/12/Restricted Boltzmann Machines/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#神经网络" title="神经网络">神经网络</a>
+                        
+                    </div>
+                    <h1>Restricted Boltzmann Machines</h1>
+                    <h2 class="subheading">Restricted Boltzmann Machines</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-05-12
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="Restricted-Boltzmann-Machines"><a href="#Restricted-Boltzmann-Machines" class="headerlink" title="Restricted Boltzmann Machines"></a>Restricted Boltzmann Machines</h1><h2 id="Structure"><a href="#Structure" class="headerlink" title="Structure"></a>Structure</h2><p>&#x6BCF;&#x4E2A; x &#x4E58;&#x4EE5;&#x4E00;&#x4E2A;&#x72EC;&#x7ACB;&#x7684;&#x6743;&#x91CD;&#xFF0C;&#x7136;&#x540E;&#x76F8;&#x52A0;&#x540E;&#x518D;&#x52A0;&#x4E00;&#x4E2A;&#x504F;&#x7F6E;&#x9879;&#xFF0C;&#x6700;&#x540E;&#x5C06;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x5230;&#x6FC0;&#x6D3B;&#x51FD;&#x6570;&#x6765;&#x4EA7;&#x751F;&#x8F93;&#x51FA;</p>
+<p>![visible  layer  hidden  layer  activation  function  x  x  input  x  x ](Restricted Boltzmann Machines/clip_image001.png)</p>
+<h2 id="Reconstructions"><a href="#Reconstructions" class="headerlink" title="Reconstructions"></a>Reconstructions</h2><p>&#x5728;&#x91CD;&#x5EFA;&#x9636;&#x6BB5;&#xFF0C;&#x7B2C;&#x4E00;&#x4E2A;&#x9690;&#x85CF;&#x5C42;&#x7684;&#x6FC0;&#x6D3B;&#x72B6;&#x6001;&#x53D8;&#x6210;&#x4E86;&#x53CD;&#x5411;&#x4F20;&#x9012;&#x8FC7;&#x7A0B;&#x4E2D;&#x7684;&#x8F93;&#x5165;&#x3002;&#x5B83;&#x4EEC;&#x4E0E;&#x6BCF;&#x4E2A;&#x8FDE;&#x63A5;&#x8FB9;&#x76F8;&#x540C;&#x7684;&#x6743;&#x91CD;&#x76F8;&#x4E58;&#xFF0C;&#x5C31;&#x50CF; x &#x5728;&#x524D;&#x5411;&#x4F20;&#x9012;&#x7684;&#x8FC7;&#x7A0B;&#x4E2D;&#x968F;&#x7740;&#x6743;&#x91CD;&#x8C03;&#x8282;&#x4E00;&#x6837;&#x3002;&#x8FD9;&#x4E9B;&#x4E58;&#x79EF;&#x7684;&#x548C;&#x5728;&#x6BCF;&#x4E2A;&#x53EF;&#x89C1;&#x8282;&#x70B9;&#x5904;&#x53C8;&#x4E0E;&#x53EF;&#x89C1;&#x5C42;&#x7684;&#x504F;&#x7F6E;&#x9879;&#x76F8;&#x52A0;&#xFF0C;&#x8FD9;&#x4E9B;&#x8FD0;&#x7B97;&#x7684;&#x8F93;&#x51FA;&#x5C31;&#x662F;&#x4E00;&#x6B21;&#x91CD;&#x5EFA;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;&#x5BF9;&#x539F;&#x59CB;&#x8F93;&#x5165;&#x7684;&#x4E00;&#x4E2A;&#x903C;&#x8FD1;&#x3002;&#x8FD9;&#x53EF;&#x4EE5;&#x901A;&#x8FC7;&#x4E0B;&#x56FE;&#x8868;&#x8FBE;:</p>
+<p>![Reconstruction  these are new  reconstructions  are the new  output  visible  layer  hidden  layer 1  a  a  a  weights are the same  activations  are the new  input ](Restricted Boltzmann Machines/clip_image001-16363416387015.png)</p>
+<p>&#x5728;&#x524D;&#x5411;&#x4F20;&#x9012;&#x8FC7;&#x7A0B;&#x4E2D;&#xFF0C;&#x7ED9;&#x5B9A;&#x6743;&#x91CD;&#x7684;&#x60C5;&#x51B5;&#x4E0B; RBM &#x4F1A;&#x4F7F;&#x7528;&#x8F93;&#x5165;&#x6765;&#x9884;&#x6D4B;&#x8282;&#x70B9;&#x7684;&#x6FC0;&#x6D3B;&#x503C;&#xFF0C;&#x6216;&#x8005;&#x8F93;&#x51FA;&#x7684;&#x6982;&#x7387; x:p(a|x; w)&#x3002;&#x4F46;&#x662F;&#x5728;&#x53CD;&#x5411;&#x4F20;&#x64AD;&#x7684;&#x8FC7;&#x7A0B;&#x4E2D;&#xFF0C;&#x5F53;&#x6FC0;&#x6D3B;&#x503C;&#x4F5C;&#x4E3A;&#x8F93;&#x5165;&#x5E76;&#x8F93;&#x51FA;&#x539F;&#x59CB;&#x6570;&#x636E;&#x7684;&#x91CD;&#x5EFA;&#x6216;&#x8005;&#x9884;&#x6D4B;&#x65F6;&#xFF0C;RBM &#x5C1D;&#x8BD5;&#x5728;&#x7ED9;&#x5B9A;&#x6FC0;&#x6D3B;&#x503C; a &#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x4F30;&#x8BA1;&#x8F93;&#x5165; x &#x7684;&#x6982;&#x7387;&#xFF0C;&#x5B83;&#x5177;&#x6709;&#x4E0E;&#x524D;&#x5411;&#x4F20;&#x9012;&#x8FC7;&#x7A0B;&#x4E2D;&#x76F8;&#x540C;&#x7684;&#x6743;&#x91CD;&#x53C2;&#x6570;&#x3002;&#x8FD9;&#x7B2C;&#x4E8C;&#x4E2A;&#x9636;&#x6BB5;&#x53EF;&#x4EE5;&#x88AB;&#x8868;&#x8FBE;&#x4E3A; p(x|a; w)&#x3002;</p>
+<p>&#x200B;    &#x8FD9;&#x4E24;&#x4E2A;&#x6982;&#x7387;&#x4F30;&#x8BA1;&#x5C06;&#x5171;&#x540C;&#x5F97;&#x5230;&#x5173;&#x4E8E;&#x8F93;&#x5165; x &#x548C;&#x6FC0;&#x6D3B;&#x503C; a &#x7684;&#x8054;&#x5408;&#x6982;&#x7387;&#x5206;&#x5E03;&#xFF0C;&#x6216;&#x8005; p(x, a)&#x3002;&#x91CD;&#x5EFA;&#x4E0E;&#x56DE;&#x5F52;&#x6709;&#x6240;&#x4E0D;&#x540C;&#xFF0C;&#x4E5F;&#x4E0D;&#x540C;&#x4E8E;&#x5206;&#x7C7B;&#x3002;&#x56DE;&#x5F52;&#x57FA;&#x4E8E;&#x5F88;&#x591A;&#x8F93;&#x5165;&#x6765;&#x4F30;&#x8BA1;&#x4E00;&#x4E2A;&#x8FDE;&#x7EED;&#x503C;&#xFF0C;&#x5206;&#x7C7B;&#x9884;&#x6D4B;&#x51FA;&#x79BB;&#x6563;&#x7684;&#x6807;&#x7B7E;&#x4EE5;&#x5E94;&#x7528;&#x5728;&#x7ED9;&#x5B9A;&#x7684;&#x8F93;&#x5165;&#x6837;&#x672C;&#x4E0A;&#xFF0C;&#x800C;&#x91CD;&#x5EFA;&#x662F;&#x5728;&#x9884;&#x6D4B;&#x539F;&#x59CB;&#x8F93;&#x5165;&#x7684;&#x6982;&#x7387;&#x5206;&#x5E03;&#x3002;</p>
+<p>&#x200B;    &#x8FD9;&#x79CD;&#x91CD;&#x5EFA;&#x88AB;&#x79F0;&#x4E4B;&#x4E3A;&#x751F;&#x6210;&#x5B66;&#x4E60;&#xFF0C;&#x5B83;&#x5FC5;&#x987B;&#x8DDF;&#x7531;&#x5206;&#x7C7B;&#x5668;&#x6267;&#x884C;&#x7684;&#x5224;&#x522B;&#x5B66;&#x4E60;&#x533A;&#x5206;&#x5F00;&#x6765;&#x3002;&#x5224;&#x522B;&#x5B66;&#x4E60;&#x5C06;&#x8F93;&#x5165;&#x6620;&#x5C04;&#x5230;&#x6807;&#x7B7E;&#x4E0A;&#xFF0C;&#x6709;&#x6548;&#x5730;&#x5728;&#x6570;&#x636E;&#x70B9;&#x4E0E;&#x6837;&#x672C;&#x4E4B;&#x95F4;&#x7ED8;&#x5236;&#x6761;&#x4EF6;&#x6982;&#x7387;&#x3002;&#x82E5;&#x5047;&#x8BBE; RBM &#x7684;&#x8F93;&#x5165;&#x6570;&#x636E;&#x548C;&#x91CD;&#x5EFA;&#x7ED3;&#x679C;&#x662F;&#x4E0D;&#x540C;&#x5F62;&#x72B6;&#x7684;&#x6B63;&#x6001;&#x66F2;&#x7EBF;&#xFF0C;&#x5B83;&#x4EEC;&#x53EA;&#x6709;&#x90E8;&#x5206;&#x91CD;&#x53E0;&#x3002;</p>
+<p>&#x200B;    &#x4E3A;&#x4E86;&#x8861;&#x91CF;&#x8F93;&#x5165;&#x6570;&#x636E;&#x7684;&#x9884;&#x6D4B;&#x6982;&#x7387;&#x5206;&#x5E03;&#x548C;&#x771F;&#x5B9E;&#x5206;&#x5E03;&#x4E4B;&#x95F4;&#x7684;&#x8DDD;&#x79BB;&#xFF0C;RBM &#x4F7F;&#x7528; KL &#x6563;&#x5EA6;&#x6765;&#x5EA6;&#x91CF;&#x4E24;&#x4E2A;&#x5206;&#x5E03;&#x7684;&#x76F8;&#x4F3C;&#x6027;&#x3002;KL &#x6563;&#x5EA6;&#x6D4B;&#x91CF;&#x7684;&#x662F;&#x4E24;&#x6761;&#x66F2;&#x7EBF;&#x7684;&#x975E;&#x91CD;&#x53E0;&#x533A;&#x57DF;&#x6216;&#x8005;&#x8BF4;&#x53D1;&#x6563;&#x533A;&#x57DF;&#xFF0C;RBM &#x7684;&#x4F18;&#x5316;&#x7B97;&#x6CD5;&#x5C1D;&#x8BD5;&#x6700;&#x5C0F;&#x5316;&#x8FD9;&#x4E9B;&#x533A;&#x57DF;&#xFF0C;&#x6240;&#x4EE5;&#x5F53;&#x5171;&#x4EAB;&#x6743;&#x91CD;&#x4E0E;&#x7B2C;&#x4E00;&#x4E2A;&#x9690;&#x85CF;&#x5C42;&#x7684;&#x6FC0;&#x6D3B;&#x503C;&#x76F8;&#x4E58;&#x65F6;&#x5C31;&#x53EF;&#x4EE5;&#x5F97;&#x51FA;&#x539F;&#x59CB;&#x8F93;&#x5165;&#x7684;&#x8FD1;&#x4F3C;&#x3002;&#x56FE;&#x7684;&#x5DE6;&#x8FB9;&#x662F;&#x4E00;&#x7EC4;&#x8F93;&#x5165;&#x7684;&#x6982;&#x7387;&#x5206;&#x5E03; p &#x53CA;&#x5176;&#x91CD;&#x6784;&#x5206;&#x5E03; q&#xFF0C;&#x56FE;&#x7684;&#x53F3;&#x4FA7;&#x662F;&#x5B83;&#x4EEC;&#x7684;&#x5DEE;&#x7684;&#x79EF;&#x5206;&#x3002;</p>
+<p>![(&#xF5;lld) &#x201C;a  (x)d ](Restricted Boltzmann Machines/clip_image001-16363416637086.png)</p>
+<p> &#x8FED;&#x4EE3;&#x5730;&#x6839;&#x636E;&#x5B83;&#x4EEC;&#x4EA7;&#x751F;&#x7684;&#x8BEF;&#x5DEE;&#x6765;&#x8C03;&#x8282;&#x6743;&#x91CD;&#xFF0C;RBM &#x5B66;&#x4F1A;&#x4E86;&#x903C;&#x8FD1;&#x539F;&#x59CB;&#x6570;&#x636E;&#x3002;&#x4F60;&#x53EF;&#x4EE5;&#x8BF4;&#x6743;&#x91CD;&#x5728;&#x6162;&#x6162;&#x5730;&#x53CD;&#x6620;&#x8F93;&#x5165;&#x6570;&#x636E;&#x7684;&#x7ED3;&#x6784;&#xFF0C;&#x5E76;&#x901A;&#x8FC7;&#x9690;&#x85CF;&#x5C42;&#x7684;&#x6FC0;&#x6D3B;&#x503C;&#x8FDB;&#x884C;&#x7F16;&#x7801;&#xFF0C;&#x5B66;&#x4E60;&#x8FC7;&#x7A0B;&#x5C31;&#x50CF;&#x4E24;&#x4E2A;&#x6982;&#x7387;&#x5206;&#x5E03;&#x5728;&#x9010;&#x6B65;&#x91CD;&#x5408;&#x3002;</p>
+<p>![&#x440;(&#x445;)  03  q(x) ](Restricted Boltzmann Machines/clip_image001-16363416738867.png)</p>
+<h2 id="Skip-gram"><a href="#Skip-gram" class="headerlink" title="Skip-gram"></a>Skip-gram</h2><p>&#x5728;&#x8BB8;&#x591A;&#x81EA;&#x7136;&#x8BED;&#x8A00;&#x5904;&#x7406;&#x4EFB;&#x52A1;&#x4E2D;&#xFF0C;&#x8BB8;&#x591A;&#x5355;&#x8BCD;&#x8868;&#x8FBE;&#x662F;&#x7531;&#x4ED6;&#x4EEC;&#x7684;tf-idf&#x5206;&#x6570;&#x51B3;&#x5B9A;&#x7684;&#x3002;&#x5373;&#x4F7F;&#x8FD9;&#x4E9B;&#x5206;&#x6570;&#x544A;&#x8BC9;&#x6211;&#x4EEC;&#x4E00;&#x4E2A;&#x5355;&#x8BCD;&#x5728;&#x4E00;&#x4E2A;&#x6587;&#x672C;&#x4E2D;&#x7684;&#x76F8;&#x5BF9;&#x91CD;&#x8981;&#x6027;&#xFF0C;&#x4F46;&#x662F;&#x4ED6;&#x4EEC;&#x5E76;&#x6CA1;&#x6709;&#x544A;&#x8BC9;&#x6211;&#x4EEC;&#x5355;&#x8BCD;&#x7684;&#x8BED;&#x4E49;&#x3002;Word2vec&#x662F;&#x4E00;&#x7C7B;&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x6A21;&#x578B;&#x2014;&#x2014;&#x5728;&#x7ED9;&#x5B9A;&#x65E0;&#x6807;&#x7B7E;&#x7684;&#x8BED;&#x6599;&#x5E93;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x4E3A;&#x8BED;&#x6599;&#x5E93;&#x4E2D;&#x7684;&#x5355;&#x8BCD;&#x4EA7;&#x751F;&#x4E00;&#x4E2A;&#x80FD;&#x8868;&#x8FBE;&#x8BED;&#x4E49;&#x7684;&#x5411;&#x91CF;&#x3002;&#x8FD9;&#x4E9B;&#x5411;&#x91CF;&#x901A;&#x5E38;&#x662F;&#x6709;&#x7528;&#x7684;&#xFF1A;</p>
+<ul>
+<li>&#x901A;&#x8FC7;&#x8BCD;&#x5411;&#x91CF;&#x6765;&#x8BA1;&#x7B97;&#x4E24;&#x4E2A;&#x5355;&#x8BCD;&#x7684;&#x8BED;&#x4E49;&#x76F8;&#x4F3C;&#x6027;</li>
+<li>&#x5BF9;&#x67D0;&#x4E9B;&#x76D1;&#x7763;&#x578B;NLP&#x4EFB;&#x52A1;&#x5982;&#x6587;&#x672C;&#x5206;&#x7C7B;&#xFF0C;&#x8BED;&#x4E49;&#x5206;&#x6790;&#x6784;&#x9020;&#x7279;&#x5F81;</li>
+</ul>
+<h3 id="skip-gram&#x6A21;&#x578B;"><a href="#skip-gram&#x6A21;&#x578B;" class="headerlink" title="skip-gram&#x6A21;&#x578B;"></a>skip-gram&#x6A21;&#x578B;</h3><p>&#x5728;&#x8BE6;&#x7EC6;&#x4ECB;&#x7ECD;skip-gram&#x6A21;&#x578B;&#x524D;&#xFF0C;&#x6211;&#x4EEC;&#x5148;&#x6765;&#x4E86;&#x89E3;&#x4E0B;&#x8BAD;&#x7EC3;&#x6570;&#x636E;&#x7684;&#x683C;&#x5F0F;&#x3002;skip-gram&#x6A21;&#x578B;&#x7684;&#x8F93;&#x5165;&#x662F;&#x4E00;&#x4E2A;&#x5355;&#x8BCD;wI&#xFF0C;&#x5B83;&#x7684;&#x8F93;&#x51FA;&#x662F;wI&#x7684;&#x4E0A;&#x4E0B;&#x6587;wO,1,&#x2026;,wO,C&#xFF0C;&#x4E0A;&#x4E0B;&#x6587;&#x7684;&#x7A97;&#x53E3;&#x5927;&#x5C0F;&#x4E3A;C&#x3002;&#x4E3E;&#x4E2A;&#x4F8B;&#x5B50;&#xFF0C;&#x8FD9;&#x91CC;&#x6709;&#x4E2A;&#x53E5;&#x5B50;&#x201C;I drive my car to the store&#x201D;&#x3002;&#x6211;&#x4EEC;&#x5982;&#x679C;&#x628A;&#x201D;car&#x201D;&#x4F5C;&#x4E3A;&#x8BAD;&#x7EC3;&#x8F93;&#x5165;&#x6570;&#x636E;&#xFF0C;&#x5355;&#x8BCD;&#x7EC4;{&#x201C;I&#x201D;, &#x201C;drive&#x201D;, &#x201C;my&#x201D;, &#x201C;to&#x201D;, &#x201C;the&#x201D;, &#x201C;store&#x201D;}&#x5C31;&#x662F;&#x8F93;&#x51FA;&#x3002;&#x6240;&#x6709;&#x8FD9;&#x4E9B;&#x5355;&#x8BCD;&#xFF0C;&#x6211;&#x4EEC;&#x4F1A;&#x8FDB;&#x884C;one-hot&#x7F16;&#x7801;&#x3002;skip-gram&#x6A21;&#x578B;&#x56FE;&#x5982;&#x4E0B;&#x6240;&#x793A;&#xFF1A; </p>
+<p>![INPUT  w(t)  PROJECTION  OUTPUT  w(t-2)  w(t-l )  w(t+l)  w(t+2) ](Restricted Boltzmann Machines/clip_image001-16363417621848.png)</p>
+<h3 id="&#x524D;&#x5411;&#x4F20;&#x64AD;"><a href="#&#x524D;&#x5411;&#x4F20;&#x64AD;" class="headerlink" title="&#x524D;&#x5411;&#x4F20;&#x64AD;"></a>&#x524D;&#x5411;&#x4F20;&#x64AD;</h3><p>&#x63A5;&#x4E0B;&#x6765;&#x6211;&#x4EEC;&#x6765;&#x770B;&#x4E0B;skip-gram&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x6A21;&#x578B;&#xFF0C;skip-gram&#x7684;&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x6A21;&#x578B;&#x662F;&#x4ECE;&#x524D;&#x9988;&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x6A21;&#x578B;&#x6539;&#x8FDB;&#x800C;&#x6765;&#xFF0C;&#x8BF4;&#x767D;&#x4E86;&#x5C31;&#x662F;&#x5728;&#x524D;&#x9988;&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x6A21;&#x578B;&#x7684;&#x57FA;&#x7840;&#x4E0A;&#xFF0C;&#x901A;&#x8FC7;&#x4E00;&#x4E9B;&#x6280;&#x5DE7;&#x4F7F;&#x5F97;&#x6A21;&#x578B;&#x66F4;&#x6709;&#x6548;&#x3002;&#x6211;&#x4EEC;&#x5148;&#x4E0A;&#x56FE;&#xFF0C;&#x770B;&#x4E00;&#x6CE2;skip-gram&#x7684;&#x795E;&#x7ECF;&#x7F51;&#x7EDC;&#x6A21;&#x578B;</p>
+<p>![img](Restricted Boltzmann Machines/clip_image001-16363417870409.png)</p>
+<p>&#x5728;&#x4E0A;&#x56FE;&#x4E2D;&#xFF0C;&#x8F93;&#x5165;&#x5411;&#x91CF;x&#x4EE3;&#x8868;&#x67D0;&#x4E2A;&#x5355;&#x8BCD;&#x7684;one-hot&#x7F16;&#x7801;&#xFF0C;&#x5BF9;&#x5E94;&#x7684;&#x8F93;&#x51FA;&#x5411;&#x91CF;{y1,&#x2026;,yC}&#x3002;&#x8F93;&#x5165;&#x5C42;&#x4E0E;&#x9690;&#x85CF;&#x5C42;&#x4E4B;&#x95F4;&#x7684;&#x6743;&#x91CD;&#x77E9;&#x9635;W&#x7684;&#x7B2C;i&#x884C;&#x4EE3;&#x8868;&#x8BCD;&#x6C47;&#x8868;&#x4E2D;&#x7B2C;i&#x4E2A;&#x5355;&#x8BCD;&#x7684;&#x6743;&#x91CD;&#x3002;<strong>&#x63A5;&#x4E0B;&#x6765;&#x91CD;&#x70B9;&#x6765;&#x4E86;</strong>&#xFF1A;&#x8FD9;&#x4E2A;&#x6743;&#x91CD;&#x77E9;&#x9635;W&#x5C31;&#x662F;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x5B66;&#x4E60;&#x7684;&#x76EE;&#x6807;&#xFF08;&#x540C;W&#x2032;&#xFF09;&#xFF0C;&#x56E0;&#x4E3A;&#x8FD9;&#x4E2A;&#x6743;&#x91CD;&#x77E9;&#x9635;&#x5305;&#x542B;&#x4E86;&#x8BCD;&#x6C47;&#x8868;&#x4E2D;&#x6240;&#x6709;&#x5355;&#x8BCD;&#x7684;&#x6743;&#x91CD;&#x4FE1;&#x606F;&#x3002;&#x4E0A;&#x8FF0;&#x6A21;&#x578B;&#x4E2D;&#xFF0C;&#x6BCF;&#x4E2A;&#x8F93;&#x51FA;&#x5355;&#x8BCD;&#x5411;&#x91CF;&#x4E5F;&#x6709;&#x4E2A;N&#xD7;V&#x7EF4;&#x7684;&#x8F93;&#x51FA;&#x5411;&#x91CF;W&#x2032;&#x3002;&#x6700;&#x540E;&#x6A21;&#x578B;&#x8FD8;&#x6709;N&#x4E2A;&#x7ED3;&#x70B9;&#x7684;&#x9690;&#x85CF;&#x5C42;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x53D1;&#x73B0;&#x9690;&#x85CF;&#x5C42;&#x8282;&#x70B9;hi&#x7684;&#x8F93;&#x5165;&#x5C31;&#x662F;&#x8F93;&#x5165;&#x5C42;&#x8F93;&#x5165;&#x7684;&#x52A0;&#x6743;&#x6C42;&#x548C;&#x3002;&#x56E0;&#x6B64;&#x7531;&#x4E8E;&#x8F93;&#x5165;&#x5411;&#x91CF;x&#x662F;one-hot&#x7F16;&#x7801;&#xFF0C;&#x90A3;&#x4E48;&#x53EA;&#x6709;&#x5411;&#x91CF;&#x4E2D;&#x7684;&#x975E;&#x96F6;&#x5143;&#x7D20;&#x624D;&#x80FD;&#x5BF9;&#x9690;&#x85CF;&#x5C42;&#x4EA7;&#x751F;&#x8F93;&#x5165;&#x3002;&#x56E0;&#x6B64;&#x5BF9;&#x4E8E;&#x8F93;&#x5165;&#x5411;&#x91CF;x&#x5176;&#x4E2D;xk=1&#x5E76;&#x4E14;xk&#x2032;=0,k&#x2260;k&#x2032;&#x2032;&#x3002;&#x6240;&#x4EE5;&#x9690;&#x85CF;&#x5C42;&#x7684;&#x8F93;&#x51FA;&#x53EA;&#x4E0E;&#x6743;&#x91CD;&#x77E9;&#x9635;&#x7B2C;k&#x884C;&#x76F8;&#x5173;&#xFF0C;&#x4ECE;&#x6570;&#x5B66;&#x4E0A;&#x8BC1;&#x660E;&#x5982;&#x4E0B;&#xFF1A; </p>
+<p>![&#x2014; vul ](Restricted Boltzmann Machines/clip_image001-163634179741610.png)</p>
+<p>&#x6CE8;&#x610F;&#x56E0;&#x4E3A;&#x8F93;&#x5165;&#x662F;one-hot&#x7F16;&#x7801;&#xFF0C;&#x6240;&#x4EE5;&#x8FD9;&#x91CC;&#x662F;&#x4E0D;&#x9700;&#x8981;&#x4F7F;&#x7528;&#x6FC0;&#x6D3B;&#x51FD;&#x6570;&#x7684;&#x3002;&#x540C;&#x7406;&#xFF0C;&#x6A21;&#x578B;&#x8F93;&#x51FA;&#x7ED3;&#x70B9;C&#xD7;V&#x7684;&#x8F93;&#x5165;&#x4E5F;&#x662F;&#x7531;&#x5BF9;&#x5E94;&#x8F93;&#x5165;&#x7ED3;&#x70B9;&#x7684;&#x52A0;&#x6743;&#x6C42;&#x548C;&#x8BA1;&#x7B97;&#x5F97;&#x5230;&#xFF1A; </p>
+<p>![img](Restricted Boltzmann Machines/clip_image001-163634181062011.png)</p>
+<p>&#x5176;&#x5B9E;&#x4ECE;&#x4E0A;&#x56FE;&#x6211;&#x4EEC;&#x4E5F;&#x770B;&#x5230;&#x4E86;&#x8F93;&#x51FA;&#x5C42;&#x4E2D;&#x7684;&#x6BCF;&#x4E2A;&#x5355;&#x8BCD;&#x90FD;&#x662F;&#x5171;&#x4EAB;&#x6743;&#x91CD;&#x7684;&#xFF0C;&#x56E0;&#x6B64;&#x6211;&#x4EEC;&#x6709;uc,j=uj&#x3002;&#x6700;&#x7EC8;&#x6211;&#x4EEC;&#x901A;&#x8FC7;softmax&#x51FD;&#x6570;&#x4EA7;&#x751F;&#x7B2C;C&#x4E2A;&#x5355;&#x8BCD;&#x7684;&#x591A;&#x9879;&#x5F0F;&#x5206;&#x5E03;&#x3002; </p>
+<p>![&#x435;&#x442;&#x440;(&#x438;&#x458;&#x2019;)  &#x423;&#x441;,&#x458; ](Restricted Boltzmann Machines/clip_image002.png)</p>
+<p>&#x8BF4;&#x767D;&#x4E86;&#xFF0C;&#x8FD9;&#x4E2A;&#x503C;&#x5C31;&#x662F;&#x7B2C;C&#x4E2A;&#x8F93;&#x51FA;&#x5355;&#x8BCD;&#x7684;&#x7B2C;j&#x4E2A;&#x7ED3;&#x70B9;&#x7684;&#x6982;&#x7387;&#x5927;&#x5C0F;&#x3002;</p>
+<h3 id="&#x901A;&#x8FC7;BP&#xFF08;&#x53CD;&#x5411;&#x4F20;&#x64AD;&#xFF09;&#x7B97;&#x6CD5;&#x53CA;&#x968F;&#x673A;&#x68AF;&#x5EA6;&#x4E0B;&#x964D;&#x6765;&#x5B66;&#x4E60;&#x6743;&#x91CD;"><a href="#&#x901A;&#x8FC7;BP&#xFF08;&#x53CD;&#x5411;&#x4F20;&#x64AD;&#xFF09;&#x7B97;&#x6CD5;&#x53CA;&#x968F;&#x673A;&#x68AF;&#x5EA6;&#x4E0B;&#x964D;&#x6765;&#x5B66;&#x4E60;&#x6743;&#x91CD;" class="headerlink" title="&#x901A;&#x8FC7;BP&#xFF08;&#x53CD;&#x5411;&#x4F20;&#x64AD;&#xFF09;&#x7B97;&#x6CD5;&#x53CA;&#x968F;&#x673A;&#x68AF;&#x5EA6;&#x4E0B;&#x964D;&#x6765;&#x5B66;&#x4E60;&#x6743;&#x91CD;"></a>&#x901A;&#x8FC7;BP&#xFF08;&#x53CD;&#x5411;&#x4F20;&#x64AD;&#xFF09;&#x7B97;&#x6CD5;&#x53CA;&#x968F;&#x673A;&#x68AF;&#x5EA6;&#x4E0B;&#x964D;&#x6765;&#x5B66;&#x4E60;&#x6743;&#x91CD;</h3><p>&#x524D;&#x9762;&#x6211;&#x8BB2;&#x89E3;&#x4E86;skip-gram&#x6A21;&#x578B;&#x7684;&#x8F93;&#x5165;&#x5411;&#x91CF;&#x53CA;&#x8F93;&#x51FA;&#x7684;&#x6982;&#x7387;&#x8868;&#x8FBE;&#xFF0C;&#x4EE5;&#x53CA;&#x6211;&#x4EEC;&#x5B66;&#x4E60;&#x7684;&#x76EE;&#x6807;&#x3002;&#x63A5;&#x4E0B;&#x6765;&#x6211;&#x4EEC;&#x8BE6;&#x7EC6;&#x8BB2;&#x89E3;&#x4E0B;&#x5B66;&#x4E60;&#x6743;&#x91CD;&#x7684;&#x8FC7;&#x7A0B;&#x3002;&#x7B2C;&#x4E00;&#x6B65;&#x5C31;&#x662F;&#x5B9A;&#x4E49;&#x635F;&#x5931;&#x51FD;&#x6570;&#xFF0C;&#x8FD9;&#x4E2A;&#x635F;&#x5931;&#x51FD;&#x6570;&#x5C31;&#x662F;&#x8F93;&#x51FA;&#x5355;&#x8BCD;&#x7EC4;&#x7684;&#x6761;&#x4EF6;&#x6982;&#x7387;&#xFF0C;&#x4E00;&#x822C;&#x90FD;&#x662F;&#x53D6;&#x5BF9;&#x6570;&#xFF0C;&#x5982;&#x4E0B;&#x6240;&#x793A;&#xFF1A; </p>
+<p>![wo,2&#x2019; &#x2022; &#x2022;  , WO,C IWI) ](Restricted Boltzmann Machines/clip_image001-163634183726012.png)</p>
+<p>![&#x2014;log ](Restricted Boltzmann Machines/clip_image002-163634183727013.png)</p>
+<p>&#x63A5;&#x4E0B;&#x6765;&#x5C31;&#x662F;&#x5BF9;&#x4E0A;&#x9762;&#x7684;&#x6982;&#x7387;&#x6C42;&#x5BFC;&#xFF0C;&#x5177;&#x4F53;&#x63A8;&#x5BFC;&#x8FC7;&#x7A0B;&#x53EF;&#x4EE5;&#x53BB;&#x770B;BP&#x7B97;&#x6CD5;&#xFF0C;&#x6211;&#x4EEC;&#x5F97;&#x5230;&#x8F93;&#x51FA;&#x6743;&#x91CD;&#x77E9;&#x9635;W&#x2032;W&#x2032;&#x7684;&#x66F4;&#x65B0;&#x89C4;&#x5219;&#xFF1A; </p>
+<p>![img](Restricted Boltzmann Machines/clip_image003.png)</p>
+<p>&#x540C;&#x7406;&#x6743;&#x91CD;WW&#x7684;&#x66F4;&#x65B0;&#x89C4;&#x5219;&#x5982;&#x4E0B;&#xFF1A; </p>
+<p>![img](Restricted Boltzmann Machines/clip_image004.png)</p>
+<p>&#x4ECE;&#x4E0A;&#x9762;&#x7684;&#x66F4;&#x65B0;&#x89C4;&#x5219;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x53D1;&#x73B0;&#xFF0C;&#x6BCF;&#x6B21;&#x66F4;&#x65B0;&#x90FD;&#x9700;&#x8981;&#x5BF9;&#x6574;&#x4E2A;&#x8BCD;&#x6C47;&#x8868;&#x6C42;&#x548C;&#xFF0C;&#x56E0;&#x6B64;&#x5BF9;&#x4E8E;&#x5F88;&#x5927;&#x7684;&#x8BED;&#x6599;&#x5E93;&#x6765;&#x8BF4;&#xFF0C;&#x8FD9;&#x4E2A;&#x8BA1;&#x7B97;&#x590D;&#x6742;&#x5EA6;&#x662F;&#x5F88;&#x9AD8;&#x7684;&#x3002;&#x4E8E;&#x662F;&#x5728;&#x5B9E;&#x9645;&#x5E94;&#x7528;&#x4E2D;&#xFF0C;<a target="_blank" rel="noopener" href="http://arxiv.org/pdf/1310.4546.pdf">Google&#x7684;Mikolov</a>&#x7B49;&#x4EBA;&#x63D0;&#x51FA;&#x4E86;&#x5206;&#x5C42;softmax&#x53CA;&#x8D1F;&#x91C7;&#x6837;&#x53EF;&#x4EE5;&#x4F7F;&#x5F97;&#x8BA1;&#x7B97;&#x590D;&#x6742;&#x5EA6;&#x964D;&#x4F4E;&#x5F88;&#x591A;&#x3002;</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/layumi1993/article/details/72866235">Word2Vec&#x6559;&#x7A0B; - Skip-Gram&#x6A21;&#x578B;</a></p>
+<h3 id="Skip-thought-vectors"><a href="#Skip-thought-vectors" class="headerlink" title="Skip-thought vectors"></a>Skip-thought vectors</h3><p>&#x672C;&#x6587;&#x65E8;&#x5728;&#x63D0;&#x51FA;&#x4E00;&#x4E2A;&#x901A;&#x7528;&#x7684;&#x65E0;&#x76D1;&#x7763;&#x53E5;&#x5B50;&#x8868;&#x793A;&#x6A21;&#x578B;&#xFF0C;&#x501F;&#x9274;&#x4E86;word2vec&#x4E2D;skip-gram&#x6A21;&#x578B;&#xFF0C;&#x901A;&#x8FC7;&#x4E00;&#x53E5;&#x8BDD;&#x6765;&#x9884;&#x6D4B;&#x8FD9;&#x53E5;&#x8BDD;&#x7684;&#x4E0A;&#x4E00;&#x53E5;&#x548C;&#x4E0B;&#x4E00;&#x53E5;&#x3002;&#x672C;&#x6587;&#x7684;&#x6A21;&#x578B;&#x88AB;&#x79F0;&#x4E3A;skip-thoughts&#xFF0C;&#x751F;&#x6210;&#x7684;&#x5411;&#x91CF;&#x79F0;&#x4E3A;skip-thought vector&#x3002;&#x6A21;&#x578B;&#x91C7;&#x7528;&#x4E86;&#x5F53;&#x4E0B;&#x6D41;&#x884C;&#x7684;&#x7AEF;&#x5230;&#x7AEF;&#x6846;&#x67B6;&#xFF0C;&#x901A;&#x8FC7;&#x641C;&#x96C6;&#x4E86;&#x5927;&#x91CF;&#x7684;&#x5C0F;&#x8BF4;&#x4F5C;&#x4E3A;&#x8BAD;&#x7EC3;&#x6570;&#x636E;&#x96C6;&#xFF0C;&#x5C06;&#x5F97;&#x5230;&#x7684;&#x6A21;&#x578B;&#x4E2D;encoder&#x90E8;&#x5206;&#x4F5C;&#x4E3A;feature extractor&#xFF0C;&#x53EF;&#x4EE5;&#x7ED9;&#x4EFB;&#x610F;&#x53E5;&#x5B50;&#x751F;&#x6210;vector&#x3002;</p>
+<p>&#x5F53;&#x7136;&#xFF0C;&#x8FD9;&#x91CC;&#x5B58;&#x5728;&#x4E00;&#x4E2A;&#x5F88;&#x5927;&#x7684;&#x95EE;&#x9898;&#x662F;&#xFF0C;&#x5982;&#x679C;&#x6D4B;&#x8BD5;&#x6570;&#x636E;&#x4E2D;&#x6709;&#x672A;&#x767B;&#x5F55;&#x8BCD;&#xFF0C;&#x5982;&#x4F55;&#x8868;&#x793A;&#x8FD9;&#x4E2A;&#x672A;&#x767B;&#x5F55;&#x8BCD;&#xFF1F;&#x9488;&#x5BF9;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#xFF0C;&#x672C;&#x6587;&#x63D0;&#x51FA;&#x4E86;&#x4E00;&#x79CD;&#x8BCD;&#x6C47;&#x8868;&#x6269;&#x5C55;&#x7684;&#x65B9;&#x6CD5;&#x6765;&#x89E3;&#x51B3;&#x8FD9;&#x4E2A;&#x95EE;&#x9898;&#x3002;&#x9996;&#x5148;&#xFF0C;&#x4ECB;&#x7ECD;&#x672C;&#x6587;&#x7684;&#x6A21;&#x578B;&#xFF0C;&#x53C2;&#x8003;&#x4E0B;&#x56FE;&#x6765;&#x7406;&#x89E3;&#xFF1A;</p>
+<p>![e-e0S&gt;  home  could  see  the  cat  the  This  steps  got  was  This  back  strange  was  home  back  strange  Figure 1: The skip-thoughts model. Given a tuple (Si&#x2014;l, Si, Si+l) of contiguous sentences, with Si  the i-th sentence of a book, the sentence Si is encoded and tries to reconstruct the previous sentence  Si&#x2014;l and next sentence Si+l. In this example, the input is the sentence triplet I got back home. I  could see the cat on the steps. This was strange. Unattached arrows are connected to the encoder  output. Colors indicate which components share parameters. (eos) is the end of sentence token. ](Restricted Boltzmann Machines/clip_image001-163634186973614.png)</p>
+<p>&#x6A21;&#x578B;&#x5206;&#x4E3A;&#x4E24;&#x4E2A;&#x90E8;&#x5206;&#xFF0C;&#x4E00;&#x4E2A;&#x662F;encoder&#xFF0C;&#x4E00;&#x4E2A;&#x662F;&#x4E24;&#x4E2A;decoder&#xFF0C;&#x5206;&#x522B;decode&#x51FA;&#x5F53;&#x524D;&#x53E5;&#x5B50;&#x7684;&#x4E0A;&#x4E00;&#x53E5;&#x548C;&#x4E0B;&#x4E00;&#x53E5;&#x3002;encoder-decoder&#x6846;&#x67B6;&#x5DF2;&#x7ECF;&#x4ECB;&#x7ECD;&#x8FC7;&#x592A;&#x591A;&#x6B21;&#x4E86;&#xFF0C;&#x8FD9;&#x91CC;&#x4E0D;&#x518D;&#x8D58;&#x8FF0;&#x3002;&#x672C;&#x6587;&#x91C7;&#x7528;&#x4E86;GRU-RNN&#x4F5C;&#x4E3A;encoder&#x548C;decoder&#xFF0C;encoder&#x90E8;&#x5206;&#x7684;&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x8BCD;&#x7684;hidden state&#x4F5C;&#x4E3A;decoder&#x7684;&#x8F93;&#x5165;&#x6765;&#x751F;&#x6210;&#x8BCD;&#x3002;&#x8FD9;&#x91CC;&#x7528;&#x7684;&#x662F;&#x6700;&#x7B80;&#x5355;&#x7684;&#x7F51;&#x7EDC;&#x7ED3;&#x6784;&#xFF0C;&#x5E76;&#x6CA1;&#x6709;&#x8003;&#x8651;&#x590D;&#x6742;&#x7684;&#x591A;&#x5C42;&#x7F51;&#x7EDC;&#x3001;&#x53CC;&#x5411;&#x7F51;&#x7EDC;&#x7B49;&#x63D0;&#x5347;&#x6548;&#x679C;&#x3002;decoder&#x90E8;&#x5206;&#x4E5F;&#x53EA;&#x662F;&#x4E00;&#x4E2A;&#x8003;&#x8651;&#x4E86;encoder last hidden state&#x7684;&#x8BED;&#x8A00;&#x6A21;&#x578B;&#xFF0C;&#x5E76;&#x65E0;&#x5176;&#x4ED6;&#x7279;&#x6B8A;&#x4E4B;&#x5904;&#xFF0C;&#x53EA;&#x662F;&#x6709;&#x4E24;&#x4E2A;decoder&#xFF0C;&#x662F;&#x4E00;&#x4E2A;one maps two&#x7684;&#x60C5;&#x51B5;&#xFF0C;&#x4F46;&#x8BA1;&#x7B97;&#x65B9;&#x6CD5;&#x4E00;&#x6837;&#x3002;&#x6A21;&#x578B;&#x4E2D;&#x7684;&#x76EE;&#x6807;&#x51FD;&#x6570;&#x4E5F;&#x662F;&#x4E24;&#x4E2A;&#x90E8;&#x5206;&#xFF0C;&#x4E00;&#x4E2A;&#x6765;&#x81EA;&#x4E8E;&#x9884;&#x6D4B;&#x4E0B;&#x4E00;&#x53E5;&#xFF0C;&#x4E00;&#x4E2A;&#x6765;&#x81EA;&#x4E8E;&#x9884;&#x6D4B;&#x4E0A;&#x4E00;&#x53E5;&#x3002;&#x5982;&#x4E0B;&#x5F0F;&#xFF1A;</p>
+<p>![img](Restricted Boltzmann Machines/clip_image001-163634187872915.png) </p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/06/02/Java虚拟机/" data-toggle="tooltip" data-placement="top" title="Java虚拟机">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/04/19/Stacked Autoencoders/" data-toggle="tooltip" data-placement="top" title="Stackend Autoencoders">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Restricted-Boltzmann-Machines"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Restricted Boltzmann Machines</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Structure"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">Structure</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Reconstructions"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">Reconstructions</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Skip-gram"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">Skip-gram</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#skip-gram&#x6A21;&#x578B;"><span class="toc-nav-number">1.3.1.</span> <span class="toc-nav-text">skip-gram&amp;#x6A21;&amp;#x578B;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x524D;&#x5411;&#x4F20;&#x64AD;"><span class="toc-nav-number">1.3.2.</span> <span class="toc-nav-text">&amp;#x524D;&amp;#x5411;&amp;#x4F20;&amp;#x64AD;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x901A;&#x8FC7;BP&#xFF08;&#x53CD;&#x5411;&#x4F20;&#x64AD;&#xFF09;&#x7B97;&#x6CD5;&#x53CA;&#x968F;&#x673A;&#x68AF;&#x5EA6;&#x4E0B;&#x964D;&#x6765;&#x5B66;&#x4E60;&#x6743;&#x91CD;"><span class="toc-nav-number">1.3.3.</span> <span class="toc-nav-text">&amp;#x901A;&amp;#x8FC7;BP&amp;#xFF08;&amp;#x53CD;&amp;#x5411;&amp;#x4F20;&amp;#x64AD;&amp;#xFF09;&amp;#x7B97;&amp;#x6CD5;&amp;#x53CA;&amp;#x968F;&amp;#x673A;&amp;#x68AF;&amp;#x5EA6;&amp;#x4E0B;&amp;#x964D;&amp;#x6765;&amp;#x5B66;&amp;#x4E60;&amp;#x6743;&amp;#x91CD;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Skip-thought-vectors"><span class="toc-nav-number">1.3.4.</span> <span class="toc-nav-text">Skip-thought vectors</span></a></li></ol></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#神经网络" title="神经网络">神经网络</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/05/12/Restricted%20Boltzmann%20Machines/";
+    var disqus_url = "http://example.com/2020/05/12/Restricted%20Boltzmann%20Machines/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

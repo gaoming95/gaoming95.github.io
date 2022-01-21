@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Stream流常规用法 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2021/07/09/Stream流常规用法/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                    <h1>Stream流常规用法</h1>
+                    <h2 class="subheading">A sequence of elements supporting sequential and parallel aggregate operations</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2021-07-09
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="Stream&#x6D41;&#x5E38;&#x89C4;&#x7528;&#x6CD5;"><a href="#Stream&#x6D41;&#x5E38;&#x89C4;&#x7528;&#x6CD5;" class="headerlink" title="Stream&#x6D41;&#x5E38;&#x89C4;&#x7528;&#x6CD5;"></a>Stream&#x6D41;&#x5E38;&#x89C4;&#x7528;&#x6CD5;</h1><p><code>JDK8</code>&#x5BF9;<code>Stream</code>&#x63A5;&#x53E3;&#x7684;&#x5B9A;&#x4E49;&#xFF0C;<code>Stream</code>&#x63A5;&#x53E3;&#x7EE7;&#x627F;<code>BaseStream</code>&#x63A5;&#x53E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Stream</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">BaseStream</span>&lt;<span class="title">T</span>, <span class="title">Stream</span>&lt;<span class="title">T</span>&gt;&gt; </span></span><br></pre></td></tr></table></figure>
+
+<p><code>BaseStream</code>&#x63A5;&#x53E3;&#x5B9A;&#x4E49;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BaseStream</span>&lt;<span class="title">T</span>, <span class="title">S</span> <span class="keyword">extends</span> <span class="title">BaseStream</span>&lt;<span class="title">T</span>, <span class="title">S</span>&gt;&gt; <span class="keyword">extends</span> <span class="title">AutoCloseable</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="BaseStream&#x63A5;&#x53E3;"><a href="#BaseStream&#x63A5;&#x53E3;" class="headerlink" title="BaseStream&#x63A5;&#x53E3;"></a>BaseStream&#x63A5;&#x53E3;</h2><blockquote>
+<p>Base interface for streams, which are sequences of elements supporting sequential and parallel aggregate operations.</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BaseStream&#x662F;&#x6D41;&#x7684;&#x57FA;&#x672C;&#x63A5;&#x53E3;&#xFF0C;&#x5B83;&#x652F;&#x6301;&#x987A;&#x5E8F;&#x548C;&#x5E76;&#x884C;&#x805A;&#x5408;&#x64CD;&#x4F5C;&#x7684;&#x5143;&#x7D20;&#x5E8F;&#x5217;&#x3002;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// demo &#x7528;&#x6CD5;&#xFF1A;&#x8BA1;&#x7B97;&#x7EA2;&#x8272;&#x7684;&#x6743;&#x91CD;&#x548C;</span></span><br><span class="line"><span class="keyword">int</span> sum = widgets.stream().filter(w -&gt; w.getColor() == RED).mapToInt(w -&gt; w.getWeight()).sum();</span><br></pre></td></tr></table></figure>
+
+<p><code>BaseStream</code>&#x63A5;&#x53E3;&#x5B9A;&#x4E49;&#x4E86;<code>7</code>&#x4E2A;&#x63A5;&#x53E3;&#x65B9;&#x6CD5;&#xFF0C;&#x91CD;&#x5199;&#x4E86;<code>AutoCloseable</code>&#x7684;<code>close</code>&#x65B9;&#x6CD5;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Iterator&lt;T&gt; <span class="title">iterator</span><span class="params">()</span></span>; <span class="comment">// &#x6D41;&#x8FED;&#x4EE3;&#x5668;</span></span><br><span class="line"><span class="function">Spliterator&lt;T&gt; <span class="title">spliterator</span><span class="params">()</span></span>; <span class="comment">// &#x6D41;&#x62C6;&#x5206;&#x5668;</span></span><br><span class="line"><span class="function"><span class="keyword">boolean</span> <span class="title">isParallel</span><span class="params">()</span></span>; <span class="comment">// &#x5982;&#x679C;&#x8981;&#x6267;&#x884C;&#x7EC8;&#x7AEF;&#x64CD;&#x4F5C;&#xFF0C;&#x5219;&#x8FD4;&#x56DE;&#x6B64;&#x6D41;&#x662F;&#x5426;&#x5E76;&#x884C;&#x6267;&#x884C;</span></span><br><span class="line"><span class="function">S <span class="title">sequential</span><span class="params">()</span></span>; <span class="comment">// &#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x987A;&#x5E8F;&#x6D41;&#x3002; &#x5982;&#x679C;&#x6D41;&#x5DF2;&#x7ECF;&#x662F;&#x987A;&#x5E8F;&#x7684;&#xFF0C;&#x8FD4;&#x56DE;&#x81EA;&#x8EAB;</span></span><br><span class="line"><span class="function">S <span class="title">parallel</span><span class="params">()</span></span>; <span class="comment">// &#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x5E76;&#x884C;&#x6D41;&#x3002; &#x5982;&#x679C;&#x6D41;&#x5DF2;&#x7ECF;&#x662F;&#x5E76;&#x884C;&#x7684;&#xFF0C;&#x8FD4;&#x56DE;&#x81EA;&#x8EAB;</span></span><br><span class="line"><span class="function">S <span class="title">unordered</span><span class="params">()</span></span>; <span class="comment">// &#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x65E0;&#x5E8F;&#x6D41;&#x3002; &#x5982;&#x679C;&#x6D41;&#x5DF2;&#x7ECF;&#x662F;&#x65E0;&#x5E8F;&#x7684;&#xFF0C;&#x8FD4;&#x56DE;&#x81EA;&#x8EAB;</span></span><br><span class="line"><span class="function">S <span class="title">onClose</span><span class="params">(Runnable closeHandler)</span></span>; <span class="comment">// &#x8FD4;&#x56DE;&#x5177;&#x6709;&#x9644;&#x52A0;&#x5173;&#x95ED;&#x5904;&#x7406;&#x7A0B;&#x5E8F;&#x7684;&#x7B49;&#x6548;&#x6D41;&#x3002; &#x5173;&#x95ED;&#x5904;&#x7406;&#x7A0B;&#x5E8F;&#x5728;&#x6D41;&#x4E0A;&#x8C03;&#x7528; close &#x65B9;&#x6CD5;&#x65F6;&#x8FD0;&#x884C;&#xFF0C;&#x5E76;&#x6309;&#x6DFB;&#x52A0;&#x987A;&#x5E8F;&#x6267;&#x884C;&#x3002;</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>; <span class="comment">// &#x7EE7;&#x627F;AutoCloseable&#x63A5;&#x53E3;&#xFF0C;override&#x65B9;&#x6CD5;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Stream&#x63A5;&#x53E3;"><a href="#Stream&#x63A5;&#x53E3;" class="headerlink" title="Stream&#x63A5;&#x53E3;"></a>Stream&#x63A5;&#x53E3;</h2><h3 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h3><blockquote>
+<p>A sequence of elements supporting sequential and parallel aggregate operations.</p>
+<p>&#x652F;&#x6301;&#x987A;&#x5E8F;&#x548C;&#x5E76;&#x884C;&#x805A;&#x5408;&#x64CD;&#x4F5C;&#x7684;&#x5143;&#x7D20;&#x5E8F;&#x5217;</p>
+</blockquote>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">Stream</span>&#xFF08;&#x6D41;&#xFF09;&#x662F;&#x4E00;&#x4E2A;&#x6765;&#x81EA;&#x6570;&#x636E;&#x6E90;&#x7684;&#x5143;&#x7D20;&#x961F;&#x5217;&#x5E76;&#x652F;&#x6301;&#x805A;&#x5408;&#x64CD;&#x4F5C;</span><br><span class="line"><span class="number">1</span> &#x5143;&#x7D20;&#x662F;&#x7279;&#x5B9A;&#x7C7B;&#x578B;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x5F62;&#x6210;&#x4E00;&#x4E2A;&#x961F;&#x5217;&#x3002;Java&#x4E2D;&#x7684;<span class="built_in">Stream</span>&#x5E76;&#x4E0D;&#x4F1A;&#x5B58;&#x50A8;&#x5143;&#x7D20;&#xFF0C;&#x800C;&#x662F;&#x6309;&#x9700;&#x8BA1;&#x7B97;</span><br><span class="line"><span class="number">2</span> &#x6570;&#x636E;&#x6E90; &#x6D41;&#x7684;&#x4FE9;&#x5143;&#xFF0C;&#x53EF;&#x4EE5;&#x662F;&#x96C6;&#x5408;&#xFF0C;&#x6570;&#x7EC4;&#xFF0C;I/O channel&#xFF0C;&#x4EA7;&#x751F;&#x5668;generator&#x7B49;</span><br><span class="line"><span class="number">3</span> &#x805A;&#x5408;&#x64CD;&#x4F5C; &#x7C7B;&#x4F3C;&#x4E8E;SQL&#x8BED;&#x53E5;&#x4E00;&#x6837;&#x7684;&#x64CD;&#x4F5C;&#xFF0C;&#x6BD4;&#x5982;filter, <span class="built_in">map</span>, reduce, <span class="built_in">find</span>, match, sorted&#x7B49;</span><br><span class="line"></span><br><span class="line">&#x548C;&#x4EE5;&#x524D;&#x7684;Collection&#x64CD;&#x4F5C;&#x4E0D;&#x540C;&#xFF0C;<span class="built_in">Stream</span>&#x64CD;&#x4F5C;&#x8FD8;&#x6709;&#x4E24;&#x4E2A;&#x57FA;&#x7840;&#x7684;&#x7279;&#x5F81;</span><br><span class="line"></span><br><span class="line">Pipeling: &#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x90FD;&#x4F1A;&#x8FD4;&#x56DE;&#x6D41;&#x5BF9;&#x8C61;&#x672C;&#x8EAB;&#xFF0C;&#x8FD9;&#x6837;&#x591A;&#x4E2A;&#x64CD;&#x4F5C;&#x53EF;&#x4EE5;&#x4E32;&#x8054;&#x6210;&#x4E00;&#x4E2A;&#x7BA1;&#x9053;&#xFF0C;&#x5982;&#x540C;&#x6D41;&#x5F0F;&#x98CE;&#x683C;(fluent style), &#x8FD9;&#x6837;&#x505A;&#x53EF;&#x4EE5;&#x5BF9;&#x64CD;&#x4F5C;&#x8FDB;&#x884C;&#x4F18;&#x5316;&#xFF0C;&#x6BD4;&#x5982;&#x5EF6;&#x8FDF;&#x6267;&#x884C;(laziness)&#x548C;&#x77ED;&#x8DEF;(<span class="keyword">short</span>-circuiting)</span><br><span class="line"></span><br><span class="line">&#x5185;&#x90E8;&#x8FED;&#x4EE3;&#xFF1A;&#x4EE5;&#x524D;&#x5BF9;&#x96C6;&#x5408;&#x904D;&#x5386;&#x90FD;&#x662F;&#x901A;&#x8FC7;Iterator&#x6216;&#x8005;For-Each&#x7684;&#x65B9;&#x5F0F;&#xFF0C;&#x663E;&#x5F0F;&#x7684;&#x5728;&#x96C6;&#x5408;&#x5916;&#x90E8;&#x8FDB;&#x884C;&#x8FED;&#x4EE3;&#xFF0C;&#x8FD9;&#x53EB;&#x505A;&#x5916;&#x90E8;&#x8FED;&#x4EE3;&#x3002;<span class="built_in">Stream</span>&#x63D0;&#x4F9B;&#x4E86;&#x5185;&#x90E8;&#x8FED;&#x4EE3;&#x7684;&#x65B9;&#x5F0F;&#xFF0C;&#x901A;&#x8FC7;&#x8BBF;&#x95EE;&#x8005;&#x6A21;&#x5F0F;(Visitor)&#x5B9E;&#x73B0;</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E3A;&#x4E86;&#x6267;&#x884C;&#x8BA1;&#x7B97;&#xFF0C;&#x6D41;&#x64CD;&#x4F5C;&#x88AB;&#x7EC4;&#x5408;&#x6210;&#x4E00;&#x4E2A;&#x6D41;&#x7BA1;&#x9053;&#x3002;&#x4E00;&#x4E2A;&#x6D41;&#x7BA1;&#x9053;&#x7531;&#x4E00;&#x4E2A;&#x6E90;&#xFF08;&#x53EF;&#x80FD;&#x662F;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#xFF0C;&#x4E00;&#x4E2A;&#x96C6;&#x5408;&#xFF0C;&#x4E00;&#x4E2A;&#x751F;&#x6210;&#x5668;&#x51FD;&#x6570;&#xFF0C;&#x4E00;&#x4E2A;<code>I/O</code>&#x901A;&#x9053;&#x7B49;&#xFF09;&#xFF0C;&#x96F6;&#x4E2A;&#x6216;&#x591A;&#x4E2A;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF08;&#x5C06;&#x4E00;&#x4E2A;&#x6D41;&#x8F6C;&#x6362;&#x4E3A;&#x53E6;&#x4E00;&#x4E2A;&#x6D41;&#xFF0C;&#x4F8B;&#x5982;<code>filter</code>&#x548C;&#x7EC8;&#x7AEF;&#x64CD;&#x4F5C;&#xFF08;&#x4EA7;&#x751F;&#x7ED3;&#x679C;&#xFF0C;&#x5982;<code>count</code>&#x6216;&#x8005;<code>forEach</code>&#xFF09;&#xFF09;</p>
+<p>&#x9664;&#x4E86;<code>Stream</code>&#x8FD9;&#x79CD;<strong>&#x5BF9;&#x8C61;&#x5F15;&#x7528;</strong>&#x6D41;&#xFF0C;&#x8FD8;&#x6709;&#x4E00;&#x4E9B;&#x7279;&#x6B8A;&#x6D41;<code>IntStream</code>&#xFF0C;<code>LongStream</code>&#xFF0C;<code>DoubleStream</code>&#x7B49;&#x3002;</p>
+<p><img src="/2021/07/09/Stream%E6%B5%81%E5%B8%B8%E8%A7%84%E7%94%A8%E6%B3%95/939998-20170313215540823-221594903.png" alt="Java_stream_Interfaces"></p>
+<p>&#x56FE;&#x4E2D;4&#x79CD;<em>stream</em>&#x63A5;&#x53E3;&#x7EE7;&#x627F;&#x81EA;<code>BaseStream</code>&#xFF0C;&#x5176;&#x4E2D;<code>IntStream, LongStream, DoubleStream</code>&#x5BF9;&#x5E94;&#x4E09;&#x79CD;&#x57FA;&#x672C;&#x7C7B;&#x578B;&#xFF08;<code>int, long, double</code>&#xFF0C;&#x6CE8;&#x610F;&#x4E0D;&#x662F;&#x5305;&#x88C5;&#x7C7B;&#x578B;&#xFF09;&#xFF0C;<code>Stream</code>&#x5BF9;&#x5E94;&#x6240;&#x6709;&#x5269;&#x4F59;&#x7C7B;&#x578B;&#x7684;<em>stream</em>&#x89C6;&#x56FE;&#x3002;&#x4E3A;&#x4E0D;&#x540C;&#x6570;&#x636E;&#x7C7B;&#x578B;&#x8BBE;&#x7F6E;&#x4E0D;&#x540C;<em>stream</em>&#x63A5;&#x53E3;&#xFF0C;&#x53EF;&#x4EE5;</p>
+<ol>
+<li>&#x63D0;&#x9AD8;&#x6027;&#x80FD;</li>
+<li>&#x589E;&#x52A0;&#x7279;&#x5B9A;&#x63A5;&#x53E3;&#x51FD;&#x6570;</li>
+</ol>
+<p>&#x4F60;&#x53EF;&#x80FD;&#x4F1A;&#x5947;&#x602A;&#x4E3A;&#x4EC0;&#x4E48;&#x4E0D;&#x628A;<code>IntStream</code>&#x7B49;&#x8BBE;&#x8BA1;&#x6210;<code>Stream</code>&#x7684;&#x5B50;&#x63A5;&#x53E3;&#xFF1F;&#x6BD5;&#x7ADF;&#x8FD9;&#x63A5;&#x53E3;&#x4E2D;&#x7684;&#x65B9;&#x6CD5;&#x540D;&#x5927;&#x90E8;&#x5206;&#x662F;&#x4E00;&#x6837;&#x7684;&#x3002;&#x7B54;&#x6848;&#x662F;&#x8FD9;&#x4E9B;&#x65B9;&#x6CD5;&#x7684;&#x540D;&#x5B57;&#x867D;&#x7136;&#x76F8;&#x540C;&#xFF0C;&#x4F46;&#x662F;&#x8FD4;&#x56DE;&#x7C7B;&#x578B;&#x4E0D;&#x540C;&#xFF0C;&#x5982;&#x679C;&#x8BBE;&#x8BA1;&#x6210;&#x7236;&#x5B50;&#x63A5;&#x53E3;&#x5173;&#x7CFB;&#xFF0C;&#x8FD9;&#x4E9B;&#x65B9;&#x6CD5;&#x5C06;&#x4E0D;&#x80FD;&#x5171;&#x5B58;&#xFF0C;&#x56E0;&#x4E3A;Java&#x4E0D;&#x5141;&#x8BB8;&#x53EA;&#x6709;&#x8FD4;&#x56DE;&#x7C7B;&#x578B;&#x4E0D;&#x540C;&#x7684;&#x65B9;&#x6CD5;&#x91CD;&#x8F7D;</p>
+<p>&#x867D;&#x7136;&#x5927;&#x90E8;&#x5206;&#x60C5;&#x51B5;&#x4E0B;<em>stream</em>&#x662F;&#x5BB9;&#x5668;&#x8C03;&#x7528;<code>Collection.stream()</code>&#x65B9;&#x6CD5;&#x5F97;&#x5230;&#x7684;&#xFF0C;&#x4F46;<em>stream</em>&#x548C;<em>collections</em>&#x6709;&#x4EE5;&#x4E0B;&#x4E0D;&#x540C;</p>
+<ul>
+<li><strong>&#x65E0;&#x5B58;&#x50A8;</strong>&#x3002;<em>stream</em>&#x4E0D;&#x662F;&#x4E00;&#x79CD;&#x6570;&#x636E;&#x7ED3;&#x6784;&#xFF0C;&#x5B83;&#x53EA;&#x662F;&#x67D0;&#x79CD;&#x6570;&#x636E;&#x6E90;&#x7684;&#x4E00;&#x4E2A;&#x89C6;&#x56FE;&#xFF0C;&#x6570;&#x636E;&#x6E90;&#x53EF;&#x4EE5;&#x662F;&#x4E00;&#x4E2A;&#x6570;&#x7EC4;&#xFF0C;Java&#x5BB9;&#x5668;&#x6216;I/O channel&#x7B49;&#x3002;</li>
+<li><strong>&#x4E3A;&#x51FD;&#x6570;&#x5F0F;&#x7F16;&#x7A0B;&#x800C;&#x751F;</strong>&#x3002;&#x5BF9;<em>stream</em>&#x7684;&#x4EFB;&#x4F55;&#x4FEE;&#x6539;&#x90FD;&#x4E0D;&#x4F1A;&#x4FEE;&#x6539;&#x80CC;&#x540E;&#x7684;&#x6570;&#x636E;&#x6E90;&#xFF0C;&#x6BD4;&#x5982;&#x5BF9;<em>stream</em>&#x6267;&#x884C;&#x8FC7;&#x6EE4;&#x64CD;&#x4F5C;&#x5E76;&#x4E0D;&#x4F1A;&#x5220;&#x9664;&#x88AB;&#x8FC7;&#x6EE4;&#x7684;&#x5143;&#x7D20;&#xFF0C;&#x800C;&#x662F;&#x4F1A;&#x4EA7;&#x751F;&#x4E00;&#x4E2A;&#x4E0D;&#x5305;&#x542B;&#x88AB;&#x8FC7;&#x6EE4;&#x5143;&#x7D20;&#x7684;&#x65B0;<em>stream</em>&#x3002;</li>
+<li><strong>&#x60F0;&#x5F0F;&#x6267;&#x884C;</strong>&#x3002;<em>stream</em>&#x4E0A;&#x7684;&#x64CD;&#x4F5C;&#x5E76;&#x4E0D;&#x4F1A;&#x7ACB;&#x5373;&#x6267;&#x884C;&#xFF0C;&#x53EA;&#x6709;&#x7B49;&#x5230;&#x7528;&#x6237;&#x771F;&#x6B63;&#x9700;&#x8981;&#x7ED3;&#x679C;&#x7684;&#x65F6;&#x5019;&#x624D;&#x4F1A;&#x6267;&#x884C;&#x3002;</li>
+<li><strong>&#x53EF;&#x6D88;&#x8D39;&#x6027;</strong>&#x3002;<em>stream</em>&#x53EA;&#x80FD;&#x88AB;&#x201C;&#x6D88;&#x8D39;&#x201D;&#x4E00;&#x6B21;&#xFF0C;&#x4E00;&#x65E6;&#x904D;&#x5386;&#x8FC7;&#x5C31;&#x4F1A;&#x5931;&#x6548;&#xFF0C;&#x5C31;&#x50CF;&#x5BB9;&#x5668;&#x7684;&#x8FED;&#x4EE3;&#x5668;&#x90A3;&#x6837;&#xFF0C;&#x60F3;&#x8981;&#x518D;&#x6B21;&#x904D;&#x5386;&#x5FC5;&#x987B;&#x91CD;&#x65B0;&#x751F;&#x6210;</li>
+</ul>
+<p>&#x5BF9;<em>stream</em>&#x7684;&#x64CD;&#x4F5C;&#x5206;&#x4E3A;&#x4E3A;&#x4E24;&#x7C7B;&#xFF0C;**&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;(*intermediate operations*)&#x548C;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;(*terminal operations*)**&#xFF0C;&#x4E8C;&#x8005;&#x7279;&#x70B9;&#x662F;&#xFF1A;</p>
+<ol>
+<li><strong>&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x603B;&#x662F;&#x4F1A;&#x60F0;&#x5F0F;&#x6267;&#x884C;</strong>&#xFF0C;&#x8C03;&#x7528;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x53EA;&#x4F1A;&#x751F;&#x6210;&#x4E00;&#x4E2A;&#x6807;&#x8BB0;&#x4E86;&#x8BE5;&#x64CD;&#x4F5C;&#x7684;&#x65B0;<em>stream</em>&#xFF0C;&#x4EC5;&#x6B64;&#x800C;&#x5DF2;&#x3002;</li>
+<li><strong>&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x4F1A;&#x89E6;&#x53D1;&#x5B9E;&#x9645;&#x8BA1;&#x7B97;</strong>&#xFF0C;&#x8BA1;&#x7B97;&#x53D1;&#x751F;&#x65F6;&#x4F1A;&#x628A;&#x6240;&#x6709;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x79EF;&#x6512;&#x7684;&#x64CD;&#x4F5C;&#x4EE5;<em>pipeline</em>&#x7684;&#x65B9;&#x5F0F;&#x6267;&#x884C;&#xFF0C;&#x8FD9;&#x6837;&#x53EF;&#x4EE5;&#x51CF;&#x5C11;&#x8FED;&#x4EE3;&#x6B21;&#x6570;&#x3002;&#x8BA1;&#x7B97;&#x5B8C;&#x6210;&#x4E4B;&#x540E;<em>stream</em>&#x5C31;&#x4F1A;&#x5931;&#x6548;&#x3002;</li>
+</ol>
+<p><code>Stream API</code>&#x4E2D;&#x5927;&#x91CF;&#x4F7F;&#x7528;<code>Lambda</code>&#x8868;&#x8FBE;&#x5F0F;&#x4F5C;&#x4E3A;&#x56DE;&#x8C03;&#x65B9;&#x6CD5;&#xFF0C;&#x4F46;&#x8FD9;&#x5E76;&#x4E0D;&#x662F;&#x5173;&#x952E;&#x3002;&#x7406;&#x89E3;Stream&#x6211;&#x4EEC;&#x66F4;&#x5173;&#x5FC3;&#x7684;&#x662F;&#x53E6;&#x5916;&#x4E24;&#x4E2A;&#x95EE;&#x9898;&#xFF1A;&#x6D41;&#x6C34;&#x7EBF;&#x548C;&#x81EA;&#x52A8;&#x5E76;&#x884C;&#x3002;&#x4F7F;&#x7528;<code>Stream</code>&#x6216;&#x8BB8;&#x5F88;&#x5BB9;&#x6613;&#x5199;&#x5165;&#x5982;&#x4E0B;&#x5F62;&#x5F0F;&#x7684;&#x4EE3;&#x7801;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> longestStringLengthStartingWithA</span><br><span class="line">        = strings.stream()</span><br><span class="line">              .filter(s -&gt; s.startsWith(<span class="string">&quot;A&quot;</span>))</span><br><span class="line">              .mapToInt(String::length)</span><br><span class="line">              .max();</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E0A;&#x8FF0;&#x4EE3;&#x7801;&#x6C42;&#x51FA;&#x4EE5;&#x5B57;&#x6BCD;*<code>A</code><em>&#x5F00;&#x5934;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x6700;&#x5927;&#x957F;&#x5EA6;&#xFF0C;&#x4E00;&#x79CD;&#x76F4;&#x767D;&#x7684;&#x65B9;&#x5F0F;&#x662F;&#x4E3A;&#x6BCF;&#x4E00;&#x6B21;&#x51FD;&#x6570;&#x8C03;&#x7528;&#x90FD;&#x6267;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#xFF0C;&#x8FD9;&#x6837;&#x505A;&#x80FD;&#x591F;&#x5B9E;&#x73B0;&#x529F;&#x80FD;&#xFF0C;&#x4F46;&#x6548;&#x7387;&#x4E0A;&#x80AF;&#x5B9A;&#x662F;&#x65E0;&#x6CD5;&#x63A5;&#x53D7;&#x7684;&#x3002;&#x7C7B;&#x5E93;&#x7684;&#x5B9E;&#x73B0;&#x7740;&#x4F7F;&#x7528;&#x6D41;&#x6C34;&#x7EBF;&#xFF08;</em>Pipeline*&#xFF09;&#x7684;&#x65B9;&#x5F0F;&#x5DE7;&#x5999;&#x7684;&#x907F;&#x514D;&#x4E86;&#x591A;&#x6B21;&#x8FED;&#x4EE3;&#xFF0C;&#x5176;&#x57FA;&#x672C;&#x601D;&#x60F3;&#x662F;&#x5728;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#x4E2D;&#x5C3D;&#x53EF;&#x80FD;&#x591A;&#x7684;&#x6267;&#x884C;&#x7528;&#x6237;&#x6307;&#x5B9A;&#x7684;&#x64CD;&#x4F5C;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>Stream&#x64CD;&#x4F5C;&#x5206;&#x7C7B;</th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;(<code>Intermediate operations</code>)</td>
+<td>&#x65E0;&#x72B6;&#x6001;(<code>Stateless</code>)</td>
+<td><code>unordered() filter() map() mapToInt() mapToLong() mapToDouble() flatMap() flatMapToInt() flatMapToLong() flatMapToDouble() peek()</code></td>
+</tr>
+<tr>
+<td></td>
+<td>&#x6709;&#x72B6;&#x6001;(<code>Stateful</code>)</td>
+<td><code>distinct() sorted() sorted() limit() skip()</code></td>
+</tr>
+<tr>
+<td>&#x7ED3;&#x675F;&#x64CD;&#x4F5C;(<code>Terminal operations</code>)</td>
+<td>&#x975E;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;</td>
+<td><code>forEach() forEachOrdered() toArray() reduce() collect() max() min() count()</code></td>
+</tr>
+<tr>
+<td></td>
+<td>&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;(<code>short-circuiting</code>)</td>
+<td><code>anyMatch() allMatch() noneMatch() findFirst() findAny()</code></td>
+</tr>
+</tbody></table>
+<p><code>Stream</code>&#x4E0A;&#x7684;&#x6240;&#x6709;&#x64CD;&#x4F5C;&#x5206;&#x4E3A;&#x4E24;&#x7C7B;&#xFF1A;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x548C;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#xFF0C;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x53EA;&#x662F;&#x4E00;&#x79CD;&#x6807;&#x8BB0;&#xFF0C;&#x53EA;&#x6709;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x624D;&#x4F1A;&#x89E6;&#x53D1;&#x5B9E;&#x9645;&#x8BA1;&#x7B97;&#x3002;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x53C8;&#x53EF;&#x4EE5;&#x5206;&#x4E3A;&#x65E0;&#x72B6;&#x6001;&#x7684;(<em>Stateless</em>)&#x548C;&#x6709;&#x72B6;&#x6001;&#x7684;(<em>Stateful</em>)&#xFF0C;&#x65E0;&#x72B6;&#x6001;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x662F;&#x6307;&#x5143;&#x7D20;&#x7684;&#x5904;&#x7406;&#x4E0D;&#x53D7;&#x524D;&#x9762;&#x5143;&#x7D20;&#x7684;&#x5F71;&#x54CD;&#xFF0C;&#x800C;&#x6709;&#x72B6;&#x6001;&#x7684;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x5FC5;&#x987B;&#x7B49;&#x5230;&#x6240;&#x6709;&#x5143;&#x7D20;&#x5904;&#x7406;&#x4E4B;&#x540E;&#x624D;&#x77E5;&#x9053;&#x6700;&#x7EC8;&#x7ED3;&#x679C;&#xFF0C;&#x6BD4;&#x5982;&#x6392;&#x5E8F;&#x662F;&#x6709;&#x72B6;&#x6001;&#x64CD;&#x4F5C;&#xFF0C;&#x5728;&#x8BFB;&#x53D6;&#x6240;&#x6709;&#x5143;&#x7D20;&#x4E4B;&#x524D;&#x5E76;&#x4E0D;&#x80FD;&#x786E;&#x5B9A;&#x6392;&#x5E8F;&#x7ED3;&#x679C;&#xFF1B;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x53C8;&#x53EF;&#x4EE5;&#x5206;&#x4E3A;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#x548C;&#x975E;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#xFF0C;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#x662F;&#x6307;&#x4E0D;&#x7528;&#x5904;&#x7406;&#x5168;&#x90E8;&#x5143;&#x7D20;&#x5C31;&#x53EF;&#x4EE5;&#x8FD4;&#x56DE;&#x7ED3;&#x679C;&#xFF0C;&#x6BD4;&#x5982;<em>&#x627E;&#x5230;&#x7B2C;&#x4E00;&#x4E2A;&#x6EE1;&#x8DB3;&#x6761;&#x4EF6;&#x7684;&#x5143;&#x7D20;</em>&#x3002;&#x4E4B;&#x6240;&#x4EE5;&#x8981;&#x8FDB;&#x884C;&#x5982;&#x6B64;&#x7CBE;&#x7EC6;&#x7684;&#x5212;&#x5206;&#xFF0C;&#x662F;&#x56E0;&#x4E3A;&#x5E95;&#x5C42;&#x5BF9;&#x6BCF;&#x4E00;&#x79CD;&#x60C5;&#x51B5;&#x7684;&#x5904;&#x7406;&#x65B9;&#x5F0F;&#x4E0D;&#x540C;&#x3002;</p>
+<p>&#x533A;&#x5206;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x548C;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x6700;&#x7B80;&#x5355;&#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#x5C31;&#x662F;&#x770B;&#x65B9;&#x6CD5;&#x7684;&#x8FD4;&#x56DE;&#x503C;&#xFF0C;&#x8FD4;&#x56DE;&#x503C;&#x4E3A;<em>stream</em>&#x7684;&#x5927;&#x90FD;&#x662F;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF0C;&#x5426;&#x5219;&#x662F;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;</p>
+<h3 id="Stream&#x7684;&#x5B9E;&#x73B0;&#x539F;&#x7406;"><a href="#Stream&#x7684;&#x5B9E;&#x73B0;&#x539F;&#x7406;" class="headerlink" title="Stream&#x7684;&#x5B9E;&#x73B0;&#x539F;&#x7406;"></a>Stream&#x7684;&#x5B9E;&#x73B0;&#x539F;&#x7406;</h3><p><img src="/2021/07/09/Stream%E6%B5%81%E5%B8%B8%E8%A7%84%E7%94%A8%E6%B3%95/939998-20170328220216904-281721275.png" alt="img"></p>
+<p>&#x4ECD;&#x7136;&#x8003;&#x8651;&#x4E0A;&#x8FF0;&#x6C42;&#x6700;&#x957F;&#x5B57;&#x7B26;&#x4E32;&#x7684;&#x7A0B;&#x5E8F;&#xFF0C;&#x4E00;&#x79CD;&#x76F4;&#x767D;&#x7684;&#x6D41;&#x6C34;&#x7EBF;&#x5B9E;&#x73B0;&#x65B9;&#x5F0F;&#x662F;&#x4E3A;&#x6BCF;&#x4E00;&#x6B21;&#x51FD;&#x6570;&#x8C03;&#x7528;&#x90FD;&#x6267;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#xFF0C;&#x5E76;&#x5C06;&#x5904;&#x7406;&#x4E2D;&#x95F4;&#x7ED3;&#x679C;&#x653E;&#x5230;&#x67D0;&#x79CD;&#x6570;&#x636E;&#x7ED3;&#x6784;&#x4E2D;&#xFF08;&#x6BD4;&#x5982;&#x6570;&#x7EC4;&#xFF0C;&#x5BB9;&#x5668;&#x7B49;&#xFF09;&#x3002;&#x5177;&#x4F53;&#x8BF4;&#x6765;&#xFF0C;&#x5C31;&#x662F;&#x8C03;&#x7528;<code>filter()</code>&#x65B9;&#x6CD5;&#x540E;&#x7ACB;&#x5373;&#x6267;&#x884C;&#xFF0C;&#x9009;&#x51FA;&#x6240;&#x6709;&#x4EE5;<em>A</em>&#x5F00;&#x5934;&#x7684;&#x5B57;&#x7B26;&#x4E32;&#x5E76;&#x653E;&#x5230;&#x4E00;&#x4E2A;&#x5217;&#x8868;<code>list1</code>&#x4E2D;&#xFF0C;&#x4E4B;&#x540E;&#x8BA9;list1&#x4F20;&#x9012;&#x7ED9;<code>mapToInt()</code>&#x65B9;&#x6CD5;&#x5E76;&#x7ACB;&#x5373;&#x6267;&#x884C;&#xFF0C;&#x751F;&#x6210;&#x7684;&#x7ED3;&#x679C;&#x653E;&#x5230;<code>list2</code>&#x4E2D;&#xFF0C;&#x6700;&#x540E;&#x904D;&#x5386;list2&#x627E;&#x51FA;&#x6700;&#x5927;&#x7684;&#x6570;&#x5B57;&#x4F5C;&#x4E3A;&#x6700;&#x7EC8;&#x7ED3;&#x679C;&#x3002;&#x7A0B;&#x5E8F;&#x7684;&#x6267;&#x884C;&#x6D41;&#x7A0B;&#x5982;&#x5982;&#x6240;&#x793A;&#xFF1A;</p>
+<p>&#x8FD9;&#x6837;&#x505A;&#x5B9E;&#x73B0;&#x8D77;&#x6765;&#x975E;&#x5E38;&#x7B80;&#x5355;&#x76F4;&#x89C2;&#xFF0C;&#x4F46;&#x6709;&#x4E24;&#x4E2A;&#x660E;&#x663E;&#x7684;&#x5F0A;&#x7AEF;&#xFF1A;</p>
+<ol>
+<li>&#x8FED;&#x4EE3;&#x6B21;&#x6570;&#x591A;&#x3002;&#x8FED;&#x4EE3;&#x6B21;&#x6570;&#x8DDF;&#x51FD;&#x6570;&#x8C03;&#x7528;&#x7684;&#x6B21;&#x6570;&#x76F8;&#x7B49;</li>
+<li>&#x9891;&#x7E41;&#x4EA7;&#x751F;&#x4E2D;&#x95F4;&#x7ED3;&#x679C;&#x3002;&#x6BCF;&#x6B21;&#x51FD;&#x6570;&#x8C03;&#x7528;&#x90FD;&#x4EA7;&#x751F;&#x4E00;&#x6B21;&#x4E2D;&#x95F4;&#x7ED3;&#x679C;&#xFF0C;&#x5B58;&#x50A8;&#x5F00;&#x9500;&#x65E0;&#x6CD5;&#x63A5;&#x53D7;</li>
+</ol>
+<p>&#x8FD9;&#x4E9B;&#x5F0A;&#x7AEF;&#x4F7F;&#x5F97;&#x6548;&#x7387;&#x5E95;&#x4E0B;&#xFF0C;&#x6839;&#x672C;&#x65E0;&#x6CD5;&#x63A5;&#x53D7;&#x3002;&#x5982;&#x679C;&#x4E0D;&#x4F7F;&#x7528;Stream API&#x6211;&#x4EEC;&#x90FD;&#x77E5;&#x9053;&#x4E0A;&#x8FF0;&#x4EE3;&#x7801;&#x8BE5;&#x5982;&#x4F55;&#x5728;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#x4E2D;&#x5B8C;&#x6210;&#xFF0C;&#x5927;&#x81F4;&#x662F;&#x5982;&#x4E0B;&#x5F62;&#x5F0F;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> longest = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span>(String str : strings){</span><br><span class="line">    <span class="keyword">if</span>(str.startsWith(<span class="string">&quot;A&quot;</span>)){<span class="comment">// 1. filter(), &#x4FDD;&#x7559;&#x4EE5;A&#x5F00;&#x5934;&#x7684;&#x5B57;&#x7B26;&#x4E32;</span></span><br><span class="line">        <span class="keyword">int</span> len = str.length();<span class="comment">// 2. mapToInt(), &#x8F6C;&#x6362;&#x6210;&#x957F;&#x5EA6;</span></span><br><span class="line">        longest = Math.max(len, longest);<span class="comment">// 3. max(), &#x4FDD;&#x7559;&#x6700;&#x957F;&#x7684;&#x957F;&#x5EA6;</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x91C7;&#x7528;&#x8FD9;&#x79CD;&#x65B9;&#x5F0F;&#x6211;&#x4EEC;&#x4E0D;&#x4F46;&#x51CF;&#x5C11;&#x4E86;&#x8FED;&#x4EE3;&#x6B21;&#x6570;&#xFF0C;&#x4E5F;&#x907F;&#x514D;&#x4E86;&#x5B58;&#x50A8;&#x4E2D;&#x95F4;&#x7ED3;&#x679C;&#xFF0C;&#x663E;&#x7136;&#x8FD9;&#x5C31;&#x662F;&#x6D41;&#x6C34;&#x7EBF;&#xFF0C;&#x56E0;&#x4E3A;&#x6211;&#x4EEC;&#x628A;&#x4E09;&#x4E2A;&#x64CD;&#x4F5C;&#x653E;&#x5728;&#x4E86;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#x5F53;&#x4E2D;&#x3002;&#x53EA;&#x8981;&#x6211;&#x4EEC;&#x4E8B;&#x5148;&#x77E5;&#x9053;&#x7528;&#x6237;&#x610F;&#x56FE;&#xFF0C;&#x603B;&#x662F;&#x80FD;&#x591F;&#x91C7;&#x7528;&#x4E0A;&#x8FF0;&#x65B9;&#x5F0F;&#x5B9E;&#x73B0;&#x8DDF;Stream API&#x7B49;&#x4EF7;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x4F46;&#x95EE;&#x9898;&#x662F;Stream&#x7C7B;&#x5E93;&#x7684;&#x8BBE;&#x8BA1;&#x8005;&#x5E76;&#x4E0D;&#x77E5;&#x9053;&#x7528;&#x6237;&#x7684;&#x610F;&#x56FE;&#x662F;&#x4EC0;&#x4E48;&#x3002;&#x5982;&#x4F55;&#x5728;&#x65E0;&#x6CD5;&#x5047;&#x8BBE;&#x7528;&#x6237;&#x884C;&#x4E3A;&#x7684;&#x524D;&#x63D0;&#x4E0B;&#x5B9E;&#x73B0;&#x6D41;&#x6C34;&#x7EBF;&#xFF0C;&#x662F;&#x7C7B;&#x5E93;&#x7684;&#x8BBE;&#x8BA1;&#x8005;&#x8981;&#x8003;&#x8651;&#x7684;&#x95EE;&#x9898;</p>
+<h3 id="Stream&#x6D41;&#x6C34;&#x7EBF;&#x89E3;&#x51B3;&#x65B9;&#x6848;"><a href="#Stream&#x6D41;&#x6C34;&#x7EBF;&#x89E3;&#x51B3;&#x65B9;&#x6848;" class="headerlink" title="Stream&#x6D41;&#x6C34;&#x7EBF;&#x89E3;&#x51B3;&#x65B9;&#x6848;"></a>Stream&#x6D41;&#x6C34;&#x7EBF;&#x89E3;&#x51B3;&#x65B9;&#x6848;</h3><p>&#x6211;&#x4EEC;&#x5927;&#x81F4;&#x80FD;&#x591F;&#x60F3;&#x5230;&#xFF0C;&#x5E94;&#x8BE5;&#x91C7;&#x7528;&#x67D0;&#x79CD;&#x65B9;&#x5F0F;&#x8BB0;&#x5F55;&#x7528;&#x6237;&#x6BCF;&#x4E00;&#x6B65;&#x7684;&#x64CD;&#x4F5C;&#xFF0C;&#x5F53;&#x7528;&#x6237;&#x8C03;&#x7528;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x65F6;&#x5C06;&#x4E4B;&#x524D;&#x8BB0;&#x5F55;&#x7684;&#x64CD;&#x4F5C;&#x53E0;&#x52A0;&#x5230;&#x4E00;&#x8D77;&#x5728;&#x4E00;&#x6B21;&#x8FED;&#x4EE3;&#x4E2D;&#x5168;&#x90E8;&#x6267;&#x884C;&#x6389;&#x3002;&#x6CBF;&#x7740;&#x8FD9;&#x4E2A;&#x601D;&#x8DEF;&#xFF0C;&#x6709;&#x51E0;&#x4E2A;&#x95EE;&#x9898;&#x9700;&#x8981;&#x89E3;&#x51B3;&#xFF1A;</p>
+<ol>
+<li>&#x7528;&#x6237;&#x7684;&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x8BB0;&#x5F55;&#xFF1F;</li>
+<li>&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x53E0;&#x52A0;&#xFF1F;</li>
+<li>&#x53E0;&#x52A0;&#x4E4B;&#x540E;&#x7684;&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x6267;&#x884C;&#xFF1F;</li>
+<li>&#x6267;&#x884C;&#x540E;&#x7684;&#x7ED3;&#x679C;&#xFF08;&#x5982;&#x679C;&#x6709;&#xFF09;&#x5728;&#x54EA;&#x91CC;&#xFF1F;</li>
+</ol>
+<h4 id="&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x8BB0;&#x5F55;"><a href="#&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x8BB0;&#x5F55;" class="headerlink" title="&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x8BB0;&#x5F55;"></a>&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x8BB0;&#x5F55;</h4><p><img src="/2021/07/09/Stream%E6%B5%81%E5%B8%B8%E8%A7%84%E7%94%A8%E6%B3%95/939998-20170328220309045-1952777908.png" alt="img"></p>
+<p>&#x6CE8;&#x610F;&#x8FD9;&#x91CC;&#x4F7F;&#x7528;&#x7684;&#x662F;<strong>&#x64CD;&#x4F5C;(<code>operation</code>)<strong>&#x4E00;&#x8BCD;&#xFF0C;&#x6307;&#x7684;&#x662F;</strong><code>Stream</code>&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;</strong>&#x7684;&#x64CD;&#x4F5C;&#xFF0C;&#x5F88;&#x591A;<code>Stream</code>&#x64CD;&#x4F5C;&#x4F1A;&#x9700;&#x8981;&#x4E00;&#x4E2A;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF08;<code>Lambda</code>&#x8868;&#x8FBE;&#x5F0F;&#xFF09;&#xFF0C;&#x56E0;&#x6B64;&#x4E00;&#x4E2A;&#x5B8C;&#x6574;&#x7684;&#x64CD;&#x4F5C;&#x662F;**<code>&#x6570;&#x636E;&#x6765;&#x6E90;&#xFF0C;&#x64CD;&#x4F5C;&#xFF0C;&#x56DE;&#x8C03;&#x51FD;&#x6570;</code>**&#x6784;&#x6210;&#x7684;&#x4E09;&#x5143;&#x7EC4;&#x3002;<code>Stream</code>&#x4E2D;&#x4F7F;&#x7528;<code>Stage</code>&#x7684;&#x6982;&#x5FF5;&#x6765;&#x63CF;&#x8FF0;&#x4E00;&#x4E2A;&#x5B8C;&#x6574;&#x7684;&#x64CD;&#x4F5C;&#xFF0C;&#x5E76;&#x7528;&#x67D0;&#x79CD;&#x5B9E;&#x4F8B;&#x5316;&#x540E;&#x7684;<code>PipelineHelper</code>&#x6765;&#x4EE3;&#x8868;<code>Stage</code>&#xFF0C;&#x5C06;&#x5177;&#x6709;&#x5148;&#x540E;&#x987A;&#x5E8F;&#x7684;&#x5404;&#x4E2A;<code>Stage</code>&#x8FDE;&#x5230;&#x4E00;&#x8D77;&#xFF0C;&#x5C31;&#x6784;&#x6210;&#x4E86;&#x6574;&#x4E2A;&#x6D41;&#x6C34;&#x7EBF;&#x3002;&#x8DDF;<code>Stream</code>&#x76F8;&#x5173;&#x7C7B;&#x548C;&#x63A5;&#x53E3;&#x7684;&#x7EE7;&#x627F;&#x5173;&#x7CFB;&#x56FE;&#x793A;&#x3002;</p>
+<p>&#x8FD8;&#x6709;<code>IntPipeline</code>, <code>LongPipeline</code>, <code>DoublePipeline</code>&#x6CA1;&#x5728;&#x56FE;&#x4E2D;&#x753B;&#x51FA;&#xFF0C;&#x8FD9;&#x4E09;&#x4E2A;&#x7C7B;&#x4E13;&#x95E8;&#x4E3A;&#x4E09;&#x79CD;&#x57FA;&#x672C;&#x7C7B;&#x578B;&#xFF08;&#x4E0D;&#x662F;&#x5305;&#x88C5;&#x7C7B;&#x578B;&#xFF09;&#x800C;&#x5B9A;&#x5236;&#x7684;&#xFF0C;&#x8DDF;<code>ReferencePipeline</code>&#x662F;&#x5E76;&#x5217;&#x5173;&#x7CFB;&#x3002;&#x56FE;&#x4E2D;<code>Head</code>&#x7528;&#x4E8E;&#x8868;&#x793A;&#x7B2C;&#x4E00;&#x4E2A;<code>Stage</code>&#xFF0C;&#x5373;&#x8C03;&#x7528;&#x8C03;&#x7528;&#x8BF8;&#x5982;<code>Collection.stream()</code>&#x65B9;&#x6CD5;&#x4EA7;&#x751F;&#x7684;<code>Stage</code>&#xFF0C;&#x5F88;&#x663E;&#x7136;&#x8FD9;&#x4E2A;<code>Stage</code>&#x91CC;&#x4E0D;&#x5305;&#x542B;&#x4EFB;&#x4F55;&#x64CD;&#x4F5C;&#xFF1B;<code>StatelessOp</code>&#x548C;<code>StatefulOp</code>&#x5206;&#x522B;&#x8868;&#x793A;&#x65E0;&#x72B6;&#x6001;&#x548C;&#x6709;&#x72B6;&#x6001;&#x7684;<code>Stage</code>&#xFF0C;&#x5BF9;&#x5E94;&#x4E8E;&#x65E0;&#x72B6;&#x6001;&#x548C;&#x6709;&#x72B6;&#x6001;&#x7684;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x3002;</p>
+<p>Stream&#x6D41;&#x6C34;&#x7EBF;&#x7EC4;&#x7EC7;&#x7ED3;&#x6784;&#x793A;&#x610F;&#x56FE;&#x5982;&#x4E0B;&#xFF1A;</p>
+<p><img src="/2021/07/09/Stream%E6%B5%81%E5%B8%B8%E8%A7%84%E7%94%A8%E6%B3%95/939998-20170328220336326-882287689.png" alt="img"></p>
+<p>&#x56FE;&#x4E2D;&#x901A;&#x8FC7;<code>Collection.stream()</code>&#x65B9;&#x6CD5;&#x5F97;&#x5230;<code>Head</code>&#x4E5F;&#x5C31;&#x662F;<code>stage0</code>&#xFF0C;&#x7D27;&#x63A5;&#x7740;&#x8C03;&#x7528;&#x4E00;&#x7CFB;&#x5217;&#x7684;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF0C;&#x4E0D;&#x65AD;&#x4EA7;&#x751F;&#x65B0;&#x7684;<code>Stream</code>&#x3002;<strong>&#x8FD9;&#x4E9B;<code>Stream</code>&#x5BF9;&#x8C61;&#x4EE5;&#x53CC;&#x5411;&#x94FE;&#x8868;&#x7684;&#x5F62;&#x5F0F;&#x7EC4;&#x7EC7;&#x5728;&#x4E00;&#x8D77;&#xFF0C;&#x6784;&#x6210;&#x6574;&#x4E2A;&#x6D41;&#x6C34;&#x7EBF;&#xFF0C;&#x7531;&#x4E8E;&#x6BCF;&#x4E2A;<code>Stage</code>&#x90FD;&#x8BB0;&#x5F55;&#x4E86;&#x524D;&#x4E00;&#x4E2A;<code>Stage</code>&#x548C;&#x672C;&#x6B21;&#x7684;&#x64CD;&#x4F5C;&#x4EE5;&#x53CA;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF0C;&#x4F9D;&#x9760;&#x8FD9;&#x79CD;&#x7ED3;&#x6784;&#x5C31;&#x80FD;&#x5EFA;&#x7ACB;&#x8D77;&#x5BF9;&#x6570;&#x636E;&#x6E90;&#x7684;&#x6240;&#x6709;&#x64CD;&#x4F5C;</strong>&#x3002;&#x8FD9;&#x5C31;&#x662F;<code>Stream</code>&#x8BB0;&#x5F55;&#x64CD;&#x4F5C;&#x7684;&#x65B9;&#x5F0F;&#x3002;</p>
+<h4 id="&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x53E0;&#x52A0;"><a href="#&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x53E0;&#x52A0;" class="headerlink" title="&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x53E0;&#x52A0;"></a>&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x53E0;&#x52A0;</h4><p>&#x4EE5;&#x4E0A;&#x53EA;&#x662F;&#x89E3;&#x51B3;&#x4E86;&#x64CD;&#x4F5C;&#x8BB0;&#x5F55;&#x7684;&#x95EE;&#x9898;&#xFF0C;&#x8981;&#x60F3;&#x8BA9;&#x6D41;&#x6C34;&#x7EBF;&#x8D77;&#x5230;&#x5E94;&#x6709;&#x7684;&#x4F5C;&#x7528;&#x6211;&#x4EEC;&#x9700;&#x8981;&#x4E00;&#x79CD;&#x5C06;&#x6240;&#x6709;&#x64CD;&#x4F5C;&#x53E0;&#x52A0;&#x5230;&#x4E00;&#x8D77;&#x7684;&#x65B9;&#x6848;&#x3002;&#x4F60;&#x53EF;&#x80FD;&#x4F1A;&#x89C9;&#x5F97;&#x8FD9;&#x5F88;&#x7B80;&#x5355;&#xFF0C;&#x53EA;&#x9700;&#x8981;&#x4ECE;&#x6D41;&#x6C34;&#x7EBF;&#x7684;<code>head</code>&#x5F00;&#x59CB;&#x4F9D;&#x6B21;&#x6267;&#x884C;&#x6BCF;&#x4E00;&#x6B65;&#x7684;&#x64CD;&#x4F5C;&#xFF08;&#x5305;&#x62EC;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#xFF09;&#x5C31;&#x884C;&#x4E86;&#x3002;&#x8FD9;&#x542C;&#x8D77;&#x6765;&#x4F3C;&#x4E4E;&#x662F;&#x53EF;&#x884C;&#x7684;&#xFF0C;&#x4F46;&#x662F;&#x4F60;&#x5FFD;&#x7565;&#x4E86;&#x524D;&#x9762;&#x7684;<code>Stage</code>&#x5E76;&#x4E0D;&#x77E5;&#x9053;&#x540E;&#x9762;<code>Stage</code>&#x5230;&#x5E95;&#x6267;&#x884C;&#x4E86;&#x54EA;&#x79CD;&#x64CD;&#x4F5C;&#xFF0C;&#x4EE5;&#x53CA;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x662F;&#x54EA;&#x79CD;&#x5F62;&#x5F0F;&#x3002;&#x6362;&#x53E5;&#x8BDD;&#x8BF4;&#xFF0C;&#x53EA;&#x6709;&#x5F53;&#x524D;<code>Stage</code>&#x672C;&#x8EAB;&#x624D;&#x77E5;&#x9053;&#x8BE5;&#x5982;&#x4F55;&#x6267;&#x884C;&#x81EA;&#x5DF1;&#x5305;&#x542B;&#x7684;&#x52A8;&#x4F5C;&#x3002;&#x8FD9;&#x5C31;&#x9700;&#x8981;&#x6709;&#x67D0;&#x79CD;&#x534F;&#x8BAE;&#x6765;&#x534F;&#x8C03;&#x76F8;&#x90BB;<code>Stage</code>&#x4E4B;&#x95F4;&#x7684;&#x8C03;&#x7528;&#x5173;&#x7CFB;&#x3002;</p>
+<p>&#x8FD9;&#x79CD;&#x534F;&#x8BAE;&#x7531;<code>Sink</code>&#x63A5;&#x53E3;&#x5B8C;&#x6210;&#xFF0C;<code>Sink</code>&#x63A5;&#x53E3;&#x5305;&#x542B;&#x7684;&#x65B9;&#x6CD5;&#x5982;&#x4E0B;&#x8868;&#x6240;&#x793A;&#xFF1A;</p>
+<table>
+<thead>
+<tr>
+<th>&#x65B9;&#x6CD5;&#x540D;</th>
+<th>&#x4F5C;&#x7528;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>void begin(long size)</code></td>
+<td>&#x5F00;&#x59CB;&#x904D;&#x5386;&#x5143;&#x7D20;&#x4E4B;&#x524D;&#x8C03;&#x7528;&#x8BE5;&#x65B9;&#x6CD5;&#xFF0C;&#x901A;&#x77E5;<code>Sink</code>&#x505A;&#x597D;&#x51C6;&#x5907;</td>
+</tr>
+<tr>
+<td><code>void end()</code></td>
+<td>&#x6240;&#x6709;&#x5143;&#x7D20;&#x904D;&#x5386;&#x5B8C;&#x6210;&#x4E4B;&#x540E;&#x8C03;&#x7528;&#xFF0C;&#x901A;&#x77E5;<code>Sink</code>&#x6CA1;&#x6709;&#x66F4;&#x591A;&#x7684;&#x5143;&#x7D20;&#x4E86;</td>
+</tr>
+<tr>
+<td><code>boolean cancellationRequested()</code></td>
+<td>&#x662F;&#x5426;&#x53EF;&#x4EE5;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#xFF0C;&#x53EF;&#x4EE5;&#x8BA9;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#x5C3D;&#x65E9;&#x7ED3;&#x675F;</td>
+</tr>
+<tr>
+<td><code>void accept(T t)</code></td>
+<td>&#x904D;&#x5386;&#x5143;&#x7D20;&#x65F6;&#x8C03;&#x7528;&#xFF0C;&#x63A5;&#x53D7;&#x4E00;&#x4E2A;&#x5F85;&#x5904;&#x7406;&#x5143;&#x7D20;&#xFF0C;&#x5E76;&#x5BF9;&#x5143;&#x7D20;&#x8FDB;&#x884C;&#x5904;&#x7406;&#x3002;<code>Stage</code>&#x628A;&#x81EA;&#x5DF1;&#x5305;&#x542B;&#x7684;&#x64CD;&#x4F5C;&#x548C;&#x56DE;&#x8C03;&#x65B9;&#x6CD5;&#x5C01;&#x88C5;&#x5230;&#x8BE5;&#x65B9;&#x6CD5;&#x91CC;&#xFF0C;&#x524D;&#x4E00;&#x4E2A;<code>Stage</code>&#x53EA;&#x9700;&#x8981;&#x8C03;&#x7528;&#x5F53;&#x524D;<code>Stage.accept(T t)</code>&#x65B9;&#x6CD5;&#x5C31;&#x884C;&#x4E86;</td>
+</tr>
+</tbody></table>
+<p>&#x6709;&#x4E86;&#x4E0A;&#x9762;&#x7684;&#x534F;&#x8BAE;&#xFF0C;&#x76F8;&#x90BB;<code>Stage</code>&#x4E4B;&#x95F4;&#x8C03;&#x7528;&#x5C31;&#x5F88;&#x65B9;&#x4FBF;&#x4E86;&#xFF0C;&#x6BCF;&#x4E2A;<code>Stage</code>&#x90FD;&#x4F1A;&#x5C06;&#x81EA;&#x5DF1;&#x7684;&#x64CD;&#x4F5C;&#x5C01;&#x88C5;&#x5230;&#x4E00;&#x4E2A;<code>Sink</code>&#x91CC;&#xFF0C;&#x524D;&#x4E00;&#x4E2A;<code>Stage</code>&#x53EA;&#x9700;&#x8C03;&#x7528;&#x540E;&#x4E00;&#x4E2A;<code>Stage</code>&#x7684;<code>accept()</code>&#x65B9;&#x6CD5;&#x5373;&#x53EF;&#xFF0C;&#x5E76;&#x4E0D;&#x9700;&#x8981;&#x77E5;&#x9053;&#x5176;&#x5185;&#x90E8;&#x662F;&#x5982;&#x4F55;&#x5904;&#x7406;&#x7684;&#x3002;&#x5F53;&#x7136;&#x5BF9;&#x4E8E;&#x6709;&#x72B6;&#x6001;&#x7684;&#x64CD;&#x4F5C;&#xFF0C;<code>Sink</code>&#x7684;<code>begin()</code>&#x548C;<code>end()</code>&#x65B9;&#x6CD5;&#x4E5F;&#x662F;&#x5FC5;&#x987B;&#x5B9E;&#x73B0;&#x7684;&#x3002;&#x6BD4;&#x5982;<code>Stream.sorted()</code>&#x662F;&#x4E00;&#x4E2A;&#x6709;&#x72B6;&#x6001;&#x7684;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF0C;&#x5176;&#x5BF9;&#x5E94;&#x7684;<code>Sink.begin()</code>&#x65B9;&#x6CD5;&#x53EF;&#x80FD;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x4E58;&#x653E;&#x7ED3;&#x679C;&#x7684;&#x5BB9;&#x5668;&#xFF0C;&#x800C;accept()&#x65B9;&#x6CD5;&#x8D1F;&#x8D23;&#x5C06;&#x5143;&#x7D20;&#x6DFB;&#x52A0;&#x5230;&#x8BE5;&#x5BB9;&#x5668;&#xFF0C;&#x6700;&#x540E;<code>end()</code>&#x8D1F;&#x8D23;&#x5BF9;&#x5BB9;&#x5668;&#x8FDB;&#x884C;&#x6392;&#x5E8F;&#x3002;&#x5BF9;&#x4E8E;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#xFF0C;<code>Sink.cancellationRequested()</code>&#x4E5F;&#x662F;&#x5FC5;&#x987B;&#x5B9E;&#x73B0;&#x7684;&#xFF0C;&#x6BD4;&#x5982;<code>Stream.findFirst()</code>&#x662F;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#xFF0C;&#x53EA;&#x8981;&#x627E;&#x5230;&#x4E00;&#x4E2A;&#x5143;&#x7D20;&#xFF0C;<code>cancellationRequested()</code>&#x5C31;&#x5E94;&#x8BE5;&#x8FD4;&#x56DE;<code>true</code>&#xFF0C;&#x4EE5;&#x4FBF;&#x8C03;&#x7528;&#x8005;&#x5C3D;&#x5FEB;&#x7ED3;&#x675F;&#x67E5;&#x627E;&#x3002;<code>Sink</code>&#x7684;&#x56DB;&#x4E2A;&#x63A5;&#x53E3;&#x65B9;&#x6CD5;&#x5E38;&#x5E38;&#x76F8;&#x4E92;&#x534F;&#x4F5C;&#xFF0C;&#x5171;&#x540C;&#x5B8C;&#x6210;&#x8BA1;&#x7B97;&#x4EFB;&#x52A1;&#x3002;<strong>&#x5B9E;&#x9645;&#x4E0A;Stream API&#x5185;&#x90E8;&#x5B9E;&#x73B0;&#x7684;&#x7684;&#x672C;&#x8D28;&#xFF0C;&#x5C31;&#x662F;&#x5982;&#x4F55;&#x91CD;&#x8F7D;Sink&#x7684;&#x8FD9;&#x56DB;&#x4E2A;&#x63A5;&#x53E3;&#x65B9;&#x6CD5;</strong>&#x3002;</p>
+<p>&#x6709;&#x4E86;<code>Sink</code>&#x5BF9;&#x64CD;&#x4F5C;&#x7684;&#x5305;&#x88C5;&#xFF0C;<code>Stage</code>&#x4E4B;&#x95F4;&#x7684;&#x8C03;&#x7528;&#x95EE;&#x9898;&#x5C31;&#x89E3;&#x51B3;&#x4E86;&#xFF0C;&#x6267;&#x884C;&#x65F6;&#x53EA;&#x9700;&#x8981;&#x4ECE;&#x6D41;&#x6C34;&#x7EBF;&#x7684;<code>head</code>&#x5F00;&#x59CB;&#x5BF9;&#x6570;&#x636E;&#x6E90;&#x4F9D;&#x6B21;&#x8C03;&#x7528;&#x6BCF;&#x4E2A;<code>Stage</code>&#x5BF9;&#x5E94;&#x7684;<code>Sink.{begin(), accept(), cancellationRequested(), end()}</code>&#x65B9;&#x6CD5;&#x5C31;&#x53EF;&#x4EE5;&#x4E86;&#x3002;&#x4E00;&#x79CD;&#x53EF;&#x80FD;&#x7684;<code>Sink.accept()</code>&#x65B9;&#x6CD5;&#x6D41;&#x7A0B;&#x662F;&#x8FD9;&#x6837;&#x7684;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">accept</span><span class="params">(U u)</span></span>{</span><br><span class="line">    <span class="number">1.</span> &#x4F7F;&#x7528;&#x5F53;&#x524D;Sink&#x5305;&#x88C5;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x5904;&#x7406;u</span><br><span class="line">    <span class="number">2.</span> &#x5C06;&#x5904;&#x7406;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x7ED9;&#x6D41;&#x6C34;&#x7EBF;&#x4E0B;&#x6E38;&#x7684;Sink</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p><code>Sink</code>&#x63A5;&#x53E3;&#x7684;&#x5176;&#x4ED6;&#x51E0;&#x4E2A;&#x65B9;&#x6CD5;&#x4E5F;&#x662F;&#x6309;&#x7167;&#x8FD9;&#x79CD;[&#x5904;&#x7406;-&gt;&#x8F6C;&#x53D1;]&#x7684;&#x6A21;&#x578B;&#x5B9E;&#x73B0;&#x3002;&#x4E0B;&#x9762;&#x6211;&#x4EEC;&#x7ED3;&#x5408;&#x5177;&#x4F53;&#x4F8B;&#x5B50;&#x770B;&#x770B;<code>Stream</code>&#x7684;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#x662F;&#x5982;&#x4F55;&#x5C06;&#x81EA;&#x8EAB;&#x7684;&#x64CD;&#x4F5C;&#x5305;&#x88C5;&#x6210;<code>Sink</code>&#x4EE5;&#x53CA;<code>Sink</code>&#x662F;&#x5982;&#x4F55;&#x5C06;&#x5904;&#x7406;&#x7ED3;&#x679C;&#x8F6C;&#x53D1;&#x7ED9;&#x4E0B;&#x4E00;&#x4E2A;<code>Sink</code>&#x7684;&#x3002;&#x5148;&#x770B;<code>Stream.map()</code>&#x65B9;&#x6CD5;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Stream.map()&#xFF0C;&#x8C03;&#x7528;&#x8BE5;&#x65B9;&#x6CD5;&#x5C06;&#x4EA7;&#x751F;&#x4E00;&#x4E2A;&#x65B0;&#x7684;Stream</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> &lt;R&gt; <span class="function">Stream&lt;R&gt; <span class="title">map</span><span class="params">(Function&lt;? <span class="keyword">super</span> P_OUT, ? extends R&gt; mapper)</span> </span>{</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> StatelessOp&lt;P_OUT, R&gt;(<span class="keyword">this</span>, StreamShape.REFERENCE,</span><br><span class="line">                                 StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) {</span><br><span class="line">        <span class="meta">@Override</span> <span class="comment">/*opWripSink()&#x65B9;&#x6CD5;&#x8FD4;&#x56DE;&#x7531;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x5305;&#x88C5;&#x800C;&#x6210;Sink*/</span></span><br><span class="line">        <span class="function">Sink&lt;P_OUT&gt; <span class="title">opWrapSink</span><span class="params">(<span class="keyword">int</span> flags, Sink&lt;R&gt; downstream)</span> </span>{</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Sink.ChainedReference&lt;P_OUT, R&gt;(downstream) {</span><br><span class="line">                <span class="meta">@Override</span></span><br><span class="line">                <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(P_OUT u)</span> </span>{</span><br><span class="line">                    R r = mapper.apply(u);<span class="comment">// 1. &#x4F7F;&#x7528;&#x5F53;&#x524D;Sink&#x5305;&#x88C5;&#x7684;&#x56DE;&#x8C03;&#x51FD;&#x6570;mapper&#x5904;&#x7406;u</span></span><br><span class="line">                    downstream.accept(r);<span class="comment">// 2. &#x5C06;&#x5904;&#x7406;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x7ED9;&#x6D41;&#x6C34;&#x7EBF;&#x4E0B;&#x6E38;&#x7684;Sink</span></span><br><span class="line">                }</span><br><span class="line">            };</span><br><span class="line">        }</span><br><span class="line">    };</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E0A;&#x8FF0;&#x4EE3;&#x7801;&#x770B;&#x4F3C;&#x590D;&#x6742;&#xFF0C;&#x5176;&#x5B9E;&#x903B;&#x8F91;&#x5F88;&#x7B80;&#x5355;&#xFF0C;&#x5C31;&#x662F;&#x5C06;&#x56DE;&#x8C03;&#x51FD;&#x6570;<code>mapper</code>&#x5305;&#x88C5;&#x5230;&#x4E00;&#x4E2A;<code>Sink</code>&#x5F53;&#x4E2D;&#x3002;&#x7531;&#x4E8E;<code>Stream.map()</code>&#x662F;&#x4E00;&#x4E2A;&#x65E0;&#x72B6;&#x6001;&#x7684;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF0C;&#x6240;&#x4EE5;<code>map()</code>&#x65B9;&#x6CD5;&#x8FD4;&#x56DE;&#x4E86;&#x4E00;&#x4E2A;<code>StatelessOp</code>&#x5185;&#x90E8;&#x7C7B;&#x5BF9;&#x8C61;&#xFF08;&#x4E00;&#x4E2A;&#x65B0;&#x7684;<code>Stream</code>&#xFF09;&#xFF0C;&#x8C03;&#x7528;&#x8FD9;&#x4E2A;&#x65B0;<code>Stream</code>&#x7684;<code>opWripSink()</code>&#x65B9;&#x6CD5;&#x5C06;&#x5F97;&#x5230;&#x4E00;&#x4E2A;&#x5305;&#x88C5;&#x4E86;&#x5F53;&#x524D;&#x56DE;&#x8C03;&#x51FD;&#x6570;&#x7684;<code>Sink</code>&#x3002;</p>
+<p>&#x518D;&#x6765;&#x770B;&#x4E00;&#x4E2A;&#x590D;&#x6742;&#x4E00;&#x70B9;&#x7684;&#x4F8B;&#x5B50;&#x3002;<code>Stream.sorted()</code>&#x65B9;&#x6CD5;&#x5C06;&#x5BF9;<code>Stream</code>&#x4E2D;&#x7684;&#x5143;&#x7D20;&#x8FDB;&#x884C;&#x6392;&#x5E8F;&#xFF0C;&#x663E;&#x7136;&#x8FD9;&#x662F;&#x4E00;&#x4E2A;&#x6709;&#x72B6;&#x6001;&#x7684;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF0C;&#x56E0;&#x4E3A;&#x8BFB;&#x53D6;&#x6240;&#x6709;&#x5143;&#x7D20;&#x4E4B;&#x524D;&#x662F;&#x6CA1;&#x6CD5;&#x5F97;&#x5230;&#x6700;&#x7EC8;&#x987A;&#x5E8F;&#x7684;&#x3002;&#x629B;&#x5F00;&#x6A21;&#x677F;&#x4EE3;&#x7801;&#x76F4;&#x63A5;&#x8FDB;&#x5165;&#x95EE;&#x9898;&#x672C;&#x8D28;&#xFF0C;<code>sorted()</code>&#x65B9;&#x6CD5;&#x662F;&#x5982;&#x4F55;&#x5C06;&#x64CD;&#x4F5C;&#x5C01;&#x88C5;&#x6210;<code>Sink</code>&#x7684;&#x5462;&#xFF1F;<code>sorted()</code>&#x4E00;&#x79CD;&#x53EF;&#x80FD;&#x5C01;&#x88C5;&#x7684;<code>Sink</code>&#x4EE3;&#x7801;&#x5982;&#x4E0B;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Stream.sort()&#x65B9;&#x6CD5;&#x7528;&#x5230;&#x7684;Sink&#x5B9E;&#x73B0;</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RefSortingSink</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractRefSortingSink</span>&lt;<span class="title">T</span>&gt; </span>{</span><br><span class="line">    <span class="keyword">private</span> ArrayList&lt;T&gt; list;<span class="comment">// &#x5B58;&#x653E;&#x7528;&#x4E8E;&#x6392;&#x5E8F;&#x7684;&#x5143;&#x7D20;</span></span><br><span class="line">    RefSortingSink(Sink&lt;? <span class="keyword">super</span> T&gt; downstream, Comparator&lt;? <span class="keyword">super</span> T&gt; comparator) {</span><br><span class="line">        <span class="keyword">super</span>(downstream, comparator);</span><br><span class="line">    }</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">begin</span><span class="params">(<span class="keyword">long</span> size)</span> </span>{</span><br><span class="line">        ...</span><br><span class="line">        <span class="comment">// &#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x5B58;&#x653E;&#x6392;&#x5E8F;&#x5143;&#x7D20;&#x7684;&#x5217;&#x8868;</span></span><br><span class="line">        list = (size &gt;= <span class="number">0</span>) ? <span class="keyword">new</span> ArrayList&lt;T&gt;((<span class="keyword">int</span>) size) : <span class="keyword">new</span> ArrayList&lt;T&gt;();</span><br><span class="line">    }</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">end</span><span class="params">()</span> </span>{</span><br><span class="line">        list.sort(comparator);<span class="comment">// &#x53EA;&#x6709;&#x5143;&#x7D20;&#x5168;&#x90E8;&#x63A5;&#x6536;&#x4E4B;&#x540E;&#x624D;&#x80FD;&#x5F00;&#x59CB;&#x6392;&#x5E8F;</span></span><br><span class="line">        downstream.begin(list.size());</span><br><span class="line">        <span class="keyword">if</span> (!cancellationWasRequested) {<span class="comment">// &#x4E0B;&#x6E38;Sink&#x4E0D;&#x5305;&#x542B;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;</span></span><br><span class="line">            list.forEach(downstream::accept);<span class="comment">// 2. &#x5C06;&#x5904;&#x7406;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x7ED9;&#x6D41;&#x6C34;&#x7EBF;&#x4E0B;&#x6E38;&#x7684;Sink</span></span><br><span class="line">        }</span><br><span class="line">        <span class="keyword">else</span> {<span class="comment">// &#x4E0B;&#x6E38;Sink&#x5305;&#x542B;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;</span></span><br><span class="line">            <span class="keyword">for</span> (T t : list) {<span class="comment">// &#x6BCF;&#x6B21;&#x90FD;&#x8C03;&#x7528;cancellationRequested()&#x8BE2;&#x95EE;&#x662F;&#x5426;&#x53EF;&#x4EE5;&#x7ED3;&#x675F;&#x5904;&#x7406;&#x3002;</span></span><br><span class="line">                <span class="keyword">if</span> (downstream.cancellationRequested()) <span class="keyword">break</span>;</span><br><span class="line">                downstream.accept(t);<span class="comment">// 2. &#x5C06;&#x5904;&#x7406;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x7ED9;&#x6D41;&#x6C34;&#x7EBF;&#x4E0B;&#x6E38;&#x7684;Sink</span></span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">        downstream.end();</span><br><span class="line">        list = <span class="keyword">null</span>;</span><br><span class="line">    }</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(T t)</span> </span>{</span><br><span class="line">        list.add(t);<span class="comment">// 1. &#x4F7F;&#x7528;&#x5F53;&#x524D;Sink&#x5305;&#x88C5;&#x52A8;&#x4F5C;&#x5904;&#x7406;t&#xFF0C;&#x53EA;&#x662F;&#x7B80;&#x5355;&#x7684;&#x5C06;&#x5143;&#x7D20;&#x6DFB;&#x52A0;&#x5230;&#x4E2D;&#x95F4;&#x5217;&#x8868;&#x5F53;&#x4E2D;</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E0A;&#x8FF0;&#x4EE3;&#x7801;&#x5B8C;&#x7F8E;&#x7684;&#x5C55;&#x73B0;&#x4E86;<code>Sink</code>&#x7684;&#x56DB;&#x4E2A;&#x63A5;&#x53E3;&#x65B9;&#x6CD5;&#x662F;&#x5982;&#x4F55;&#x534F;&#x540C;&#x5DE5;&#x4F5C;&#x7684;&#xFF1A;</p>
+<ol>
+<li>&#x9996;&#x5148;<code>beging()</code>&#x65B9;&#x6CD5;&#x544A;&#x8BC9;<code>Sink</code>&#x53C2;&#x4E0E;&#x6392;&#x5E8F;&#x7684;&#x5143;&#x7D20;&#x4E2A;&#x6570;&#xFF0C;&#x65B9;&#x4FBF;&#x786E;&#x5B9A;&#x4E2D;&#x95F4;&#x7ED3;&#x679C;&#x5BB9;&#x5668;&#x7684;&#x7684;&#x5927;&#x5C0F;&#xFF1B;</li>
+<li>&#x4E4B;&#x540E;&#x901A;&#x8FC7;<code>accept()</code>&#x65B9;&#x6CD5;&#x5C06;&#x5143;&#x7D20;&#x6DFB;&#x52A0;&#x5230;&#x4E2D;&#x95F4;&#x7ED3;&#x679C;&#x5F53;&#x4E2D;&#xFF0C;&#x6700;&#x7EC8;&#x6267;&#x884C;&#x65F6;&#x8C03;&#x7528;&#x8005;&#x4F1A;&#x4E0D;&#x65AD;&#x8C03;&#x7528;&#x8BE5;&#x65B9;&#x6CD5;&#xFF0C;&#x76F4;&#x5230;&#x904D;&#x5386;&#x6240;&#x6709;&#x5143;&#x7D20;&#xFF1B;</li>
+<li>&#x6700;&#x540E;<code>end()</code>&#x65B9;&#x6CD5;&#x544A;&#x8BC9;<code>Sink</code>&#x6240;&#x6709;&#x5143;&#x7D20;&#x904D;&#x5386;&#x5B8C;&#x6BD5;&#xFF0C;&#x542F;&#x52A8;&#x6392;&#x5E8F;&#x6B65;&#x9AA4;&#xFF0C;&#x6392;&#x5E8F;&#x5B8C;&#x6210;&#x540E;&#x5C06;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x7ED9;&#x4E0B;&#x6E38;&#x7684;<code>Sink</code>&#xFF1B;</li>
+<li>&#x5982;&#x679C;&#x4E0B;&#x6E38;&#x7684;<code>Sink</code>&#x662F;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#xFF0C;&#x5C06;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x7ED9;&#x4E0B;&#x6E38;&#x65F6;&#x4E0D;&#x65AD;&#x8BE2;&#x95EE;&#x4E0B;&#x6E38;<code>cancellationRequested()</code>&#x662F;&#x5426;&#x53EF;&#x4EE5;&#x7ED3;&#x675F;&#x5904;&#x7406;</li>
+</ol>
+<h4 id="&#x53E0;&#x52A0;&#x4E4B;&#x540E;&#x7684;&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x6267;&#x884C;"><a href="#&#x53E0;&#x52A0;&#x4E4B;&#x540E;&#x7684;&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x6267;&#x884C;" class="headerlink" title="&#x53E0;&#x52A0;&#x4E4B;&#x540E;&#x7684;&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x6267;&#x884C;"></a>&#x53E0;&#x52A0;&#x4E4B;&#x540E;&#x7684;&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x6267;&#x884C;</h4><p><img src="/2021/07/09/Stream%E6%B5%81%E5%B8%B8%E8%A7%84%E7%94%A8%E6%B3%95/939998-20170328220418951-1517446139.png" alt="img"></p>
+<p><code>Sink</code>&#x5B8C;&#x7F8E;&#x5C01;&#x88C5;&#x4E86;<code>Stream</code>&#x6BCF;&#x4E00;&#x6B65;&#x64CD;&#x4F5C;&#xFF0C;&#x5E76;&#x7ED9;&#x51FA;&#x4E86;[&#x5904;&#x7406;-&gt;&#x8F6C;&#x53D1;]&#x7684;&#x6A21;&#x5F0F;&#x6765;&#x53E0;&#x52A0;&#x64CD;&#x4F5C;&#x3002;&#x8FD9;&#x4E00;&#x8FDE;&#x4E32;&#x7684;&#x9F7F;&#x8F6E;&#x5DF2;&#x7ECF;&#x54AC;&#x5408;&#xFF0C;&#x5C31;&#x5DEE;&#x6700;&#x540E;&#x4E00;&#x6B65;&#x62E8;&#x52A8;&#x9F7F;&#x8F6E;&#x542F;&#x52A8;&#x6267;&#x884C;&#x3002;&#x662F;&#x4EC0;&#x4E48;&#x542F;&#x52A8;&#x8FD9;&#x4E00;&#x8FDE;&#x4E32;&#x7684;&#x64CD;&#x4F5C;&#x5462;&#xFF1F;&#x4E5F;&#x8BB8;&#x4F60;&#x5DF2;&#x7ECF;&#x60F3;&#x5230;&#x4E86;&#x542F;&#x52A8;&#x7684;&#x539F;&#x59CB;&#x52A8;&#x529B;&#x5C31;&#x662F;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;(<code>Terminal Operation</code>)&#xFF0C;&#x4E00;&#x65E6;&#x8C03;&#x7528;&#x67D0;&#x4E2A;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#xFF0C;&#x5C31;&#x4F1A;&#x89E6;&#x53D1;&#x6574;&#x4E2A;&#x6D41;&#x6C34;&#x7EBF;&#x7684;&#x6267;&#x884C;&#x3002;</p>
+<p>&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x4E4B;&#x540E;&#x4E0D;&#x80FD;&#x518D;&#x6709;&#x522B;&#x7684;&#x64CD;&#x4F5C;&#xFF0C;&#x6240;&#x4EE5;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x4E0D;&#x4F1A;&#x521B;&#x5EFA;&#x65B0;&#x7684;&#x6D41;&#x6C34;&#x7EBF;&#x9636;&#x6BB5;(<code>Stage</code>)&#xFF0C;&#x76F4;&#x89C2;&#x7684;&#x8BF4;&#x5C31;&#x662F;&#x6D41;&#x6C34;&#x7EBF;&#x7684;&#x94FE;&#x8868;&#x4E0D;&#x4F1A;&#x5728;&#x5F80;&#x540E;&#x5EF6;&#x4F38;&#x4E86;&#x3002;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x4F1A;&#x521B;&#x5EFA;&#x4E00;&#x4E2A;&#x5305;&#x88C5;&#x4E86;&#x81EA;&#x5DF1;&#x64CD;&#x4F5C;&#x7684;<code>Sink</code>&#xFF0C;&#x8FD9;&#x4E5F;&#x662F;&#x6D41;&#x6C34;&#x7EBF;&#x4E2D;&#x6700;&#x540E;&#x4E00;&#x4E2A;<code>Sink</code>&#xFF0C;&#x8FD9;&#x4E2A;<code>Sink</code>&#x53EA;&#x9700;&#x8981;&#x5904;&#x7406;&#x6570;&#x636E;&#x800C;&#x4E0D;&#x9700;&#x8981;&#x5C06;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x7ED9;&#x4E0B;&#x6E38;&#x7684;<code>Sink</code>&#xFF08;&#x56E0;&#x4E3A;&#x6CA1;&#x6709;&#x4E0B;&#x6E38;&#xFF09;&#x3002;&#x5BF9;&#x4E8E;<code>Sink</code>&#x7684;[&#x5904;&#x7406;-&gt;&#x8F6C;&#x53D1;]&#x6A21;&#x578B;&#xFF0C;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x7684;<code>Sink</code>&#x5C31;&#x662F;&#x8C03;&#x7528;&#x94FE;&#x7684;&#x51FA;&#x53E3;&#x3002;</p>
+<p>&#x6211;&#x4EEC;&#x518D;&#x6765;&#x8003;&#x5BDF;&#x4E00;&#x4E0B;&#x4E0A;&#x6E38;&#x7684;<code>Sink</code>&#x662F;&#x5982;&#x4F55;&#x627E;&#x5230;&#x4E0B;&#x6E38;<code>Sink</code>&#x7684;&#x3002;&#x4E00;&#x79CD;&#x53EF;&#x9009;&#x7684;&#x65B9;&#x6848;&#x662F;&#x5728;<code>PipelineHelper</code>&#x4E2D;&#x8BBE;&#x7F6E;&#x4E00;&#x4E2A;<code>Sink</code>&#x5B57;&#x6BB5;&#xFF0C;&#x5728;&#x6D41;&#x6C34;&#x7EBF;&#x4E2D;&#x627E;&#x5230;&#x4E0B;&#x6E38;<code>Stage</code>&#x5E76;&#x8BBF;&#x95EE;<code>Sink</code>&#x5B57;&#x6BB5;&#x5373;&#x53EF;&#x3002;&#x4F46;<code>Stream</code>&#x7C7B;&#x5E93;&#x7684;&#x8BBE;&#x8BA1;&#x8005;&#x6CA1;&#x6709;&#x8FD9;&#x4E48;&#x505A;&#xFF0C;&#x800C;&#x662F;&#x8BBE;&#x7F6E;&#x4E86;&#x4E00;&#x4E2A;<code>Sink AbstractPipeline.opWrapSink(int flags, Sink downstream)</code>&#x65B9;&#x6CD5;&#x6765;&#x5F97;&#x5230;<code>Sink</code>&#xFF0C;&#x8BE5;&#x65B9;&#x6CD5;&#x7684;&#x4F5C;&#x7528;&#x662F;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x5305;&#x542B;&#x4E86;&#x5F53;&#x524D;<code>Stage</code>&#x4EE3;&#x8868;&#x7684;&#x64CD;&#x4F5C;&#x4EE5;&#x53CA;&#x80FD;&#x591F;&#x5C06;&#x7ED3;&#x679C;&#x4F20;&#x9012;&#x7ED9;<code>downstream</code>&#x7684;<code>Sink</code>&#x5BF9;&#x8C61;&#x3002;&#x4E3A;&#x4EC0;&#x4E48;&#x8981;&#x4EA7;&#x751F;&#x4E00;&#x4E2A;&#x65B0;&#x5BF9;&#x8C61;&#x800C;&#x4E0D;&#x662F;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;<code>Sink</code>&#x5B57;&#x6BB5;&#xFF1F;&#x8FD9;&#x662F;&#x56E0;&#x4E3A;&#x4F7F;&#x7528;<code>opWrapSink()</code>&#x53EF;&#x4EE5;&#x5C06;&#x5F53;&#x524D;&#x64CD;&#x4F5C;&#x4E0E;&#x4E0B;&#x6E38;<code>Sink</code>&#xFF08;&#x4E0A;&#x6587;&#x4E2D;&#x7684;<code>downstream</code>&#x53C2;&#x6570;&#xFF09;&#x7ED3;&#x5408;&#x6210;&#x65B0;<code>Sink</code>&#x3002;&#x8BD5;&#x60F3;&#x53EA;&#x8981;&#x4ECE;&#x6D41;&#x6C34;&#x7EBF;&#x7684;&#x6700;&#x540E;&#x4E00;&#x4E2A;<code>Stage</code>&#x5F00;&#x59CB;&#xFF0C;&#x4E0D;&#x65AD;&#x8C03;&#x7528;&#x4E0A;&#x4E00;&#x4E2A;<code>Stage</code>&#x7684;<code>opWrapSink()</code>&#x65B9;&#x6CD5;&#x76F4;&#x5230;&#x6700;&#x5F00;&#x59CB;&#xFF08;&#x4E0D;&#x5305;&#x62EC;<code>stage0</code>&#xFF0C;&#x56E0;&#x4E3A;<code>stage0</code>&#x4EE3;&#x8868;&#x6570;&#x636E;&#x6E90;&#xFF0C;&#x4E0D;&#x5305;&#x542B;&#x64CD;&#x4F5C;&#xFF09;&#xFF0C;&#x5C31;&#x53EF;&#x4EE5;&#x5F97;&#x5230;&#x4E00;&#x4E2A;&#x4EE3;&#x8868;&#x4E86;&#x6D41;&#x6C34;&#x7EBF;&#x4E0A;&#x6240;&#x6709;&#x64CD;&#x4F5C;&#x7684;<code>Sink</code>&#xFF0C;&#x7528;&#x4EE3;&#x7801;&#x8868;&#x793A;&#x5C31;&#x662F;&#x8FD9;&#x6837;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AbstractPipeline.wrapSink()</span></span><br><span class="line"><span class="comment">// &#x4ECE;&#x4E0B;&#x6E38;&#x5411;&#x4E0A;&#x6E38;&#x4E0D;&#x65AD;&#x5305;&#x88C5;Sink&#x3002;&#x5982;&#x679C;&#x6700;&#x521D;&#x4F20;&#x5165;&#x7684;sink&#x4EE3;&#x8868;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#xFF0C;</span></span><br><span class="line"><span class="comment">// &#x51FD;&#x6570;&#x8FD4;&#x56DE;&#x65F6;&#x5C31;&#x53EF;&#x4EE5;&#x5F97;&#x5230;&#x4E00;&#x4E2A;&#x4EE3;&#x8868;&#x4E86;&#x6D41;&#x6C34;&#x7EBF;&#x4E0A;&#x6240;&#x6709;&#x64CD;&#x4F5C;&#x7684;Sink&#x3002;</span></span><br><span class="line"><span class="keyword">final</span> &lt;P_IN&gt; <span class="function">Sink&lt;P_IN&gt; <span class="title">wrapSink</span><span class="params">(Sink&lt;E_OUT&gt; sink)</span> </span>{</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">for</span> (AbstractPipeline p=AbstractPipeline.<span class="keyword">this</span>; p.depth &gt; <span class="number">0</span>; p=p.previousStage) {</span><br><span class="line">        sink = p.opWrapSink(p.previousStage.combinedFlags, sink);</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> (Sink&lt;P_IN&gt;) sink;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x73B0;&#x5728;&#x6D41;&#x6C34;&#x7EBF;&#x4E0A;&#x4ECE;&#x5F00;&#x59CB;&#x5230;&#x7ED3;&#x675F;&#x7684;&#x6240;&#x6709;&#x7684;&#x64CD;&#x4F5C;&#x90FD;&#x88AB;&#x5305;&#x88C5;&#x5230;&#x4E86;&#x4E00;&#x4E2A;<code>Sink</code>&#x91CC;&#xFF0C;&#x6267;&#x884C;&#x8FD9;&#x4E2A;<code>Sink</code>&#x5C31;&#x76F8;&#x5F53;&#x4E8E;&#x6267;&#x884C;&#x6574;&#x4E2A;&#x6D41;&#x6C34;&#x7EBF;&#xFF0C;&#x6267;&#x884C;<code>Sink</code>&#x7684;&#x4EE3;&#x7801;&#x5982;&#x4E0B;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AbstractPipeline.copyInto(), &#x5BF9;spliterator&#x4EE3;&#x8868;&#x7684;&#x6570;&#x636E;&#x6267;&#x884C;wrappedSink&#x4EE3;&#x8868;&#x7684;&#x64CD;&#x4F5C;&#x3002;</span></span><br><span class="line"><span class="keyword">final</span> &lt;P_IN&gt; <span class="function"><span class="keyword">void</span> <span class="title">copyInto</span><span class="params">(Sink&lt;P_IN&gt; wrappedSink, Spliterator&lt;P_IN&gt; spliterator)</span> </span>{</span><br><span class="line">    ...</span><br><span class="line">    <span class="keyword">if</span> (!StreamOpFlag.SHORT_CIRCUIT.isKnown(getStreamAndOpFlags())) {</span><br><span class="line">        wrappedSink.begin(spliterator.getExactSizeIfKnown());<span class="comment">// &#x901A;&#x77E5;&#x5F00;&#x59CB;&#x904D;&#x5386;</span></span><br><span class="line">        spliterator.forEachRemaining(wrappedSink);<span class="comment">// &#x8FED;&#x4EE3;</span></span><br><span class="line">        wrappedSink.end();<span class="comment">// &#x901A;&#x77E5;&#x904D;&#x5386;&#x7ED3;&#x675F;</span></span><br><span class="line">    }</span><br><span class="line">    ...</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x4E0A;&#x8FF0;&#x4EE3;&#x7801;&#x9996;&#x5148;&#x8C03;&#x7528;<code>wrappedSink.begin()</code>&#x65B9;&#x6CD5;&#x544A;&#x8BC9;<code>Sink</code>&#x6570;&#x636E;&#x5373;&#x5C06;&#x5230;&#x6765;&#xFF0C;&#x7136;&#x540E;&#x8C03;&#x7528;<code>spliterator.forEachRemaining()</code>&#x65B9;&#x6CD5;&#x5BF9;&#x6570;&#x636E;&#x8FDB;&#x884C;&#x8FED;&#x4EE3;&#xFF08;<code>Spliterator</code>&#x662F;&#x5BB9;&#x5668;&#x7684;&#x4E00;&#x79CD;&#x8FED;&#x4EE3;&#x5668;&#xFF0C;[&#x53C2;&#x9605;](<a target="_blank" rel="noopener" href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/3-Lambda">https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/3-Lambda</a> and Collections.md#spliterator)&#xFF09;&#xFF0C;&#x6700;&#x540E;&#x8C03;&#x7528;<code>wrappedSink.end()</code>&#x65B9;&#x6CD5;&#x901A;&#x77E5;<code>Sink</code>&#x6570;&#x636E;&#x5904;&#x7406;&#x7ED3;&#x675F;&#x3002;&#x903B;&#x8F91;&#x5982;&#x6B64;&#x6E05;&#x6670;&#x3002;</p>
+<h4 id="&#x6267;&#x884C;&#x540E;&#x7684;&#x7ED3;&#x679C;&#x5728;&#x54EA;&#x91CC;"><a href="#&#x6267;&#x884C;&#x540E;&#x7684;&#x7ED3;&#x679C;&#x5728;&#x54EA;&#x91CC;" class="headerlink" title="&#x6267;&#x884C;&#x540E;&#x7684;&#x7ED3;&#x679C;&#x5728;&#x54EA;&#x91CC;"></a>&#x6267;&#x884C;&#x540E;&#x7684;&#x7ED3;&#x679C;&#x5728;&#x54EA;&#x91CC;</h4><p>&#x6700;&#x540E;&#x4E00;&#x4E2A;&#x95EE;&#x9898;&#x662F;&#x6D41;&#x6C34;&#x7EBF;&#x4E0A;&#x6240;&#x6709;&#x64CD;&#x4F5C;&#x90FD;&#x6267;&#x884C;&#x540E;&#xFF0C;&#x7528;&#x6237;&#x6240;&#x9700;&#x8981;&#x7684;&#x7ED3;&#x679C;&#xFF08;&#x5982;&#x679C;&#x6709;&#xFF09;&#x5728;&#x54EA;&#x91CC;&#xFF1F;&#x9996;&#x5148;&#x8981;&#x8BF4;&#x660E;&#x7684;&#x662F;&#x4E0D;&#x662F;&#x6240;&#x6709;&#x7684;Stream&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x90FD;&#x9700;&#x8981;&#x8FD4;&#x56DE;&#x7ED3;&#x679C;&#xFF0C;&#x6709;&#x4E9B;&#x64CD;&#x4F5C;&#x53EA;&#x662F;&#x4E3A;&#x4E86;&#x4F7F;&#x7528;&#x5176;&#x526F;&#x4F5C;&#x7528;(<em>Side-effects</em>)&#xFF0C;&#x6BD4;&#x5982;&#x4F7F;&#x7528;<code>Stream.forEach()</code>&#x65B9;&#x6CD5;&#x5C06;&#x7ED3;&#x679C;&#x6253;&#x5370;&#x51FA;&#x6765;&#x5C31;&#x662F;&#x5E38;&#x89C1;&#x7684;&#x4F7F;&#x7528;&#x526F;&#x4F5C;&#x7528;&#x7684;&#x573A;&#x666F;&#xFF08;&#x4E8B;&#x5B9E;&#x4E0A;&#xFF0C;&#x9664;&#x4E86;&#x6253;&#x5370;&#x4E4B;&#x5916;&#x5176;&#x4ED6;&#x573A;&#x666F;&#x90FD;&#x5E94;&#x907F;&#x514D;&#x4F7F;&#x7528;&#x526F;&#x4F5C;&#x7528;&#xFF09;&#xFF0C;&#x5BF9;&#x4E8E;&#x771F;&#x6B63;&#x9700;&#x8981;&#x8FD4;&#x56DE;&#x7ED3;&#x679C;&#x7684;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x7ED3;&#x679C;&#x5B58;&#x5728;&#x54EA;&#x91CC;&#x5462;&#xFF1F;</p>
+<blockquote>
+<p>&#x7279;&#x522B;&#x8BF4;&#x660E;&#xFF1A;&#x526F;&#x4F5C;&#x7528;&#x4E0D;&#x5E94;&#x8BE5;&#x88AB;&#x6EE5;&#x7528;&#xFF0C;&#x4E5F;&#x8BB8;&#x4F60;&#x4F1A;&#x89C9;&#x5F97;&#x5728;Stream.forEach()&#x91CC;&#x8FDB;&#x884C;&#x5143;&#x7D20;&#x6536;&#x96C6;&#x662F;&#x4E2A;&#x4E0D;&#x9519;&#x7684;&#x9009;&#x62E9;&#xFF0C;&#x5C31;&#x50CF;&#x4E0B;&#x9762;&#x4EE3;&#x7801;&#x4E2D;&#x90A3;&#x6837;&#xFF0C;&#x4F46;&#x9057;&#x61BE;&#x7684;&#x662F;&#x8FD9;&#x6837;&#x4F7F;&#x7528;&#x7684;&#x6B63;&#x786E;&#x6027;&#x548C;&#x6548;&#x7387;&#x90FD;&#x65E0;&#x6CD5;&#x4FDD;&#x8BC1;&#xFF0C;&#x56E0;&#x4E3A;Stream&#x53EF;&#x80FD;&#x4F1A;&#x5E76;&#x884C;&#x6267;&#x884C;&#x3002;&#x5927;&#x591A;&#x6570;&#x4F7F;&#x7528;&#x526F;&#x4F5C;&#x7528;&#x7684;&#x5730;&#x65B9;&#x90FD;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;[&#x5F52;&#x7EA6;&#x64CD;&#x4F5C;](<a target="_blank" rel="noopener" href="http://www.cnblogs.com/CarpenterLee/p/5-Streams">http://www.cnblogs.com/CarpenterLee/p/5-Streams</a> API(II).md)&#x66F4;&#x5B89;&#x5168;&#x548C;&#x6709;&#x6548;&#x7684;&#x5B8C;&#x6210;&#x3002;</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#x9519;&#x8BEF;&#x7684;&#x6536;&#x96C6;&#x65B9;&#x5F0F;</span></span><br><span class="line">ArrayList&lt;String&gt; results = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">stream.filter(s -&gt; pattern.matcher(s).matches())</span><br><span class="line">      .forEach(s -&gt; results.add(s));  <span class="comment">// Unnecessary use of side-effects!</span></span><br><span class="line"><span class="comment">// &#x6B63;&#x786E;&#x7684;&#x6536;&#x96C6;&#x65B9;&#x5F0F;</span></span><br><span class="line">List&lt;String&gt;results =</span><br><span class="line">     stream.filter(s -&gt; pattern.matcher(s).matches())</span><br><span class="line">             .collect(Collectors.toList());  <span class="comment">// No side-effects!</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x56DE;&#x5230;&#x6D41;&#x6C34;&#x7EBF;&#x6267;&#x884C;&#x7ED3;&#x679C;&#x7684;&#x95EE;&#x9898;&#x4E0A;&#x6765;&#xFF0C;&#x9700;&#x8981;&#x8FD4;&#x56DE;&#x7ED3;&#x679C;&#x7684;&#x6D41;&#x6C34;&#x7EBF;&#x7ED3;&#x679C;&#x5B58;&#x5728;&#x54EA;&#x91CC;&#x5462;&#xFF1F;&#x8FD9;&#x8981;&#x5206;&#x4E0D;&#x540C;&#x7684;&#x60C5;&#x51B5;&#x8BA8;&#x8BBA;&#xFF0C;&#x4E0B;&#x8868;&#x7ED9;&#x51FA;&#x4E86;&#x5404;&#x79CD;&#x6709;&#x8FD4;&#x56DE;&#x7ED3;&#x679C;&#x7684;Stream&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x3002;</p>
+<table>
+<thead>
+<tr>
+<th>&#x8FD4;&#x56DE;&#x7C7B;&#x578B;</th>
+<th>&#x5BF9;&#x5E94;&#x7684;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>boolean</code></td>
+<td><code>anyMatch() allMatch() noneMatch()</code></td>
+</tr>
+<tr>
+<td><code>Optional</code></td>
+<td><code>findFirst() findAny()</code></td>
+</tr>
+<tr>
+<td>&#x5F52;&#x7EA6;&#x7ED3;&#x679C;</td>
+<td><code>reduce() collect()</code></td>
+</tr>
+<tr>
+<td>&#x6570;&#x7EC4;</td>
+<td><code>toArray()</code></td>
+</tr>
+</tbody></table>
+<ol>
+<li>&#x5BF9;&#x4E8E;&#x8868;&#x4E2D;&#x8FD4;&#x56DE;<code>boolean</code>&#x6216;&#x8005;<code>Optional</code>&#x7684;&#x64CD;&#x4F5C;&#xFF08;<code>Optional</code>&#x662F;&#x5B58;&#x653E; &#x4E00;&#x4E2A; &#x503C;&#x7684;&#x5BB9;&#x5668;&#xFF09;&#x7684;&#x64CD;&#x4F5C;&#xFF0C;&#x7531;&#x4E8E;&#x503C;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x503C;&#xFF0C;&#x53EA;&#x9700;&#x8981;&#x5728;&#x5BF9;&#x5E94;&#x7684;<code>Sink</code>&#x4E2D;&#x8BB0;&#x5F55;&#x8FD9;&#x4E2A;&#x503C;&#xFF0C;&#x7B49;&#x5230;&#x6267;&#x884C;&#x7ED3;&#x675F;&#x65F6;&#x8FD4;&#x56DE;&#x5C31;&#x53EF;&#x4EE5;&#x4E86;&#x3002;</li>
+<li>&#x5BF9;&#x4E8E;&#x5F52;&#x7EA6;&#x64CD;&#x4F5C;&#xFF0C;&#x6700;&#x7EC8;&#x7ED3;&#x679C;&#x653E;&#x5728;&#x7528;&#x6237;&#x8C03;&#x7528;&#x65F6;&#x6307;&#x5B9A;&#x7684;&#x5BB9;&#x5668;&#x4E2D;&#xFF08;&#x5BB9;&#x5668;&#x7C7B;&#x578B;&#x901A;&#x8FC7;[&#x6536;&#x96C6;&#x5668;](<a target="_blank" rel="noopener" href="http://www.cnblogs.com/CarpenterLee/p/5-Streams">http://www.cnblogs.com/CarpenterLee/p/5-Streams</a> API(II).md#&#x6536;&#x96C6;&#x5668;)&#x6307;&#x5B9A;&#xFF09;&#x3002;<code>collect(), reduce(), max(), min()</code>&#x90FD;&#x662F;&#x5F52;&#x7EA6;&#x64CD;&#x4F5C;&#xFF0C;&#x867D;&#x7136;max()&#x548C;<code>min()</code>&#x4E5F;&#x662F;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;<code>Optional</code>&#xFF0C;&#x4F46;&#x4E8B;&#x5B9E;&#x4E0A;&#x5E95;&#x5C42;&#x662F;&#x901A;&#x8FC7;&#x8C03;&#x7528;[reduce()](<a target="_blank" rel="noopener" href="http://www.cnblogs.com/CarpenterLee/p/5-Streams">http://www.cnblogs.com/CarpenterLee/p/5-Streams</a> API(II).md#&#x591A;&#x9762;&#x624B;reduce)&#x65B9;&#x6CD5;&#x5B9E;&#x73B0;&#x7684;&#x3002;</li>
+<li>&#x5BF9;&#x4E8E;&#x8FD4;&#x56DE;&#x662F;&#x6570;&#x7EC4;&#x7684;&#x60C5;&#x51B5;&#xFF0C;&#x6BEB;&#x65E0;&#x7591;&#x95EE;&#x7684;&#x7ED3;&#x679C;&#x4F1A;&#x653E;&#x5728;&#x6570;&#x7EC4;&#x5F53;&#x4E2D;&#x3002;&#x8FD9;&#x4E48;&#x8BF4;&#x5F53;&#x7136;&#x662F;&#x5BF9;&#x7684;&#xFF0C;&#x4F46;&#x5728;&#x6700;&#x7EC8;&#x8FD4;&#x56DE;&#x6570;&#x7EC4;&#x4E4B;&#x524D;&#xFF0C;&#x7ED3;&#x679C;&#x5176;&#x5B9E;&#x662F;&#x5B58;&#x50A8;&#x5728;&#x4E00;&#x79CD;&#x53EB;&#x505A;*<code>Node</code>*&#x7684;&#x6570;&#x636E;&#x7ED3;&#x6784;&#x4E2D;&#x7684;&#x3002;<code>Node</code>&#x662F;&#x4E00;&#x79CD;&#x591A;&#x53C9;&#x6811;&#x7ED3;&#x6784;&#xFF0C;&#x5143;&#x7D20;&#x5B58;&#x50A8;&#x5728;&#x6811;&#x7684;&#x53F6;&#x5B50;&#x5F53;&#x4E2D;&#xFF0C;&#x5E76;&#x4E14;&#x4E00;&#x4E2A;&#x53F6;&#x5B50;&#x8282;&#x70B9;&#x53EF;&#x4EE5;&#x5B58;&#x653E;&#x591A;&#x4E2A;&#x5143;&#x7D20;&#x3002;&#x8FD9;&#x6837;&#x505A;&#x662F;&#x4E3A;&#x4E86;&#x5E76;&#x884C;&#x6267;&#x884C;&#x65B9;&#x4FBF;&#x3002;</li>
+</ol>
+<h3 id="Stream&#x521B;&#x5EFA;"><a href="#Stream&#x521B;&#x5EFA;" class="headerlink" title="Stream&#x521B;&#x5EFA;"></a>Stream&#x521B;&#x5EFA;</h3><p>&#x6700;&#x5E38;&#x7528;&#x7684;&#x521B;&#x5EFA;<code>Stream</code>&#x6709;&#x4E24;&#x79CD;&#x9014;&#x5F84;&#xFF1A;</p>
+<ol>
+<li>&#x901A;&#x8FC7;<code>Stream</code>&#x63A5;&#x53E3;&#x7684;&#x9759;&#x6001;&#x5DE5;&#x5382;&#x65B9;&#x6CD5;&#xFF08;&#x6CE8;&#x610F;&#xFF1A;<code>Java8</code>&#x91CC;&#x9762;&#x63A5;&#x53E3;&#x53EF;&#x4EE5;&#x5E26;&#x9759;&#x6001;&#x65B9;&#x6CD5;&#xFF09;</li>
+<li>&#x901A;&#x8FC7;<code>Collection</code>&#x63A5;&#x53E3;&#x7684;&#x9ED8;&#x8BA4;&#x65B9;&#x6CD5;&#xFF1A;<code>stream()</code>&#xFF0C;&#x628A;&#x4E00;&#x4E2A;<code>Collection</code>&#x5BF9;&#x8C61;&#x8F6C;&#x6210;<code>Stream</code></li>
+</ol>
+<blockquote>
+<p><strong>stream()</strong> &#x2212; &#x4E3A;&#x96C6;&#x5408;&#x521B;&#x5EFA;&#x4E32;&#x884C;&#x6D41;</p>
+<p><strong>parallelStream()</strong> &#x2212; &#x4E3A;&#x96C6;&#x5408;&#x521B;&#x5EFA;&#x5E76;&#x884C;&#x6D41;</p>
+</blockquote>
+<p><strong>&#x4F7F;&#x7528;Stream&#x9759;&#x6001;&#x65B9;&#x6CD5;&#x6765;&#x521B;&#x5EFA;Stream</strong></p>
+<ol>
+<li><code>of</code>&#x65B9;&#x6CD5;&#xFF1A;&#x6709;&#x4E24;&#x4E2A;<code>overload</code>&#x65B9;&#x6CD5;&#xFF0C;&#x4E00;&#x4E2A;&#x63A5;&#x53D7;&#x53EF;&#x53D8;&#x957F;&#x53C2;&#x6570;&#xFF0C;&#x4E00;&#x4E2A;&#x63A5;&#x53D7;&#x5355;&#x4E00;&#x503C;</li>
+<li><code>generator</code>&#x65B9;&#x6CD5;&#xFF1A;&#x751F;&#x6210;&#x65E0;&#x9650;&#x957F;&#x5EA6;&#x7684;<code>Stream</code>&#xFF0C;&#x5176;&#x5143;&#x7D20;&#x7684;&#x751F;&#x6210;&#x662F;&#x901A;&#x8FC7;&#x7ED9;&#x5B9A;&#x7684;<code>Supplier</code>&#xFF08;&#x8FD9;&#x4E2A;&#x63A5;&#x53E3;&#x53EF;&#x4EE5;&#x770B;&#x6210;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x7684;&#x5DE5;&#x5382;&#xFF0C;&#x6BCF;&#x6B21;&#x8C03;&#x7528;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x7ED9;&#x5B9A;&#x7C7B;&#x578B;&#x7684;&#x5BF9;&#x8C61;&#xFF09;</li>
+<li><code>iterate</code>&#x65B9;&#x6CD5;&#xFF1A;&#x4E5F;&#x662F;&#x751F;&#x6210;&#x65E0;&#x9650;&#x957F;&#x5EA6;&#x7684;<code>Stream</code>&#xFF0C;&#x548C;<code>generator</code>&#x4E0D;&#x540C;&#x7684;&#x662F;&#xFF0C;&#x5176;&#x5143;&#x7D20;&#x7684;&#x751F;&#x6210;&#x662F;&#x91CD;&#x590D;&#x5BF9;&#x7ED9;&#x5B9A;&#x7684;&#x79CD;&#x5B50;&#x503C;(<code>seed</code>)&#x8C03;&#x7528;&#x7528;&#x6237;&#x6307;&#x5B9A;&#x51FD;&#x6570;&#x6765;&#x751F;&#x6210;&#x7684;&#x3002;&#x5176;&#x4E2D;&#x5305;&#x542B;&#x7684;&#x5143;&#x7D20;&#x53EF;&#x4EE5;&#x8BA4;&#x4E3A;&#x662F;&#xFF1A;<code>seed</code>&#xFF0C;<code>f(seed)</code>,<code>f(f(seed))</code>&#x65E0;&#x9650;&#x5FAA;&#x73AF;</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Stream.iterate(<span class="number">1</span>, item -&gt; item + <span class="number">1</span>).limit(<span class="number">10</span>).forEach(System.out::println); <span class="comment">// limit</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#x6570;&#x7EC4;</span></span><br><span class="line">Arrays.stream(arr).forEach(System.out::println);</span><br><span class="line"><span class="comment">// List</span></span><br><span class="line">Arrays.asList(arr).stream().forEach(System.out::println);</span><br><span class="line"><span class="comment">// generator</span></span><br><span class="line">Stream.generate(() -&gt; <span class="keyword">new</span> Random().nextInt(<span class="number">10</span>)).limit(<span class="number">10</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x8F6C;&#x6362;Stream"><a href="#&#x8F6C;&#x6362;Stream" class="headerlink" title="&#x8F6C;&#x6362;Stream"></a>&#x8F6C;&#x6362;Stream</h3><p>&#x8F6C;&#x6362;<code>Stream</code>&#x5176;&#x5B9E;&#x5C31;&#x662F;&#x628A;&#x4E00;&#x4E2A;<code>Stream</code>&#x901A;&#x8FC7;&#x67D0;&#x4E9B;&#x884C;&#x4E3A;&#x8F6C;&#x6362;&#x6210;&#x4E00;&#x4E2A;&#x65B0;&#x7684;<code>Stream</code>&#x3002;<code>Stream</code>&#x63A5;&#x53E3;&#x4E2D;&#x5B9A;&#x4E49;&#x4E86;&#x51E0;&#x4E2A;&#x5E38;&#x7528;&#x7684;&#x8F6C;&#x6362;&#x65B9;&#x6CD5;</p>
+<ol>
+<li><code>distinct</code>&#xFF1A;&#x5BF9;&#x4E8E;<code>Stream</code>&#x4E2D;&#x5305;&#x542B;&#x7684;&#x5143;&#x7D20;&#x8FDB;&#x884C;&#x53BB;&#x91CD;&#x64CD;&#x4F5C;&#xFF08;&#x53BB;&#x91CD;&#x903B;&#x8F91;&#x4F9D;&#x8D56;&#x5143;&#x7D20;&#x7684;<code>equals</code>&#x65B9;&#x6CD5;&#xFF09;&#xFF0C;&#x65B0;&#x751F;&#x6210;&#x7684;<code>Stream</code>&#x4E2D;&#x6CA1;&#x6709;&#x91CD;&#x590D;&#x7684;&#x5143;&#x7D20;</li>
+<li><code>filter</code>&#xFF1A;&#x5BF9;&#x4E8E;<code>Stream</code>&#x4E2D;&#x5305;&#x542B;&#x7684;&#x5143;&#x7D20;&#x4F7F;&#x7528;&#x7ED9;&#x5B9A;&#x7684;&#x8FC7;&#x6EE4;&#x51FD;&#x6570;&#x8FDB;&#x884C;&#x8FC7;&#x6EE4;&#x64CD;&#x4F5C;&#xFF0C;&#x65B0;&#x751F;&#x6210;&#x7684;<code>Stream</code>&#x53EA;&#x5305;&#x542B;&#x7B26;&#x5408;&#x6761;&#x4EF6;&#x7684;&#x5143;&#x7D20;</li>
+<li><code>map</code>&#xFF1A;&#x5BF9;&#x4E8E;Stream&#x4E2D;&#x5305;&#x542B;&#x7684;&#x5143;&#x7D20;&#x4F7F;&#x7528;&#x7ED9;&#x5B9A;&#x7684;&#x8F6C;&#x6362;&#x51FD;&#x6570;&#x8FDB;&#x884C;&#x8F6C;&#x6362;&#x64CD;&#x4F5C;&#xFF0C;&#x65B0;&#x751F;&#x6210;&#x7684;<code>Stream</code>&#x53EA;&#x5305;&#x542B;&#x8F6C;&#x6362;&#x751F;&#x6210;&#x7684;&#x5143;&#x7D20;&#x3002;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x6709;&#x4E09;&#x4E2A;&#x539F;&#x59CB;&#x7C7B;&#x578B;&#x7684;&#x53D8;&#x79CD;&#x65B9;&#x6CD5;&#xFF0C;&#x5206;&#x522B;&#x662F;&#xFF1A;<code>mapToInt</code>&#xFF0C;<code>mapToLong</code>&#x548C;<code>mapToDouble</code>&#x3002;&#x8FD9;&#x4E09;&#x4E2A;&#x65B9;&#x6CD5;&#x4E5F;&#x6BD4;&#x8F83;&#x597D;&#x7406;&#x89E3;&#xFF0C;&#x6BD4;&#x5982;<code>mapToInt</code>&#x5C31;&#x662F;&#x628A;&#x539F;&#x59CB;<code>Stream</code>&#x8F6C;&#x6362;&#x6210;&#x4E00;&#x4E2A;&#x65B0;&#x7684;<code>Stream</code>&#xFF0C;&#x8FD9;&#x4E2A;&#x65B0;&#x751F;&#x6210;&#x7684;<code>Stream</code>&#x4E2D;&#x7684;&#x5143;&#x7D20;&#x90FD;&#x662F;<code>int</code>&#x7C7B;&#x578B;&#x3002;&#x4E4B;&#x6240;&#x4EE5;&#x4F1A;&#x6709;&#x8FD9;&#x4E09;&#x4E2A;&#x53D8;&#x79CD;&#x65B9;&#x6CD5;&#xFF0C;&#x53EF;&#x4EE5;&#x514D;&#x9664;&#x81EA;&#x52A8;&#x88C5;&#x7BB1;/&#x62C6;&#x7BB1;&#x7684;&#x989D;&#x5916;&#x6D88;&#x8017;&#x3002;</li>
+<li><code>flatMap</code>&#xFF1A;&#x548C;<code>map</code>&#x7C7B;&#x578B;&#xFF0C;&#x4E0D;&#x540C;&#x7684;&#x662F;&#x5176;&#x6BCF;&#x4E2A;&#x5143;&#x7D20;&#x8F6C;&#x6362;&#x5F97;&#x5230;&#x7684;&#x662F;<code>Stream</code>&#x5BF9;&#x8C61;&#xFF0C;&#x4F1A;&#x628A;<code>Stream</code>&#x4E2D;&#x7684;&#x5143;&#x7D20;&#x538B;&#x7F29;&#x5230;&#x7236;&#x96C6;&#x5408;&#x4E2D;</li>
+<li><code>peek</code>&#xFF1A;&#x751F;&#x6210;&#x4E00;&#x4E2A;&#x5305;&#x542B;&#x539F;<code>Stream</code>&#x7684;&#x6240;&#x6709;&#x5143;&#x7D20;&#x7684;&#x65B0;&#x7684;<code>Stream</code>&#xFF0C;&#x540C;&#x65F6;&#x4F1A;&#x63D0;&#x4F9B;&#x4E00;&#x4E2A;&#x6D88;&#x8D39;&#x51FD;&#x6570;&#xFF08;<code>Consumer</code>&#x5B9E;&#x4F8B;&#xFF09;&#xFF0C;&#x65B0;<code>Stream</code>&#x6BCF;&#x4E2A;&#x5143;&#x7D20;&#x88AB;&#x6D88;&#x8D39;&#x7684;&#x65F6;&#x5019;&#x90FD;&#x4F1A;&#x6267;&#x884C;&#x7ED9;&#x5B9A;&#x7684;&#x6D88;&#x8D39;&#x51FD;&#x6570;</li>
+<li><code>limit</code>&#xFF1A;&#x5BF9;&#x4E00;&#x4E2A;<code>Stream</code>&#x8FDB;&#x884C;&#x622A;&#x65AD;&#x64CD;&#x4F5C;&#xFF0C;&#x83B7;&#x53D6;&#x5176;&#x524D;<code>N</code>&#x4E2A;&#x5143;&#x7D20;&#xFF0C;&#x5982;&#x679C;&#x539F;<code>Stream</code>&#x4E2D;&#x5305;&#x542B;&#x7684;&#x5143;&#x7D20;&#x4E2A;&#x6570;&#x5C0F;&#x4E8E;<code>N</code>&#xFF0C;&#x90A3;&#x5C31;&#x83B7;&#x53D6;&#x5176;&#x6240;&#x6709;&#x7684;&#x5143;&#x7D20;</li>
+<li><code>skip</code>&#xFF1A;&#x8FD4;&#x56DE;&#x4E00;&#x4E2A;&#x4E22;&#x5F03;&#x539F;<code>Stream</code>&#x7684;&#x524D;<code>N</code>&#x4E2A;&#x5143;&#x7D20;&#x540E;&#x5269;&#x4E0B;&#x5143;&#x7D20;&#x7EC4;&#x6210;&#x7684;&#x65B0;<code>Stream</code>&#xFF0C;&#x5982;&#x679C;&#x539F;<code>Stream</code>&#x4E2D;&#x5305;&#x542B;&#x7684;&#x5143;&#x7D20;&#x4E2A;&#x6570;&#x5C0F;&#x4E8E;<code>N</code>&#xFF0C;&#x90A3;&#x4E48;&#x8FD4;&#x56DE;&#x7A7A;<code>Stream</code></li>
+</ol>
+<h3 id="Reduce-Stream"><a href="#Reduce-Stream" class="headerlink" title="Reduce Stream"></a>Reduce Stream</h3><blockquote>
+<p>A reduction operation (also called a fold) takes a sequence of input elements and combines them into a single summary result by repeated application of a combining operation, such as finding the sum or maximum of a set of numbers, or accumulating elements into a list. The streams classes have multiple forms of general reduction operations, called reduce() and collect(), as well as multiple specialized reduction forms such as sum(), max(), or count().</p>
+</blockquote>
+<p>&#x6C47;&#x805A;&#x64CD;&#x4F5C;&#xFF08;&#x4E5F;&#x79F0;&#x4E3A;&#x6298;&#x53E0;&#xFF09;&#x63A5;&#x53E3;&#x4E00;&#x4E2A;&#x5143;&#x7D20;&#x5E8F;&#x5217;&#x4F5C;&#x4E3A;&#x8F93;&#x5165;&#xFF0C;&#x53CD;&#x590D;&#x4F7F;&#x7528;&#x67D0;&#x4E2A;&#x5408;&#x5E76;&#x64CD;&#x4F5C;&#xFF0C;&#x628A;&#x5E8F;&#x5217;&#x4E2D;&#x7684;&#x5143;&#x7D20;&#x5408;&#x5E76;&#x6210;&#x4E00;&#x4E2A;&#x6C47;&#x603B;&#x7684;&#x7ED3;&#x679C;&#x3002;&#x6BD4;&#x5982;&#x67E5;&#x627E;&#x4E00;&#x4E2A;&#x6570;&#x5B57;&#x5217;&#x8868;&#x7684;&#x603B;&#x548C;&#x6216;&#x8005;&#x6700;&#x5927;&#x503C;&#xFF0C;&#x6216;&#x8005;&#x628A;&#x8FD9;&#x4E9B;&#x6570;&#x5B57;&#x7D2F;&#x79EF;&#x6210;&#x4E00;&#x4E2A;<code>List</code>&#x5BF9;&#x8C61;&#x3002;<code>Stream</code>&#x63A5;&#x53E3;&#x6709;&#x4E00;&#x4E9B;&#x901A;&#x7528;&#x7684;&#x6C47;&#x805A;&#x64CD;&#x4F5C;&#xFF0C;&#x6BD4;&#x5982;<code>reduce()</code>&#x548C;<code>collect()</code>&#xFF1B;&#x4E5F;&#x6709;&#x4E00;&#x4E9B;&#x7279;&#x5B9A;&#x7528;&#x9014;&#x7684;&#x6C47;&#x805A;&#x64CD;&#x4F5C;&#xFF0C;&#x6BD4;&#x5982;<code>sum()</code>&#xFF0C;<code>max()</code>&#xFF0C;<code>count()</code>&#x3002;<code>sum</code>&#x65B9;&#x6CD5;&#x4E0D;&#x662F;&#x6240;&#x6709;&#x7684;<code>Stream</code>&#x5BF9;&#x8C61;&#x90FD;&#x6709;&#x7684;&#xFF0C;&#x53EA;&#x6709;<code>IntStream</code>&#xFF0C;<code>LongStream</code>&#x548C;<code>DoubleStream</code>&#x624D;&#x6709;</p>
+<ol>
+<li>&#x53EF;&#x53D8;&#x6C47;&#x805A;&#xFF1A;&#x628A;&#x8F93;&#x5165;&#x7684;&#x5143;&#x7D20;&#x7D2F;&#x79EF;&#x5230;&#x4E00;&#x4E2A;&#x53EF;&#x53D8;&#x7684;&#x5BB9;&#x5668;&#x4E2D;&#xFF0C;&#x6BD4;&#x5982;<code>Collection</code>&#x6216;&#x8005;<code>StringBuilder</code></li>
+<li>&#x5176;&#x4ED6;&#x6C47;&#x805A;&#xFF1A;&#x9664;&#x53BB;&#x53EF;&#x53D8;&#x6C47;&#x805A;&#x5269;&#x4E0B;&#x7684;&#xFF0C;&#x4E00;&#x822C;&#x90FD;&#x4E0D;&#x662F;&#x901A;&#x8FC7;&#x53CD;&#x590D;&#x4FEE;&#x6539;&#x67D0;&#x4E2A;&#x53EF;&#x53D8;&#x5BF9;&#x8C61;&#xFF0C;&#x800C;&#x662F;&#x901A;&#x8FC7;&#x628A;&#x524D;&#x4E00;&#x6B21;&#x7684;&#x6C47;&#x805A;&#x7ED3;&#x679C;&#x5F53;&#x6210;&#x4E0B;&#x4E00;&#x6B21;&#x7684;&#x5165;&#x53C2;&#xFF0C;&#x53CD;&#x590D;&#x5982;&#x6B64;&#x3002;&#x6BD4;&#x5982;<code>reduce</code>&#xFF0C;<code>count</code>&#xFF0C;<code>allMatch</code></li>
+</ol>
+<h4 id="&#x53EF;&#x53D8;&#x6C47;&#x805A;"><a href="#&#x53EF;&#x53D8;&#x6C47;&#x805A;" class="headerlink" title="&#x53EF;&#x53D8;&#x6C47;&#x805A;"></a><strong>&#x53EF;&#x53D8;&#x6C47;&#x805A;</strong></h4><p>&#x53EF;&#x53D8;&#x6C47;&#x805A;&#x5BF9;&#x5E94;&#x7684;&#x53EA;&#x6709;&#x4E00;&#x4E2A;&#x65B9;&#x6CD5;&#xFF1A;<code>collect</code>&#xFF0C;&#x5B83;&#x53EF;&#x4EE5;&#x628A;<code>Stream</code>&#x4E2D;&#x7684;&#x5143;&#x7D20;&#x6536;&#x96C6;&#x5230;&#x4E00;&#x4E2A;&#x7ED3;&#x679C;&#x5BB9;&#x5668;&#x4E2D;&#xFF08;&#x6BD4;&#x5982;<code>Collection</code>&#xFF09;&#xFF1A;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;R&gt; <span class="function">R <span class="title">collect</span><span class="params">(Supplier&lt;R&gt; supplier, BiConsumer&lt;R, ? <span class="keyword">super</span> T&gt; accumulator, BiConsumer&lt;R, R&gt; combiner)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>Supplier supplier</code>&#x662F;&#x4E00;&#x4E2A;&#x5DE5;&#x5382;&#x51FD;&#x6570;&#xFF0C;&#x7528;&#x6765;&#x751F;&#x6210;&#x4E00;&#x4E2A;&#x65B0;&#x7684;&#x5BB9;&#x5668;&#xFF1B;<code>BiConsumer accumulator</code>&#x4E5F;&#x662F;&#x4E00;&#x4E2A;&#x51FD;&#x6570;&#xFF0C;&#x7528;&#x6765;&#x628A;<code>Stream</code>&#x4E2D;&#x7684;&#x5143;&#x7D20;&#x6DFB;&#x52A0;&#x5230;&#x7ED3;&#x679C;&#x5BB9;&#x5668;&#x4E2D;&#xFF1B;<code>BiConsumer combiner</code>&#x8FD8;&#x662F;&#x4E00;&#x4E2A;&#x51FD;&#x6570;&#xFF0C;&#x7528;&#x6765;&#x628A;&#x4E2D;&#x95F4;&#x72B6;&#x6001;&#x7684;&#x591A;&#x4E2A;&#x7ED3;&#x679C;&#x5BB9;&#x5668;&#x5408;&#x5E76;&#x6210;&#x4E3A;&#x4E00;&#x4E2A;&#xFF08;&#x5E76;&#x53D1;&#x7684;&#x65F6;&#x5019;&#x4F1A;&#x7528;&#x5230;&#xFF09;&#x3002;</p>
+<h4 id="&#x5176;&#x4ED6;&#x6C47;&#x805A;"><a href="#&#x5176;&#x4ED6;&#x6C47;&#x805A;" class="headerlink" title="&#x5176;&#x4ED6;&#x6C47;&#x805A;"></a><strong>&#x5176;&#x4ED6;&#x6C47;&#x805A;</strong></h4><p><strong>reduce</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; ints = Lists.newArrayList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;ints sum is:&quot;</span> + ints.stream().reduce(Integer::sum).orElse(<span class="number">0</span>));</span><br></pre></td></tr></table></figure>
+
+<p>&#x53EF;&#x4EE5;&#x770B;&#x5230;<code>reduce</code>&#x65B9;&#x6CD5;&#x63A5;&#x53D7;&#x4E00;&#x4E2A;&#x51FD;&#x6570;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x6709;&#x4E24;&#x4E2A;&#x53C2;&#x6570;&#xFF0C;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x662F;&#x4E0A;&#x6B21;&#x51FD;&#x6570;&#x6267;&#x884C;&#x7684;&#x8FD4;&#x56DE;&#x503C;&#xFF08;&#x4E5F;&#x79F0;&#x4E3A;&#x4E2D;&#x95F4;&#x7ED3;&#x679C;&#xFF09;&#xFF0C;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x662F;<code>stream</code>&#x4E2D;&#x7684;&#x5143;&#x7D20;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x628A;&#x8FD9;&#x4E24;&#x4E2A;&#x503C;&#x76F8;&#x52A0;&#xFF0C;&#x5F97;&#x5230;&#x7684;&#x548C;&#x4F1A;&#x88AB;&#x8D4B;&#x503C;&#x7ED9;&#x4E0B;&#x6B21;&#x6267;&#x884C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x3002;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x662F;&#xFF1A;<strong>&#x7B2C;&#x4E00;&#x6B21;&#x6267;&#x884C;&#x7684;&#x65F6;&#x5019;&#x7B2C;&#x4E00;&#x4E2A;&#x53C2;&#x6570;&#x7684;&#x503C;&#x662F;<code>Stream</code>&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x5143;&#x7D20;&#xFF0C;&#x7B2C;&#x4E8C;&#x4E2A;&#x53C2;&#x6570;&#x662F;<code>Stream</code>&#x7684;&#x7B2C;&#x4E8C;&#x4E2A;&#x5143;&#x7D20;</strong>&#x3002;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x8FD4;&#x56DE;&#x503C;&#x7C7B;&#x578B;&#x662F;<code>Optional</code>&#xFF0C;&#x8FD9;&#x662F;<code>Java8</code>&#x9632;&#x6B62;&#x51FA;&#x73B0;<code>NPE</code>&#x7684;&#x4E00;&#x79CD;&#x53EF;&#x884C;&#x65B9;&#x6CD5;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; ints = Lists.newArrayList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;ints sum is:&quot;</span> + ints.stream().reduce(<span class="number">100</span>, Integer::sum));</span><br></pre></td></tr></table></figure>
+
+<p>&#x5B83;&#x5141;&#x8BB8;&#x7528;&#x6237;&#x63D0;&#x4F9B;&#x4E00;&#x4E2A;&#x5FAA;&#x73AF;&#x8BA1;&#x7B97;&#x7684;&#x521D;&#x59CB;&#x503C;&#xFF0C;&#x5982;&#x679C;<code>Stream</code>&#x4E3A;&#x7A7A;&#xFF0C;&#x5C31;&#x76F4;&#x63A5;&#x8FD4;&#x56DE;&#x8BE5;&#x503C;&#x3002;&#x800C;&#x4E14;&#x8FD9;&#x4E2A;&#x65B9;&#x6CD5;&#x4E0D;&#x4F1A;&#x8FD4;&#x56DE;<code>Optional</code>&#xFF0C;&#x56E0;&#x4E3A;&#x5176;&#x4E0D;&#x4F1A;&#x51FA;&#x73B0;<code>null</code>&#x503C;</p>
+<p><strong>count</strong></p>
+<p>&#x83B7;&#x53D6;<code>Stream</code>&#x4E2D;&#x5143;&#x7D20;&#x7684;&#x4E2A;&#x6570;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; ints = Lists.newArrayList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;ints count is:&quot;</span> + ints.stream().map(c -&gt; c).count());</span><br></pre></td></tr></table></figure>
+
+<p><code>allMatch</code>&#xFF1A;&#x662F;&#x4E0D;&#x662F;<code>Stream</code>&#x4E2D;&#x7684;&#x6240;&#x6709;&#x5143;&#x7D20;&#x90FD;&#x6EE1;&#x8DB3;&#x7ED9;&#x5B9A;&#x7684;&#x5339;&#x914D;&#x6761;&#x4EF6;</p>
+<p><code>anyMatch</code>&#xFF1A;<code>Stream</code>&#x4E2D;&#x662F;&#x5426;&#x5B58;&#x5728;&#x4EFB;&#x4F55;&#x4E00;&#x4E2A;&#x5143;&#x7D20;&#x6EE1;&#x8DB3;&#x5339;&#x914D;&#x6761;&#x4EF6;</p>
+<p><code>findFirst</code>: &#x8FD4;&#x56DE;<code>Stream</code>&#x4E2D;&#x7684;&#x7B2C;&#x4E00;&#x4E2A;&#x5143;&#x7D20;&#xFF0C;&#x5982;&#x679C;<code>Stream</code>&#x4E3A;&#x7A7A;&#xFF0C;&#x8FD4;&#x56DE;&#x7A7A;<code>Optional</code></p>
+<p><code>noneMatch</code>&#xFF1A;&#x662F;&#x4E0D;&#x662F;<code>Stream</code>&#x4E2D;&#x7684;&#x6240;&#x6709;&#x5143;&#x7D20;&#x90FD;&#x4E0D;&#x6EE1;&#x8DB3;&#x7ED9;&#x5B9A;&#x7684;&#x5339;&#x914D;&#x6761;&#x4EF6;</p>
+<p><code>max</code>&#x548C;<code>min</code>&#xFF1A;&#x4F7F;&#x7528;&#x7ED9;&#x5B9A;&#x7684;&#x6BD4;&#x8F83;&#x5668;&#xFF08;<code>Operator</code>&#xFF09;&#xFF0C;&#x8FD4;&#x56DE;<code>Stream</code>&#x4E2D;&#x7684;&#x6700;&#x5927;|&#x6700;&#x5C0F;&#x503C;</p>
+<hr>
+<h2 id="Lazy"><a href="#Lazy" class="headerlink" title="Lazy"></a>Lazy</h2><blockquote>
+<p>&#x61D2;&#x64CD;&#x4F5C;&#xFF1A;&#x5BF9;&#x4E8E;&#x4F1A;&#x6D88;&#x8017;&#x8F83;&#x591A;&#x8D44;&#x6E90;&#x7684;&#x5BF9;&#x8C61;&#xFF0C;&#x4F7F;&#x7528;&#x5EF6;&#x8FDF;&#x521D;&#x59CB;&#x5316;&#x662F;&#x6BD4;&#x8F83;&#x597D;&#x7684;&#x9009;&#x62E9;&#x3002;&#x8FD9;&#x4E0D;&#x4EC5;&#x80FD;&#x591F;&#x8282;&#x7701;&#x4E00;&#x4E9B;&#x8D44;&#x6E90;&#xFF0C;&#x540C;&#x4E8B;&#x80FD;&#x591F;&#x52A0;&#x5FEB;&#x5BF9;&#x8C61;&#x7684;&#x521B;&#x5EFA;&#x901F;&#x5EA6;&#xFF0C;&#x4ECE;&#x800C;&#x4ECE;&#x6574;&#x4F53;&#x4E0A;&#x63D0;&#x5347;&#x6027;&#x80FD;&#x3002;&#x4F46;&#x662F;&#x5BF9;&#x4E8E;&#x4E00;&#x4E2A;&#x5BF9;&#x8C61;&#x7684;&#x5EF6;&#x8FDF;&#x521D;&#x59CB;&#x5316;&#xFF0C;&#x9700;&#x8981;&#x6CE8;&#x610F;&#x7684;&#x4E00;&#x70B9;&#x5C31;&#x662F;&#x8FD9;&#x4E9B;&#x5B9E;&#x73B0;&#x7EC6;&#x8282;&#x4E0D;&#x5E94;&#x8BE5;&#x66B4;&#x9732;&#x7ED9;&#x7528;&#x6237;&#xFF0C;&#x5373;&#x7528;&#x6237;&#x80FD;&#x591F;&#x6309;&#x7167;&#x6B63;&#x5E38;&#x7684;&#x64CD;&#x4F5C;&#x6D41;&#x7A0B;&#x6765;&#x4F7F;&#x7528;&#x8BE5;&#x5BF9;&#x8C61;&#x3002;</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> Heavy <span class="title">getHeavy</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="keyword">if</span>(heavy == <span class="keyword">null</span>) {</span><br><span class="line">        heavy = <span class="keyword">new</span> Heavy();</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> heavy;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h3 id="Lazy-Evaluation"><a href="#Lazy-Evaluation" class="headerlink" title="Lazy Evaluation"></a>Lazy Evaluation</h3><p><code>Lazy Evaluation</code>&#xFF08;&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#xFF09;</p>
+<p>&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x7684;&#x4E3B;&#x8981;&#x76EE;&#x7684;&#x662F;&#x51CF;&#x5C11;&#x9700;&#x8981;&#x6267;&#x884C;&#x7684;&#x4EE3;&#x7801;&#x91CF;&#x6765;&#x63D0;&#x9AD8;&#x6267;&#x884C;&#x901F;&#x5EA6;</p>
+<p>&#x5176;&#x5B9E;<code>Java</code>&#x8BED;&#x8A00;&#x4E2D;&#x6709;&#x4E00;&#x4E9B;&#x5730;&#x65B9;&#x5DF2;&#x7ECF;&#x5E94;&#x7528;&#x4E86;&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x7684;&#x6982;&#x5FF5;&#xFF0C;&#x6BD4;&#x5982;&#x5BF9;&#x903B;&#x8F91;&#x8868;&#x8FBE;&#x5F0F;&#x7684;&#x6C42;&#x503C;</p>
+<p>&#x5728;&#x6267;&#x884C;<code>fn1() || fn2()</code>&#x65F6;&#xFF0C;&#x5F53;<code>fn1()</code>&#x8FD4;&#x56DE;<code>true</code>&#x7684;&#x65F6;&#x5019;&#xFF0C;<code>fn2()</code>&#x662F;&#x4E0D;&#x4F1A;&#x88AB;&#x6267;&#x884C;&#x7684;&#x3002;&#x540C;&#x6837;&#x7684;&#xFF0C;&#x5728;&#x6267;&#x884C;<code>fn1()&amp;&amp;fn2()</code>&#x65F6;&#xFF0C;&#x5F53;<code>fn1()</code>&#x8FD4;&#x56DE;<code>false</code>&#x7684;&#x65F6;&#x5019;&#xFF0C;<code>fn2()</code>&#x662F;&#x4E0D;&#x4F1A;&#x88AB;&#x6267;&#x884C;&#x7684;&#x3002;&#x8FD9;&#x5C31;&#x662F;&#x5927;&#x5BB6;&#x719F;&#x77E5;&#x7684;&#x77ED;&#x8DEF;(<code>Short-circuiting</code>)&#x64CD;&#x4F5C;&#x3002;</p>
+<p>&#x7136;&#x800C;&#x5BF9;&#x4E8E;&#x65B9;&#x6CD5;&#x8C03;&#x7528;&#xFF0C;&#x5728;&#x53D1;&#x751F;&#x5B9E;&#x9645;&#x8C03;&#x7528;&#x524D;&#x6240;&#x4F20;&#x5165;&#x7684;&#x53C2;&#x6570;&#x90FD;&#x4F1A;&#x88AB;&#x6C42;&#x503C;&#xFF0C;&#x5373;&#x4F7F;&#x67D0;&#x4E9B;&#x53C2;&#x6570;&#x5728;&#x65B9;&#x6CD5;&#x4E2D;&#x6839;&#x672C;&#x5C31;&#x6CA1;&#x6709;&#x88AB;&#x7528;&#x5230;&#x3002;&#x56E0;&#x6B64;&#x8FD9;&#x5C31;&#x9020;&#x6210;&#x4E86;&#x6F5C;&#x5728;&#x7684;&#x6027;&#x80FD;&#x6D6A;&#x8D39;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x4F7F;&#x7528;<code>Lambda</code>&#x8868;&#x8FBE;&#x5F0F;&#x6765;&#x8FDB;&#x884C;&#x6539;&#x8FDB;&#x3002;</p>
+<p>&#x5F53;&#x53C2;&#x6570;&#x5217;&#x8868;&#x4E2D;&#x6709;<code>Lambda</code>&#x8868;&#x8FBE;&#x5F0F;&#x548C;&#x65B9;&#x6CD5;&#x5F15;&#x7528;&#x65F6;&#xFF0C;&#x8FD9;&#x79CD;&#x7C7B;&#x578B;&#x7684;&#x53C2;&#x6570;&#x53EA;&#x6709;&#x5728;&#x771F;&#x6B63;&#x5730;&#x9700;&#x8981;&#x88AB;&#x4F7F;&#x7528;&#x65F6;&#x624D;&#x4F1A;&#x7531;<code>Java</code>&#x7F16;&#x8BD1;&#x5668;&#x6C42;&#x503C;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x5229;&#x7528;&#x8FD9;&#x4E00;&#x70B9;&#x6765;&#x5B9E;&#x73B0;&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x3002;<code>Java 8</code>&#x4E2D;&#x65B0;&#x6DFB;&#x52A0;&#x7684;<code>Stream</code>&#x7C7B;&#x578B;&#x7684;&#x8BB8;&#x591A;&#x65B9;&#x6CD5;&#x90FD;&#x5B9E;&#x73B0;&#x4E86;&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x3002;&#x6BD4;&#x5982;<code>filter</code>&#x65B9;&#x6CD5;&#x63A5;&#x53D7;&#x7684;<code>Predicate</code>&#x51FD;&#x6570;&#x63A5;&#x53E3;&#xFF0C;&#x5E76;&#x4E0D;&#x4E00;&#x5B9A;&#x4F1A;&#x88AB;&#x96C6;&#x5408;&#x4E2D;&#x7684;&#x6240;&#x6709;&#x5143;&#x7D20;&#x8C03;&#x7528;&#x3002;&#x56E0;&#x6B64;&#xFF0C;&#x6211;&#x4EEC;&#x53EF;&#x4EE5;&#x8003;&#x8651;&#x5C06;&#x65B9;&#x6CD5;&#x7684;&#x53C2;&#x6570;&#x51B2;&#x6784;&#x6210;&#x51FD;&#x6570;&#x63A5;&#x53E3;&#x6765;&#x5B9E;&#x73B0;&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x3002;</p>
+<h3 id="Eager&#x6C42;&#x503C;"><a href="#Eager&#x6C42;&#x503C;" class="headerlink" title="Eager&#x6C42;&#x503C;"></a>Eager&#x6C42;&#x503C;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Evaluation</span> </span>{</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">evaluate</span><span class="params">(<span class="keyword">final</span> <span class="keyword">int</span> value)</span> </span>{</span><br><span class="line">        System.out.println(<span class="string">&quot;evaluating ...&quot;</span> + value);</span><br><span class="line">        simulateTimeConsumingOp(<span class="number">2000</span>);</span><br><span class="line">        <span class="keyword">return</span> value &gt; <span class="number">100</span>;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">eagerEvaluator</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">        <span class="keyword">final</span> <span class="keyword">boolean</span> input1, <span class="keyword">final</span> <span class="keyword">boolean</span> input2)</span> </span>{</span><br><span class="line">        System.out.println(<span class="string">&quot;eagerEvaluator called...&quot;</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;accept?: &quot;</span> + (input1 &amp;&amp; input2));</span><br><span class="line">    }</span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">}</span><br><span class="line">eagerEvaluator(evaluate(<span class="number">1</span>), evaluate(<span class="number">2</span>));</span><br><span class="line"><span class="comment">// evaluating ...1</span></span><br><span class="line"><span class="comment">// evaluating ...2</span></span><br><span class="line"><span class="comment">// eagerEvaluator called...</span></span><br><span class="line"><span class="comment">// accept?: false</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x4EE5;&#x4E0A;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;&#x867D;&#x7136;&#x5E0C;&#x671B;&#x4F7F;&#x7528;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#x6765;&#x5F97;&#x5230;&#x6700;&#x540E;&#x7684;&#x7ED3;&#x679C;(<code>input1 &amp;&amp; input2</code>)&#xFF0C;&#x4F46;&#x662F;&#x5DF2;&#x7ECF;&#x665A;&#x4E86;&#x3002;&#x5728;&#x5BF9;&#x53C2;&#x6570;&#x8FDB;&#x884C;&#x6C42;&#x503C;&#x7684;&#x65F6;&#x5019;&#xFF0C;<code>input1</code>&#x548C;<code>input2</code>&#x7684;&#x503C;&#x5B9E;&#x9645;&#x4E0A;&#x5C31;&#x5DF2;&#x7ECF;&#x88AB;&#x786E;&#x8BA4;&#x4E86;&#xFF0C;&#x4ECE;&#x4E0A;&#x9762;&#x7684;&#x8F93;&#x51FA;&#x53EF;&#x4EE5;&#x770B;&#x51FA;&#x8FD9;&#x4E00;&#x70B9;&#x3002;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x4F1A;&#x6267;&#x884C;&#x81F3;&#x5C11;<code>4</code>&#x79D2;&#xFF0C;&#x663E;&#x7136;&#x8FD9;&#x4E0D;&#x662F;&#x6700;&#x4F18;&#x89E3;&#x3002;</p>
+<h3 id="&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x7684;&#x8BBE;&#x8BA1;"><a href="#&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x7684;&#x8BBE;&#x8BA1;" class="headerlink" title="&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x7684;&#x8BBE;&#x8BA1;"></a>&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x7684;&#x8BBE;&#x8BA1;</h3><p>&#x5982;&#x679C;&#x6211;&#x4EEC;&#x77E5;&#x9053;&#x65B9;&#x6CD5;&#x4E2D;&#x7684;&#x67D0;&#x4E9B;&#x53C2;&#x6570;&#x53EF;&#x80FD;&#x4E0D;&#x4F1A;&#x88AB;&#x7528;&#x5230;&#xFF0C;&#x90A3;&#x4E48;&#x5C31;&#x53EF;&#x4EE5;&#x5BF9;&#x5B83;&#x4EEC;&#x8FDB;&#x884C;&#x91CD;&#x6784;&#xFF0C;&#x5C06;&#x5B83;&#x4EEC;&#x66FF;&#x6362;&#x6210;&#x51FD;&#x6570;&#x63A5;&#x53E3;&#x6765;&#x5B9E;&#x73B0;&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x3002;&#x6BD4;&#x5982;&#x4E0A;&#x8FF0;&#x4EE3;&#x7801;&#x4E2D;&#x4F7F;&#x7528;&#x4E86;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#xFF0C;&#x8BF4;&#x660E;<code>input2</code>&#x7684;&#x6C42;&#x503C;&#x4E5F;&#x8BB8;&#x662F;&#x4E0D;&#x5FC5;&#x8981;&#x7684;&#xFF0C;&#x8FD9;&#x662F;&#x53EF;&#x4EE5;&#x5C06;&#x5B83;&#x66FF;&#x6362;&#x6210;<code>Supplier</code>&#x63A5;&#x53E3;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">lazyEvaluator</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">final</span> Supplier&lt;Boolean&gt; input1, <span class="keyword">final</span> Supplier&lt;Boolean&gt; input2)</span> </span>{</span><br><span class="line">    System.out.println(<span class="string">&quot;lazyEvaluator called...&quot;</span>);</span><br><span class="line">    System.out.println(<span class="string">&quot;accept?: &quot;</span> + (input1.get() &amp;&amp; input2.get()));</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x66FF;&#x6362;&#x6210;<code>Supplier</code>&#x7C7B;&#x578B;&#x7684;&#x51FD;&#x6570;&#x63A5;&#x53E3;&#x540E;&#xFF0C;&#x53EA;&#x6709;&#x5728;&#x8C03;&#x7528;&#x5B83;&#x7684;<code>get</code>&#x65B9;&#x6CD5;&#xFF0C;&#x624D;&#x4F1A;&#x771F;&#x6B63;&#x6267;&#x884C;&#x6C42;&#x503C;&#x64CD;&#x4F5C;&#x3002;&#x90A3;&#x4E48;&#x4E0A;&#x8FF0;&#x7684;&#x77ED;&#x8DEF;&#x64CD;&#x4F5C;&#x5C31;&#x6709;&#x610F;&#x4E49;&#x4E86;&#xFF0C;&#x5F53;<code>input1.get()</code>&#x8FD4;&#x56DE;&#x7684;&#x662F;<code>false</code>&#xFF0C;<code>input2.get()</code>&#x6839;&#x672C;&#x5C31;&#x4E0D;&#x4F1A;&#x88AB;&#x8C03;&#x7528;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">lazyEvaluator(() -&gt; evaluate(<span class="number">1</span>), () -&gt; evaluate(<span class="number">2</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// lazyEvaluator called...</span></span><br><span class="line"><span class="comment">// evaluating ...1</span></span><br><span class="line"><span class="comment">// accept?: false</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x6B64;&#x65F6;&#x7684;&#x6267;&#x884C;&#x65F6;&#x95F4;&#x53EA;&#x6709;<code>2</code>&#x79D2;&#x591A;&#x4E00;&#x70B9;&#xFF0C;&#x6BD4;&#x4E4B;&#x524D;&#x7684;4&#x79D2;&#x800C;&#x8A00;&#xFF0C;&#x6027;&#x80FD;&#x63D0;&#x9AD8;&#x4E86;&#x63A5;&#x8FD1;100%&#x3002;&#x5728;&#x67D0;&#x4E9B;&#x53C2;&#x6570;&#x4E0D;&#x88AB;&#x9700;&#x8981;&#x7684;&#x573A;&#x5408;&#x4E0B;&#xFF0C;&#x501F;&#x52A9;<code>Lambda</code>&#x8868;&#x8FBE;&#x5F0F;&#x6216;&#x8005;&#x65B9;&#x6CD5;&#x5F15;&#x7528;&#x6765;&#x5B9E;&#x73B0;&#x54EA;&#x4E9B;&#x53C2;&#x6570;&#x786E;&#x5B9E;&#x80FD;&#x591F;&#x589E;&#x52A0;&#x6027;&#x80FD;&#xFF0C;&#x4F46;&#x662F;&#x4E5F;&#x4F7F;&#x5F97;&#x4EE3;&#x7801;&#x7A0D;&#x5FAE;&#x7684;&#x590D;&#x6742;&#x4E86;&#x4E00;&#x70B9;&#xFF0C;&#x4F46;&#x662F;&#x4E3A;&#x4E86;&#x6027;&#x80FD;&#x7684;&#x63D0;&#x5347;&#x8FD9;&#x4E9B;&#x4EE3;&#x4EF7;&#x4E5F;&#x662F;&#x503C;&#x5F97;&#x7684;&#x3002;</p>
+<h3 id="Stream&#x61D2;&#x64CD;&#x4F5C;"><a href="#Stream&#x61D2;&#x64CD;&#x4F5C;" class="headerlink" title="Stream&#x61D2;&#x64CD;&#x4F5C;"></a>Stream&#x61D2;&#x64CD;&#x4F5C;</h3><p><code>Stream</code>&#x6709;&#x4E24;&#x79CD;&#x7C7B;&#x578B;&#x7684;&#x65B9;&#x6CD5;&#xFF1A;</p>
+<ol>
+<li>&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF08;<code>Intermediate Operation</code>&#xFF09;</li>
+<li>&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#xFF08;<code>Terminal Operation</code>&#xFF09;</li>
+</ol>
+<p><code>Stream</code>&#x4E4B;&#x6240;&#x4EE5;&#x61D2;&#x5728;&#x4E8E;&#x6BCF;&#x6B21;&#x5728;&#x4F7F;&#x7528;<code>Stream</code>&#x65F6;&#xFF0C;&#x90FD;&#x4F1A;&#x8FDE;&#x63A5;&#x591A;&#x4E2A;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF0C;&#x5E76;&#x5728;&#x6700;&#x540E;&#x9644;&#x4E0A;&#x4E00;&#x4E2A;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#x3002;&#x50CF;<code>map()</code>&#x548C;<code>filter()</code>&#x8FD9;&#x6837;&#x7684;&#x65B9;&#x6CD5;&#x662F;&#x4E2D;&#x95F4;&#x64CD;&#x4F5C;&#xFF0C;&#x5728;&#x8C03;&#x7528;&#x5B83;&#x4EEC;&#x65F6;&#xFF0C;&#x4F1A;&#x7ACB;&#x5373;&#x8FD4;&#x56DE;&#x53E6;&#x4E00;&#x4E2A;<code>Stream</code>&#x5BF9;&#x8C61;&#x3002;&#x800C;&#x5BF9;&#x4E8E;<code>reduce()</code>&#x53CA;<code>findFirst()</code>&#x8FD9;&#x6837;&#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#x5B83;&#x4EEC;&#x662F;&#x7ED3;&#x675F;&#x64CD;&#x4F5C;&#xFF0C;&#x5728;&#x8C03;&#x7528;&#x5B83;&#x4EEC;&#x65F6;&#x624D;&#x4F1A;&#x5728;&#x6267;&#x884C;&#x771F;&#x6B63;&#x7684;&#x64CD;&#x4F5C;&#x6765;&#x83B7;&#x53D6;&#x9700;&#x8981;&#x7684;&#x503C;&#x3002;</p>
+<hr>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><h3 id="&#x6570;&#x636E;"><a href="#&#x6570;&#x636E;" class="headerlink" title="&#x6570;&#x636E;"></a>&#x6570;&#x636E;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>{</span><br><span class="line">    <span class="keyword">private</span> Integer id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Integer room;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; tags;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Person person1 = Person.builder().id(<span class="number">1</span>).name(<span class="string">&quot;11&quot;</span>).room(<span class="number">1</span>).tags(Lists.newArrayList(<span class="string">&quot;111&quot;</span>, <span class="string">&quot;aaa&quot;</span>)).build();</span><br><span class="line">Person person2 = Person.builder().id(<span class="number">2</span>).name(<span class="string">&quot;22&quot;</span>).room(<span class="number">1</span>).tags(Lists.newArrayList(<span class="string">&quot;222&quot;</span>, <span class="string">&quot;bbb&quot;</span>)).build();</span><br><span class="line">Person person3 = Person.builder().id(<span class="number">3</span>).name(<span class="string">&quot;33&quot;</span>).room(<span class="number">1</span>).tags(Lists.newArrayList(<span class="string">&quot;333&quot;</span>, <span class="string">&quot;ccc&quot;</span>)).build();</span><br><span class="line">Person person4 = Person.builder().id(<span class="number">4</span>).name(<span class="string">&quot;44&quot;</span>).room(<span class="number">2</span>).tags(Lists.newArrayList(<span class="string">&quot;444&quot;</span>, <span class="string">&quot;ddd&quot;</span>)).build();</span><br><span class="line">Person person5 = Person.builder().id(<span class="number">5</span>).name(<span class="string">&quot;55&quot;</span>).room(<span class="number">2</span>).tags(Lists.newArrayList(<span class="string">&quot;555&quot;</span>, <span class="string">&quot;eee&quot;</span>)).build();</span><br><span class="line">Person person6 = Person.builder().id(<span class="number">6</span>).name(<span class="string">&quot;66&quot;</span>).room(<span class="number">2</span>).tags(Lists.newArrayList(<span class="string">&quot;666&quot;</span>, <span class="string">&quot;fff&quot;</span>)).build();</span><br><span class="line"></span><br><span class="line">List&lt;Person&gt; personList = Lists.newArrayList(person1, person2, person3, person4, person5, person6);</span><br></pre></td></tr></table></figure>
+
+<h3 id="collect"><a href="#collect" class="headerlink" title="collect"></a>collect</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; ids = personList.parallelStream().map(Person::getId).collect(Collectors.toList());</span><br><span class="line"><span class="comment">// &#x6536;&#x96C6;&#x67D0;&#x4E2A;&#x5B57;&#x6BB5;&#x7684;&#x503C; [1, 2, 3, 4, 5, 6]</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// {1=Person(id=1, name=11, room=1, tags=[111, aaa]),</span></span><br><span class="line"><span class="comment">// 2=Person(id=2, name=22, room=1, tags=[222, bbb]),</span></span><br><span class="line"><span class="comment">// 3=Person(id=3, name=33, room=1, tags=[333, ccc]),</span></span><br><span class="line"><span class="comment">// 4=Person(id=4, name=44, room=2, tags=[444, ddd]),</span></span><br><span class="line"><span class="comment">// 5=Person(id=5, name=55, room=2, tags=[555, eee]),</span></span><br><span class="line"><span class="comment">// 6=Person(id=6, name=66, room=2, tags=[666, fff])}</span></span><br><span class="line">Map&lt;Integer, Person&gt; keyMap = personList.stream().collect(Collectors.toMap(Person::getId, c -&gt; c));</span><br><span class="line"></span><br><span class="line"><span class="comment">// &#x8BE5;&#x65B9;&#x6CD5;&#x5FC5;&#x987B;&#x4FDD;&#x8BC1;&#x6570;&#x636E;&#x4E0D;&#x53EF;&#x91CD;&#x590D;&#xFF0C;&#x5982;&#x679C;&#x91CD;&#x590D;&#x4F1A;&#x62A5;&#x5F02;&#x5E38;</span></span><br><span class="line">Exception in thread <span class="string">&quot;main&quot;</span> java.lang.IllegalStateException: <span class="function">Duplicate key <span class="title">Person</span><span class="params">(id=<span class="number">1</span>, name=<span class="number">11</span>, room=<span class="number">1</span>, tags=[<span class="number">111</span>, aaa])</span></span></span><br><span class="line"><span class="function">    at java.util.stream.Collectors.lambda$throwingMerger$114<span class="params">(Collectors.java:<span class="number">133</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.HashMap.<span class="title">merge</span><span class="params">(HashMap.java:<span class="number">1245</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.stream.Collectors.lambda$toMap$172<span class="params">(Collectors.java:<span class="number">1320</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.stream.ReduceOps$3ReducingSink.<span class="title">accept</span><span class="params">(ReduceOps.java:<span class="number">169</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.ArrayList$ArrayListSpliterator.<span class="title">forEachRemaining</span><span class="params">(ArrayList.java:<span class="number">1374</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.stream.AbstractPipeline.<span class="title">copyInto</span><span class="params">(AbstractPipeline.java:<span class="number">481</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.stream.AbstractPipeline.<span class="title">wrapAndCopyInto</span><span class="params">(AbstractPipeline.java:<span class="number">471</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.stream.ReduceOps$ReduceOp.<span class="title">evaluateSequential</span><span class="params">(ReduceOps.java:<span class="number">708</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.stream.AbstractPipeline.<span class="title">evaluate</span><span class="params">(AbstractPipeline.java:<span class="number">234</span>)</span></span></span><br><span class="line"><span class="function">    at java.util.stream.ReferencePipeline.<span class="title">collect</span><span class="params">(ReferencePipeline.java:<span class="number">499</span>)</span></span></span><br><span class="line"><span class="function">    at Test.<span class="title">main</span><span class="params">(Test.java:<span class="number">65</span>)</span></span></span><br><span class="line"><span class="function">    </span></span><br><span class="line"><span class="function">personList.<span class="title">add</span><span class="params">(Person.builder()</span>.<span class="title">id</span><span class="params">(<span class="number">1</span>)</span>.<span class="title">name</span><span class="params">(<span class="string">&quot;11&quot;</span>)</span>.<span class="title">room</span><span class="params">(<span class="number">1</span>)</span>.<span class="title">tags</span><span class="params">(Lists.newArrayList(<span class="string">&quot;111&quot;</span>, <span class="string">&quot;aaa&quot;</span>)</span>).<span class="title">build</span><span class="params">()</span>)</span>;</span><br><span class="line">Map&lt;Integer, Person&gt; repeat = personList.stream().collect(Collectors.toMap(Person::getId, c -&gt; c));</span><br></pre></td></tr></table></figure>
+
+<h3 id="distinct"><a href="#distinct" class="headerlink" title="distinct"></a>distinct</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; distinctRooms = personList.stream().map(Person::getRoom).distinct().collect(Collectors.toList());</span><br><span class="line"><span class="comment">// &#x6536;&#x96C6;&#x67D0;&#x4E2A;&#x5B57;&#x6BB5;&#x53BB;&#x91CD; [1, 2]</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">personList.add(Person.builder().id(<span class="number">1</span>).name(<span class="string">&quot;11&quot;</span>).room(<span class="number">1</span>).tags(Lists.newArrayList(<span class="string">&quot;111&quot;</span>, <span class="string">&quot;aaa&quot;</span>)).build());</span><br><span class="line">List&lt;Person&gt; distinctPerson = personList.stream().distinct().collect(Collectors.toList());</span><br><span class="line"><span class="comment">// distinct&#x57FA;&#x4E8E;&#x5BF9;&#x8C61;&#x7684;equals&#x65B9;&#x6CD5;&#xFF0C;&#x5B9E;&#x73B0;&#x53BB;&#x91CD;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="max-min-sum-average"><a href="#max-min-sum-average" class="headerlink" title="max\min\sum\average"></a>max\min\sum\average</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">long</span> sum = personList.stream().mapToInt(Person::getId).sum();</span><br><span class="line"><span class="keyword">double</span> average = personList.stream().mapToInt(Person::getId).average().orElse(<span class="number">0.0</span>);</span><br><span class="line"><span class="keyword">int</span> max = personList.stream().mapToInt(Person::getId).max().orElse(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">int</span> min = personList.stream().mapToInt(Person::getId).min().orElse(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="groupby"><a href="#groupby" class="headerlink" title="groupby"></a>groupby</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// {1=[Person(id=1, name=11, room=1, tags=[111, aaa]), Person(id=2, name=22, room=1, tags=[222, bbb]), Person(id=3, name=33, room=1, tags=[333, ccc])],</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 2=[Person(id=4, name=44, room=2, tags=[444, ddd]), Person(id=5, name=55, room=2, tags=[555, eee]), Person(id=6, name=66, room=2, tags=[666, fff])]}</span></span><br><span class="line"></span><br><span class="line">Map&lt;Integer, List&lt;Person&gt;&gt; roomMap = personList.stream().collect(Collectors.groupingBy(Person::getRoom));</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// &#x5206;&#x7EC4;&#x4E4B;&#x540E;&#x518D;&#x6B21;&#x6D41;&#x5904;&#x7406;</span></span><br><span class="line"><span class="comment">// {1=[1], 2=[2], 3=[3], 4=[4], 5=[5], 6=[6]}</span></span><br><span class="line">Map&lt;Integer, List&lt;Integer&gt;&gt; groupIds = personList.stream().collect(Collectors.groupingBy(Person::getId, Collectors.mapping(Person::getId, Collectors.toList())));</span><br><span class="line"></span><br><span class="line"><span class="comment">// {1=[[111, aaa]], 2=[[222, bbb]], 3=[[333, ccc]], 4=[[444, ddd]], 5=[[555, eee]], 6=[[666, fff]]}</span></span><br><span class="line">Map&lt;Integer, List&lt;List&lt;String&gt;&gt;&gt; groupTags = personList.stream().collect(Collectors.groupingBy(Person::getId, Collectors.mapping(Person::getTags, Collectors.toList())));</span><br></pre></td></tr></table></figure>
+
+<h3 id="reduce"><a href="#reduce" class="headerlink" title="reduce"></a>reduce</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(personList.stream().reduce((c1, c2) -&gt; {</span><br><span class="line">    <span class="keyword">return</span> Person.builder().id(c1.getId() + c2.getId()).build();</span><br><span class="line">}).orElse(Person.builder().build()));</span><br><span class="line"><span class="comment">// Person(id=21, name=null, room=null, tags=null)</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(personList.stream().reduce((c1, c2) -&gt; {</span><br><span class="line">    <span class="keyword">return</span> Person.builder().id(c1.getId() + c2.getId()).build();</span><br><span class="line">}).orElse(Person.builder().build()));</span><br><span class="line"><span class="comment">// Person(id=21, name=null, room=null, tags=null)</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>sorted</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Person&gt; sortedList = personList.stream().sorted(Comparator.comparing(Person::getId).reversed()).collect(Collectors.toList());</span><br><span class="line"><span class="comment">// &#x6309;&#x7167;id&#x5012;&#x5E8F;</span></span><br><span class="line"><span class="comment">// [Person(id=6, name=66, room=2, tags=[666, fff]), Person(id=5, name=55, room=2, tags=[555, eee]), Person(id=4, name=44, room=2, tags=[444, ddd]), Person(id=3, name=33, room=1, tags=[333, ccc]), Person(id=2, name=22, room=1, tags=[222, bbb]), Person(id=1, name=11, room=1, tags=[111, aaa])]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="joining"><a href="#joining" class="headerlink" title="joining"></a>joining</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">String names = personList.stream().map(Person::getName).collect(Collectors.joining());</span><br><span class="line"><span class="comment">// 112233445566</span></span><br><span class="line"></span><br><span class="line">String names = personList.stream().map(Person::getName).collect(Collectors.joining(<span class="string">&quot;,&quot;</span>));</span><br><span class="line"><span class="comment">// 11,22,33,44,55,66</span></span><br><span class="line"></span><br><span class="line">String names = personList.stream().map(Person::getName).collect(Collectors.joining(<span class="string">&quot;,&quot;</span>, <span class="string">&quot;{&quot;</span>, <span class="string">&quot;}&quot;</span>));</span><br><span class="line"><span class="comment">// {11,22,33,44,55,66}</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="flatmap"><a href="#flatmap" class="headerlink" title="flatmap"></a>flatmap</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; flatMapResult = personList.stream().flatMap(inner -&gt; inner.getTags().stream()).collect(Collectors.toList());</span><br><span class="line"><span class="comment">// [111, aaa, 222, bbb, 333, ccc, 444, ddd, 555, eee, 666, fff]</span></span><br><span class="line"></span><br><span class="line">List&lt;String&gt; collect = personList.stream().map(Person::getTags).flatMap(Collection::stream).collect(Collectors.toList());</span><br><span class="line"><span class="comment">// [111, aaa, 222, bbb, 333, ccc, 444, ddd, 555, eee, 666, fff]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="anyMatch"><a href="#anyMatch" class="headerlink" title="anyMatch"></a>anyMatch</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> b = personList.stream().anyMatch(c -&gt; <span class="string">&quot;11&quot;</span>.equals(c.getName())); <span class="comment">// true</span></span><br><span class="line"><span class="keyword">boolean</span> b = personList.stream().allMatch(c -&gt; <span class="string">&quot;11&quot;</span>.equals(c.getName())); <span class="comment">// false</span></span><br><span class="line"><span class="keyword">boolean</span> b = personList.stream().noneMatch(c -&gt; <span class="string">&quot;11&quot;</span>.equals(c.getName())); <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// anyMatch&#x8868;&#x793A;&#xFF0C;&#x5224;&#x65AD;&#x7684;&#x6761;&#x4EF6;&#x91CC;&#xFF0C;&#x4EFB;&#x610F;&#x4E00;&#x4E2A;&#x5143;&#x7D20;&#x6210;&#x529F;&#xFF0C;&#x8FD4;&#x56DE;true</span></span><br><span class="line"><span class="comment">// allMatch&#x8868;&#x793A;&#xFF0C;&#x5224;&#x65AD;&#x6761;&#x4EF6;&#x91CC;&#x7684;&#x5143;&#x7D20;&#xFF0C;&#x6240;&#x6709;&#x7684;&#x90FD;&#x662F;&#xFF0C;&#x8FD4;&#x56DE;true</span></span><br><span class="line"><span class="comment">// noneMatch&#x8DDF;allMatch&#x76F8;&#x53CD;&#xFF0C;&#x5224;&#x65AD;&#x6761;&#x4EF6;&#x91CC;&#x7684;&#x5143;&#x7D20;&#xFF0C;&#x6240;&#x6709;&#x7684;&#x90FD;&#x4E0D;&#x662F;&#xFF0C;&#x8FD4;&#x56DE;true</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Person&gt; collect = personList.stream().filter(c -&gt; <span class="string">&quot;11&quot;</span>.equals(c.getName())).collect(Collectors.toList());</span><br><span class="line"><span class="comment">// [Person(id=1, name=11, room=1, tags=[111, aaa])]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="peek"><a href="#peek" class="headerlink" title="peek"></a>peek</h3><p>peek&#x4E0D;&#x662F;&#x4E00;&#x4E2A;&#x7EC8;&#x6B62;&#x64CD;&#x4F5C;</p>
+<p>&#x6D41;&#x7F16;&#x7A0B;&#x4E2D;&#xFF0C;&#x5FC5;&#x987B;&#x6709;&#x4E00;&#x4E2A;&#x7EC8;&#x6B62;&#x64CD;&#x4F5C;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">String[] arr = {<span class="string">&quot;a&quot;</span>, <span class="string">&quot;b&quot;</span>, <span class="string">&quot;c&quot;</span>, <span class="string">&quot;d&quot;</span>};</span><br><span class="line">List&lt;String&gt; collect = Arrays.stream(arr).peek(System.out::println).filter(<span class="string">&quot;c&quot;</span>::equals).peek(System.out::println).collect(Collectors.toList());</span><br><span class="line">System.out.println(collect);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">a</span></span><br><span class="line"><span class="selector-tag">b</span></span><br><span class="line">c</span><br><span class="line">c</span><br><span class="line">d</span><br><span class="line"><span class="selector-attr">[c]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x624B;&#x52A8;&#x5206;&#x9875;"><a href="#&#x624B;&#x52A8;&#x5206;&#x9875;" class="headerlink" title="&#x624B;&#x52A8;&#x5206;&#x9875;"></a>&#x624B;&#x52A8;&#x5206;&#x9875;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> pageSize = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">int</span> page = <span class="number">3</span>;</span><br><span class="line">List&lt;Person&gt; result = personList.stream().skip(pageSize * (page - <span class="number">1</span>))</span><br><span class="line">    .limit(pageSize)</span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"><span class="comment">// [Person(id=5, name=55, room=2, tags=[555, eee]), Person(id=6, name=66, room=2, tags=[666, fff])]</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x7EDF;&#x8BA1;"><a href="#&#x7EDF;&#x8BA1;" class="headerlink" title="&#x7EDF;&#x8BA1;"></a>&#x7EDF;&#x8BA1;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">IntSummaryStatistics intSummaryStatistics = personList.stream().mapToInt(Person::getId).summaryStatistics();</span><br><span class="line">System.out.println(intSummaryStatistics.getMax());</span><br><span class="line">System.out.println(intSummaryStatistics.getAverage());</span><br><span class="line">System.out.println(intSummaryStatistics.getCount());</span><br><span class="line">System.out.println(intSummaryStatistics.getMin());</span><br><span class="line">System.out.println(intSummaryStatistics.getSum());</span><br><span class="line"></span><br><span class="line"><span class="comment">// 6</span></span><br><span class="line"><span class="comment">// 3.5</span></span><br><span class="line"><span class="comment">// 6</span></span><br><span class="line"><span class="comment">// 1</span></span><br><span class="line"><span class="comment">// 21</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="&#x8FED;&#x4EE3;&#x5668;"><a href="#&#x8FED;&#x4EE3;&#x5668;" class="headerlink" title="&#x8FED;&#x4EE3;&#x5668;"></a>&#x8FED;&#x4EE3;&#x5668;</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Stream.iterate(<span class="number">0</span>, i -&gt; i + <span class="number">1</span>).limit(bizIds.size()).forEach()</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="&#x53C2;&#x8003;&#x6587;&#x732E;"><a href="#&#x53C2;&#x8003;&#x6587;&#x732E;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x732E;"></a>&#x53C2;&#x8003;&#x6587;&#x732E;</h2><ul>
+<li>[1] <a target="_blank" rel="noopener" href="https://www.cnblogs.com/CarpenterLee/p/6637118.html">&#x6DF1;&#x5165;&#x7406;&#x89E3;Java Stream&#x6D41;&#x6C34;&#x7EBF;</a></li>
+<li>[2] <a target="_blank" rel="noopener" href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/6-Stream%20Pipelines.md">Stream Pipelines</a></li>
+<li>[3] <a target="_blank" rel="noopener" href="https://github.com/CarpenterLee/JavaLambdaInternals">JavaLambdaInternals</a></li>
+</ul>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2021/08/17/编码与解码/" data-toggle="tooltip" data-placement="top" title="编码与解码">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2021/02/11/BackdoorController/" data-toggle="tooltip" data-placement="top" title="BcakdoorController">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Stream&#x6D41;&#x5E38;&#x89C4;&#x7528;&#x6CD5;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Stream&amp;#x6D41;&amp;#x5E38;&amp;#x89C4;&amp;#x7528;&amp;#x6CD5;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#BaseStream&#x63A5;&#x53E3;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">BaseStream&amp;#x63A5;&amp;#x53E3;</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Stream&#x63A5;&#x53E3;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">Stream&amp;#x63A5;&amp;#x53E3;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Stream"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">Stream</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Stream&#x7684;&#x5B9E;&#x73B0;&#x539F;&#x7406;"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">Stream&amp;#x7684;&amp;#x5B9E;&amp;#x73B0;&amp;#x539F;&amp;#x7406;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Stream&#x6D41;&#x6C34;&#x7EBF;&#x89E3;&#x51B3;&#x65B9;&#x6848;"><span class="toc-nav-number">1.2.3.</span> <span class="toc-nav-text">Stream&amp;#x6D41;&amp;#x6C34;&amp;#x7EBF;&amp;#x89E3;&amp;#x51B3;&amp;#x65B9;&amp;#x6848;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x8BB0;&#x5F55;"><span class="toc-nav-number">1.2.3.1.</span> <span class="toc-nav-text">&amp;#x64CD;&amp;#x4F5C;&amp;#x5982;&amp;#x4F55;&amp;#x8BB0;&amp;#x5F55;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x53E0;&#x52A0;"><span class="toc-nav-number">1.2.3.2.</span> <span class="toc-nav-text">&amp;#x64CD;&amp;#x4F5C;&amp;#x5982;&amp;#x4F55;&amp;#x53E0;&amp;#x52A0;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x53E0;&#x52A0;&#x4E4B;&#x540E;&#x7684;&#x64CD;&#x4F5C;&#x5982;&#x4F55;&#x6267;&#x884C;"><span class="toc-nav-number">1.2.3.3.</span> <span class="toc-nav-text">&amp;#x53E0;&amp;#x52A0;&amp;#x4E4B;&amp;#x540E;&amp;#x7684;&amp;#x64CD;&amp;#x4F5C;&amp;#x5982;&amp;#x4F55;&amp;#x6267;&amp;#x884C;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x6267;&#x884C;&#x540E;&#x7684;&#x7ED3;&#x679C;&#x5728;&#x54EA;&#x91CC;"><span class="toc-nav-number">1.2.3.4.</span> <span class="toc-nav-text">&amp;#x6267;&amp;#x884C;&amp;#x540E;&amp;#x7684;&amp;#x7ED3;&amp;#x679C;&amp;#x5728;&amp;#x54EA;&amp;#x91CC;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Stream&#x521B;&#x5EFA;"><span class="toc-nav-number">1.2.4.</span> <span class="toc-nav-text">Stream&amp;#x521B;&amp;#x5EFA;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x8F6C;&#x6362;Stream"><span class="toc-nav-number">1.2.5.</span> <span class="toc-nav-text">&amp;#x8F6C;&amp;#x6362;Stream</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Reduce-Stream"><span class="toc-nav-number">1.2.6.</span> <span class="toc-nav-text">Reduce Stream</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x53EF;&#x53D8;&#x6C47;&#x805A;"><span class="toc-nav-number">1.2.6.1.</span> <span class="toc-nav-text">&amp;#x53EF;&amp;#x53D8;&amp;#x6C47;&amp;#x805A;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x5176;&#x4ED6;&#x6C47;&#x805A;"><span class="toc-nav-number">1.2.6.2.</span> <span class="toc-nav-text">&amp;#x5176;&amp;#x4ED6;&amp;#x6C47;&amp;#x805A;</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Lazy"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">Lazy</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Lazy-Evaluation"><span class="toc-nav-number">1.3.1.</span> <span class="toc-nav-text">Lazy Evaluation</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Eager&#x6C42;&#x503C;"><span class="toc-nav-number">1.3.2.</span> <span class="toc-nav-text">Eager&amp;#x6C42;&amp;#x503C;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x5EF6;&#x8FDF;&#x6C42;&#x503C;&#x7684;&#x8BBE;&#x8BA1;"><span class="toc-nav-number">1.3.3.</span> <span class="toc-nav-text">&amp;#x5EF6;&amp;#x8FDF;&amp;#x6C42;&amp;#x503C;&amp;#x7684;&amp;#x8BBE;&amp;#x8BA1;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#Stream&#x61D2;&#x64CD;&#x4F5C;"><span class="toc-nav-number">1.3.4.</span> <span class="toc-nav-text">Stream&amp;#x61D2;&amp;#x64CD;&amp;#x4F5C;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#Example"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">Example</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x6570;&#x636E;"><span class="toc-nav-number">1.4.1.</span> <span class="toc-nav-text">&amp;#x6570;&amp;#x636E;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#collect"><span class="toc-nav-number">1.4.2.</span> <span class="toc-nav-text">collect</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#distinct"><span class="toc-nav-number">1.4.3.</span> <span class="toc-nav-text">distinct</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#max-min-sum-average"><span class="toc-nav-number">1.4.4.</span> <span class="toc-nav-text">max\min\sum\average</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#groupby"><span class="toc-nav-number">1.4.5.</span> <span class="toc-nav-text">groupby</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#reduce"><span class="toc-nav-number">1.4.6.</span> <span class="toc-nav-text">reduce</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#joining"><span class="toc-nav-number">1.4.7.</span> <span class="toc-nav-text">joining</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#flatmap"><span class="toc-nav-number">1.4.8.</span> <span class="toc-nav-text">flatmap</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#anyMatch"><span class="toc-nav-number">1.4.9.</span> <span class="toc-nav-text">anyMatch</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#filter"><span class="toc-nav-number">1.4.10.</span> <span class="toc-nav-text">filter</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#peek"><span class="toc-nav-number">1.4.11.</span> <span class="toc-nav-text">peek</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x624B;&#x52A8;&#x5206;&#x9875;"><span class="toc-nav-number">1.4.12.</span> <span class="toc-nav-text">&amp;#x624B;&amp;#x52A8;&amp;#x5206;&amp;#x9875;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x7EDF;&#x8BA1;"><span class="toc-nav-number">1.4.13.</span> <span class="toc-nav-text">&amp;#x7EDF;&amp;#x8BA1;</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#&#x8FED;&#x4EE3;&#x5668;"><span class="toc-nav-number">1.4.14.</span> <span class="toc-nav-text">&amp;#x8FED;&amp;#x4EE3;&amp;#x5668;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x53C2;&#x8003;&#x6587;&#x732E;"><span class="toc-nav-number">1.5.</span> <span class="toc-nav-text">&amp;#x53C2;&amp;#x8003;&amp;#x6587;&amp;#x732E;</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2021/07/09/Stream%E6%B5%81%E5%B8%B8%E8%A7%84%E7%94%A8%E6%B3%95/";
+    var disqus_url = "http://example.com/2021/07/09/Stream%E6%B5%81%E5%B8%B8%E8%A7%84%E7%94%A8%E6%B3%95/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

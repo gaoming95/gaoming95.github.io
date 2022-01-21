@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          Web系统架构分层 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2020/06/22/Web系统架构分层/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#应用框架" title="应用框架">应用框架</a>
+                        
+                    </div>
+                    <h1>Web系统架构分层</h1>
+                    <h2 class="subheading">微服务架构 api biz common job portal</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2020-06-22
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="Web&#x7CFB;&#x7EDF;&#x67B6;&#x6784;&#x5206;&#x5C42;"><a href="#Web&#x7CFB;&#x7EDF;&#x67B6;&#x6784;&#x5206;&#x5C42;" class="headerlink" title="Web&#x7CFB;&#x7EDF;&#x67B6;&#x6784;&#x5206;&#x5C42;"></a>Web&#x7CFB;&#x7EDF;&#x67B6;&#x6784;&#x5206;&#x5C42;</h1><h2 id="&#x4E5D;&#x5C42;&#x67B6;&#x6784;"><a href="#&#x4E5D;&#x5C42;&#x67B6;&#x6784;" class="headerlink" title="&#x4E5D;&#x5C42;&#x67B6;&#x6784;"></a>&#x4E5D;&#x5C42;&#x67B6;&#x6784;</h2><h3 id="api"><a href="#api" class="headerlink" title="api"></a>api</h3><p>&#x5916;&#x90E8;&#x7CFB;&#x7EDF;&#x8C03;&#x7528;&#x672C;&#x7CFB;&#x7EDF;&#x670D;&#x52A1;&#x7684;&#x5165;&#x53E3;</p>
+<p>&#x6253;&#x6210;<code>jar</code>&#x5305;&#x63D0;&#x4EA4;&#x5230;<code>maven</code>&#x4ED3;&#x5E93;&#x4F9B;&#x5176;&#x4ED6;&#x9879;&#x76EE;&#x8C03;&#x7528;</p>
+<p>&#x6EE1;&#x8DB3;&#x8C03;&#x7528;&#x9700;&#x8981;&#x7684;&#x7C7B;&#x540D;&#x3001;&#x65B9;&#x6CD5;&#x540D;&#x3001;&#x8BF7;&#x6C42;&#x548C;&#x8FD4;&#x56DE;&#x53C2;&#x6570;</p>
+<hr>
+<h4 id="&#x63A5;&#x53E3;&#x5B9A;&#x4E49;"><a href="#&#x63A5;&#x53E3;&#x5B9A;&#x4E49;" class="headerlink" title="&#x63A5;&#x53E3;&#x5B9A;&#x4E49;"></a>&#x63A5;&#x53E3;&#x5B9A;&#x4E49;</h4><p>&#x63A5;&#x53E3;&#xFF08;<code>interface</code>&#xFF09;&#x5B9A;&#x4E49;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@file</span>: IArchiveService</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: gaoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2021/01/22</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>: </span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IExampleService</span> </span>{</span><br><span class="line">    <span class="function">PageResult&lt;ExampleListDto&gt; <span class="title">queryExamplesByPage</span><span class="params">(QueryExampleListDto queryDto)</span></span>;</span><br><span class="line">    <span class="function">List&lt;ExampleTopDto&gt; <span class="title">queryExampleTop</span><span class="params">(QueryExampleTopDto queryDto)</span></span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h4 id="&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x5B9A;&#x4E49;"><a href="#&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x5B9A;&#x4E49;" class="headerlink" title="&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x5B9A;&#x4E49;"></a>&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x5B9A;&#x4E49;</h4><p>&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#xFF08;<code>DTO</code>&#xFF09;&#x5B9A;&#x4E49;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.AllArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> lombok.Builder;</span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> lombok.NoArgsConstructor;</span><br><span class="line"><span class="keyword">import</span> java.io.Serializable;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@file</span>: ExampleQueryInfoDto</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: gaoming</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2021/01/22</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span>: 1.0</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@description</span>:</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@AllArgsConstructor</span></span><br><span class="line"><span class="meta">@NoArgsConstructor</span></span><br><span class="line"><span class="meta">@Builder</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">QueryExampleListDto</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>{</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = -<span class="number">3861945445570798616L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#x5185;&#x5BB9;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> String content;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * &#x9875;&#x7801;</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> Page page;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>&#x3010;&#x6CE8;&#x610F;&#x4E8B;&#x9879;&#x3011;</p>
+<ol>
+<li><code>api</code>&#x5C42;&#x5C3D;&#x91CF;&#x7CBE;&#x7B80;</li>
+<li>&#x6CE8;&#x610F;&#x5BF9;&#x8C61;&#x662F;<code>DTO</code>&#xFF0C;&#x800C;&#x4E0D;&#x662F;<code>Dto</code></li>
+<li>&#x63A5;&#x53E3;&#x6216;&#x7C7B;&#x6CE8;&#x91CA;&#xFF0C;&#x65B9;&#x6CD5;&#x6CE8;&#x91CA;</li>
+<li>&#x8BF7;&#x6C42;&#x53C2;&#x6570;&#x6700;&#x597D;&#x4E0D;&#x8981;&#x4F7F;&#x7528;&#x57FA;&#x672C;&#x7C7B;&#x578B;&#xFF08;&#x4E0D;&#x5229;&#x4E8E;&#x540E;&#x7EED;&#x6269;&#x5C55;&#xFF09;</li>
+<li>&#x8FD4;&#x56DE;&#x53C2;&#x6570;&#x4E0D;&#x8981;&#x76F4;&#x63A5;&#x8FD4;&#x56DE;&#x6570;&#x636E;&#xFF0C;&#x8981;&#x4F7F;&#x7528;&#x5305;&#x88C5;&#x7C7B;&#x5305;&#x88C5;</li>
+</ol>
+<h3 id="biz"><a href="#biz" class="headerlink" title="biz"></a>biz</h3><p>&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#x3001;&#x6D88;&#x606F;&#x961F;&#x5217;&#x7684;&#x5904;&#x7406;</p>
+<p>&#x5BF9;&#x4E0A;&#x63A5;<code>service</code>&#x3001;<code>task</code>&#x5C42;&#xFF0C;&#x4E0B;&#x63A5;<code>manager</code>&#x3001;<code>integration</code>&#x5C42;</p>
+<p>&#x3010;&#x6CE8;&#x610F;&#x4E8B;&#x9879;&#x3011;</p>
+<ol>
+<li><code>biz</code>&#x5C42;&#x7EDF;&#x4E00;&#x4F7F;&#x7528;<code>BO</code>&#x5BF9;&#x8C61;&#x505A;&#x903B;&#x8F91;&#x5904;&#x7406;<ol>
+<li>&#x5C06;&#x5916;&#x90E8;&#x7CFB;&#x7EDF;&#x4E0E;&#x5185;&#x90E8;&#x7CFB;&#x7EDF;&#x547D;&#x540D;&#x4E0D;&#x7EDF;&#x4E00;&#x7684;&#x5B57;&#x6BB5;&#x8FDB;&#x884C;&#x8F6C;&#x6362;&#x5904;&#x7406;</li>
+<li>&#x6709;&#x4E00;&#x4E9B;&#x5B57;&#x6BB5;&#x9700;&#x8981;&#x903B;&#x8F91;&#x5904;&#x7406;&#xFF0C;&#x4F46;&#x662F;&#x53C8;&#x4E0D;&#x8981;&#x5B58;&#x50A8;&#x7684;&#x653E;&#x5728;<code>BO</code>&#x5BF9;&#x8C61;&#x91CC;</li>
+<li>&#x65B9;&#x6CD5;&#x53EF;&#x590D;&#x7528;</li>
+<li>&#x9664;&#x4E86;&#x6D88;&#x606F;&#x961F;&#x5217;&#x4E2D;&#x7684;&#x5BF9;&#x8C61;&#x5916;&#xFF0C;biz&#x5C42;&#x7684;&#x5BF9;&#x8C61;&#x4E0D;&#x9700;&#x8981;&#x5E8F;&#x5217;&#x5316;</li>
+</ol>
+</li>
+<li><code>biz</code>&#x5C42;&#x68C0;&#x67E5;&#x5230;&#x7684;&#x5F02;&#x5E38;&#x7EDF;&#x4E00;&#x5C01;&#x88C5;&#x6210;<code>ServiceException</code></li>
+<li>&#x7C7B;&#x540D;&#x7EDF;&#x4E00;&#x4EE5;biz&#x7ED3;&#x5C3E;&#xFF08;&#x4E3A;&#x4E86;&#x548C;<code>service</code>&#x533A;&#x5206;&#xFF09;</li>
+<li><code>biz</code>&#x5C42;&#x7684;&#x7C7B;&#x6CA1;&#x6709;&#x5FC5;&#x8981;&#x4F7F;&#x7528;&#x63A5;&#x53E3;&#x7684;&#x5F62;&#x5F0F;&#xFF0C;&#x76F4;&#x63A5;&#x5728;&#x7C7B;&#x91CC;&#x9762;&#x5199;&#x903B;&#x8F91;&#x5904;&#x7406;&#x5C31;&#x53EF;&#x4EE5;&#x4E86;</li>
+<li>&#x5982;&#x975E;&#x7279;&#x6B8A;&#x60C5;&#x51B5;&#xFF0C;&#x4E8B;&#x52A1;&#x7EDF;&#x4E00;&#x5728;<code>manager</code>&#x5C42;&#x53BB;&#x5904;&#x7406;</li>
+</ol>
+<h3 id="common"><a href="#common" class="headerlink" title="common"></a>common</h3><ol>
+<li>&#x7CFB;&#x7EDF;&#x5E38;&#x91CF;</li>
+<li>&#x5F02;&#x5E38;&#x5904;&#x7406;</li>
+<li>&#x65E5;&#x671F;&#x3001;&#x52A0;&#x89E3;&#x5BC6;&#x7B49;&#x5DE5;&#x5177;&#x7C7B;</li>
+<li>&#x7CFB;&#x7EDF;&#x5185;&#x90E8;&#x679A;&#x4E3E;</li>
+</ol>
+<h3 id="dal"><a href="#dal" class="headerlink" title="dal"></a>dal</h3><p>&#x6570;&#x636E;&#x8BBF;&#x95EE;&#x5C42;&#xFF0C;&#x4E0E;&#x5E95;&#x5C42;<code>Mysql</code>&#x3001;<code>Oracle</code>&#x3001;<code>Hbase</code>&#x8FDB;&#x884C;&#x6570;&#x636E;&#x4EA4;&#x4E92;</p>
+<p>&#x5982;&#xFF1A;<code>Mybatis</code> <code>ORM</code>&#x6587;&#x4EF6;&#xFF0C;<code>mapper</code>&#x3001;<code>po</code>&#x3001;<code>dao</code>&#x6587;&#x4EF6;</p>
+<h3 id="integration"><a href="#integration" class="headerlink" title="integration"></a>integration</h3><p>&#x5916;&#x90E8;&#x63A5;&#x53E3;&#x8BBF;&#x95EE;</p>
+<h3 id="manager"><a href="#manager" class="headerlink" title="manager"></a>manager</h3><ol>
+<li>&#x5BF9;<code>service</code>&#x5C42;&#x901A;&#x7528;&#x80FD;&#x529B;&#x7684;&#x4E0B;&#x6C89;&#xFF0C;&#x5982;&#x7F13;&#x5B58;&#x65B9;&#x6848;&#x3001;&#x6570;&#x636E;&#x5E93;&#x64CD;&#x4F5C;&#x901A;&#x7528;&#x5904;&#x7406;</li>
+<li>&#x4E0E;<code>dao</code>&#x5C42;&#x4EA4;&#x4E92;&#xFF0C;&#x5BF9;dao&#x7684;&#x4E1A;&#x52A1;&#x901A;&#x7528;&#x80FD;&#x529B;&#x7684;&#x5C01;&#x88C5;</li>
+<li>&#x4E8B;&#x52A1;&#x5904;&#x7406;</li>
+</ol>
+<p>&#x3010;&#x6CE8;&#x610F;&#x4E8B;&#x9879;&#x3011;</p>
+<ol>
+<li><code>manager</code>&#x5C42;&#x7684;&#x6BCF;&#x4E2A;&#x65B9;&#x6CD5;&#x90FD;&#x662F;&#x4E00;&#x7CFB;&#x5217;&#x7684;&#x6570;&#x636E;&#x5E93;&#x64CD;&#x4F5C;&#xFF0C;<code>dao</code>&#x5C42;&#x6574;&#x5408;&#x3001;&#x4E8B;&#x52A1;&#x5904;&#x7406;</li>
+<li><code>BO</code>&#x8F6C;<code>PO</code>&#x5BF9;&#x8C61;</li>
+<li><code>manager</code>&#x5C42;&#x9488;&#x5BF9;&#x7F13;&#x5B58;&#x7684;&#x89C4;&#x8303;&#xFF08;&#x6743;&#x8861;&#x662F;&#x5426;&#x9700;&#x8981;&#x7F13;&#x5B58;&#xFF0C;&#x8BF7;&#x6C42;&#x91CF;&#x4E0D;&#x5927;&#x7684;&#x52FF;&#x7528;&#xFF09;</li>
+</ol>
+<h3 id="service"><a href="#service" class="headerlink" title="service"></a>service</h3><ol>
+<li><code>api</code>&#x5C42;&#x7684;&#x670D;&#x52A1;&#x5B9E;&#x73B0;</li>
+<li>&#x5916;&#x90E8;&#x8BF7;&#x6C42;&#x7684;&#x53C2;&#x6570;&#x6821;&#x9A8C;&#xFF08;<code>aop</code>&#xFF09;</li>
+<li>&#x5916;&#x90E8;&#x8BF7;&#x6C42;&#x7684;&#x5165;&#x53C2;&#x3001;&#x56DE;&#x53C2;&#x548C;&#x5F02;&#x5E38;&#x7684;&#x65E5;&#x5FD7;&#x6253;&#x5370;</li>
+<li>&#x8C03;&#x7528;<code>biz</code>&#x5C42;&#x8FDB;&#x884C;&#x903B;&#x8F91;&#x5904;&#x7406;</li>
+</ol>
+<p>&#x3010;&#x6CE8;&#x610F;&#x4E8B;&#x9879;&#x3011;</p>
+<ol>
+<li>&#x4F7F;&#x7528;<code>AOP+Oval</code>&#x6846;&#x67B6;&#x8FDB;&#x884C;&#x8BF7;&#x6C42;&#x53C2;&#x6570;&#x6821;&#x9A8C;</li>
+</ol>
+<h3 id="task"><a href="#task" class="headerlink" title="task"></a>task</h3><p>&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;</p>
+<h3 id="web"><a href="#web" class="headerlink" title="web"></a>web</h3><p><code>web</code>&#x5C42;</p>
+<h2 id="&#x901A;&#x7528;&#x4E94;&#x5C42;&#x67B6;&#x6784;"><a href="#&#x901A;&#x7528;&#x4E94;&#x5C42;&#x67B6;&#x6784;" class="headerlink" title="&#x901A;&#x7528;&#x4E94;&#x5C42;&#x67B6;&#x6784;"></a>&#x901A;&#x7528;&#x4E94;&#x5C42;&#x67B6;&#x6784;</h2><h3 id="api-1"><a href="#api-1" class="headerlink" title="api"></a>api</h3><p>&#x5916;&#x90E8;&#x7CFB;&#x7EDF;&#x8C03;&#x7528;&#x672C;&#x7CFB;&#x7EDF;&#x670D;&#x52A1;&#x7684;&#x5165;&#x53E3;</p>
+<p>&#x6253;&#x6210;jar&#x5305;&#x63D0;&#x4EA4;&#x5230;<code>maven</code>&#x4ED3;&#x5E93;&#x4F9B;&#x5176;&#x4ED6;&#x9879;&#x76EE;&#x8C03;&#x7528;</p>
+<p>&#x6EE1;&#x8DB3;&#x8C03;&#x7528;&#x9700;&#x8981;&#x7684;&#x7C7B;&#x540D;&#x3001;&#x65B9;&#x6CD5;&#x540D;&#x3001;&#x8BF7;&#x6C42;&#x548C;&#x8FD4;&#x56DE;&#x53C2;&#x6570;</p>
+<h3 id="biz-1"><a href="#biz-1" class="headerlink" title="biz"></a>biz</h3><p>&#x4E1A;&#x52A1;&#x903B;&#x8F91;&#x903B;&#x8F91;&#x5904;&#x7406;&#xFF08;<code>Service</code>&#x5C42; &#x8C03;&#x7528;<code>Delegate</code>&#x5C42;&#xFF09;</p>
+<h3 id="common-1"><a href="#common-1" class="headerlink" title="common"></a>common</h3><p>&#x7CFB;&#x7EDF;&#x5E38;&#x91CF;&#x3001;&#x679A;&#x4E3E;&#x7B49;</p>
+<h3 id="job"><a href="#job" class="headerlink" title="job"></a>job</h3><p>&#x5B9A;&#x65F6;&#x4EFB;&#x52A1;</p>
+<h3 id="portal"><a href="#portal" class="headerlink" title="portal"></a>portal</h3><p><code>web</code>&#x63A5;&#x53E3;&#x5C42;</p>
+<h2 id="&#x5176;&#x4ED6;&#x5C42;&#x7EA7;"><a href="#&#x5176;&#x4ED6;&#x5C42;&#x7EA7;" class="headerlink" title="&#x5176;&#x4ED6;&#x5C42;&#x7EA7;"></a>&#x5176;&#x4ED6;&#x5C42;&#x7EA7;</h2><h3 id="bom"><a href="#bom" class="headerlink" title="bom"></a>bom</h3><p><code>BOM</code> (<code>Bill Of Materials</code>) &#x662F;&#x7531;<code>maven</code>&#x63D0;&#x4F9B;&#x7684;&#x529F;&#x80FD;&#xFF0C;&#x5B83;&#x901A;&#x8FC7;&#x5B9A;&#x4E49;&#x4E00;&#x6574;&#x5957;&#x76F8;&#x4E92;&#x517C;&#x5BB9;&#x7684;<code>jar</code>&#x5305;&#x7248;&#x672C;&#x96C6;&#x5408;&#xFF0C;&#x4F7F;&#x7528;&#x65F6;&#x53EA;&#x9700;&#x8981;&#x4F9D;&#x8D56;&#x8BE5;<code>BOM</code>&#x6587;&#x4EF6;&#xFF0C;&#x5373;&#x53EF;&#x653E;&#x5FC3;&#x7684;&#x4F7F;&#x7528;&#x9700;&#x8981;&#x7684;<code>jar</code>&#x5305;&#xFF0C;&#x4E14;&#x65E0;&#x9700;&#x5728;&#x6307;&#x5B9A;&#x7248;&#x672C;&#x53F7;&#x3002;<code>BOM</code>&#x7684;&#x7EF4;&#x62A4;&#x65B9;&#x8D1F;&#x8D23;&#x7248;&#x672C;&#x5347;&#x7EA7;&#xFF0C;&#x5E76;&#x4FDD;&#x8BC1;<code>BOM</code>&#x5B9A;&#x4E49;&#x7684;<code>jar</code>&#x5305;&#x4E4B;&#x95F4;&#x7684;&#x517C;&#x5BB9;&#x6027;&#x3002;</p>
+<p>&#x4F7F;&#x7528;<code>BOM</code>&#x9664;&#x4E86;&#x53EF;&#x4EE5;&#x65B9;&#x4FBF;&#x4F7F;&#x7528;&#x8005;&#x5728;&#x58F0;&#x660E;&#x4F9D;&#x8D56;&#x7684;&#x5BA2;&#x6237;&#x7AEF;&#x65F6;&#x4E0D;&#x9700;&#x8981;&#x6307;&#x5B9A;&#x7248;&#x672C;&#x53F7;&#x5916;&#xFF0C;&#x6700;&#x4E3B;&#x8981;&#x7684;&#x539F;&#x56E0;&#x662F;&#x53EF;&#x4EE5;&#x89E3;&#x51B3;&#x4F9D;&#x8D56;&#x51B2;&#x7A81;&#x3002;</p>
+<p><code>BOM</code> &#x672C;&#x8D28;&#x4E0A;&#x662F;&#x4E00;&#x4E2A;&#x666E;&#x901A;&#x7684;<code>POM</code>&#x6587;&#x4EF6;&#xFF0C;&#x533A;&#x522B;&#x662F;&#x5BF9;&#x4E8E;&#x4F7F;&#x7528;&#x65B9;&#x800C;&#x8A00;&#xFF0C;&#x751F;&#x6548;&#x7684;&#x53EA;&#x6709;<code>dependencyManament</code>&#x8FD9;&#x4E00;&#x4E2A;&#x90E8;&#x5206;&#xFF0C;&#x4E5F;&#x53EA;&#x662F;&#x9700;&#x8981;&#x5728;<code>dependencyManament</code>&#x5B9A;&#x4E49;&#x5BF9;&#x4E8E;&#x5BF9;&#x5916;&#x53D1;&#x5E03;&#x7684;&#x5BA2;&#x6237;&#x7AEF;&#x7248;&#x672C;&#x5373;&#x53EF;</p>
+<h4 id="&#x4F7F;&#x7528;"><a href="#&#x4F7F;&#x7528;" class="headerlink" title="&#x4F7F;&#x7528;"></a>&#x4F7F;&#x7528;</h4><p>&#x5728;&#x9879;&#x76EE;&#x4E3B;<code>pom.xml</code>&#x6587;&#x4EF6;&#x4E2D; &#x8282;&#x70B9;&#x4E0B;&#x9996;&#x4F4D;&#x5904;&#x52A0;&#x5165;&#x5982;&#x4E0B;</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencyManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">         <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.test.xx<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>cloud-bom<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">version</span>&gt;</span>${version}<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">type</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">type</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">scope</span>&gt;</span>import<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line">          <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">        </span><br><span class="line">          <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">            ...</span><br><span class="line">          <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencyManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>&#x5728;&#x9700;&#x8981;&#x4F7F;&#x7528;&#x76F8;&#x5173;<code>JAR</code>&#x5305;&#x7684;<code>pom.xml</code>&#x6587;&#x4EF6;&#x4E2D;&#x8282;&#x70B9;&#x4E0B;&#x5F15;&#x5165;&#x5982;&#x4E0B;</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line"> ...</span><br><span class="line">	 <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.google.guava<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>guava<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	 <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">	 <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>commons-collections<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">	  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>commons-collections<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">	 <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"> ....</span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="&#x53C2;&#x8003;&#x6587;&#x732E;"><a href="#&#x53C2;&#x8003;&#x6587;&#x732E;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x732E;"></a>&#x53C2;&#x8003;&#x6587;&#x732E;</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Yue_zuozuo/article/details/108975078">&#x5FAE;&#x670D;&#x52A1;&#x4E4B;BOM&#x5B9A;&#x4E49;</a></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2020/07/01/QueryDSL/" data-toggle="tooltip" data-placement="top" title="QueryDSL">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2020/06/20/RabbitMQ/" data-toggle="tooltip" data-placement="top" title="RabbitMq">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#Web&#x7CFB;&#x7EDF;&#x67B6;&#x6784;&#x5206;&#x5C42;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">Web&amp;#x7CFB;&amp;#x7EDF;&amp;#x67B6;&amp;#x6784;&amp;#x5206;&amp;#x5C42;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x4E5D;&#x5C42;&#x67B6;&#x6784;"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">&amp;#x4E5D;&amp;#x5C42;&amp;#x67B6;&amp;#x6784;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#api"><span class="toc-nav-number">1.1.1.</span> <span class="toc-nav-text">api</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x63A5;&#x53E3;&#x5B9A;&#x4E49;"><span class="toc-nav-number">1.1.1.1.</span> <span class="toc-nav-text">&amp;#x63A5;&amp;#x53E3;&amp;#x5B9A;&amp;#x4E49;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x6A21;&#x578B;&#x5BF9;&#x8C61;&#x5B9A;&#x4E49;"><span class="toc-nav-number">1.1.1.2.</span> <span class="toc-nav-text">&amp;#x6A21;&amp;#x578B;&amp;#x5BF9;&amp;#x8C61;&amp;#x5B9A;&amp;#x4E49;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#biz"><span class="toc-nav-number">1.1.2.</span> <span class="toc-nav-text">biz</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#common"><span class="toc-nav-number">1.1.3.</span> <span class="toc-nav-text">common</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#dal"><span class="toc-nav-number">1.1.4.</span> <span class="toc-nav-text">dal</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#integration"><span class="toc-nav-number">1.1.5.</span> <span class="toc-nav-text">integration</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#manager"><span class="toc-nav-number">1.1.6.</span> <span class="toc-nav-text">manager</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#service"><span class="toc-nav-number">1.1.7.</span> <span class="toc-nav-text">service</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#task"><span class="toc-nav-number">1.1.8.</span> <span class="toc-nav-text">task</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#web"><span class="toc-nav-number">1.1.9.</span> <span class="toc-nav-text">web</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x901A;&#x7528;&#x4E94;&#x5C42;&#x67B6;&#x6784;"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">&amp;#x901A;&amp;#x7528;&amp;#x4E94;&amp;#x5C42;&amp;#x67B6;&amp;#x6784;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#api-1"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">api</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#biz-1"><span class="toc-nav-number">1.2.2.</span> <span class="toc-nav-text">biz</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#common-1"><span class="toc-nav-number">1.2.3.</span> <span class="toc-nav-text">common</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#job"><span class="toc-nav-number">1.2.4.</span> <span class="toc-nav-text">job</span></a></li><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#portal"><span class="toc-nav-number">1.2.5.</span> <span class="toc-nav-text">portal</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x5176;&#x4ED6;&#x5C42;&#x7EA7;"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">&amp;#x5176;&amp;#x4ED6;&amp;#x5C42;&amp;#x7EA7;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#bom"><span class="toc-nav-number">1.3.1.</span> <span class="toc-nav-text">bom</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x4F7F;&#x7528;"><span class="toc-nav-number">1.3.1.1.</span> <span class="toc-nav-text">&amp;#x4F7F;&amp;#x7528;</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x53C2;&#x8003;&#x6587;&#x732E;"><span class="toc-nav-number">1.4.</span> <span class="toc-nav-text">&amp;#x53C2;&amp;#x8003;&amp;#x6587;&amp;#x732E;</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#应用框架" title="应用框架">应用框架</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2020/06/22/Web%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E5%B1%82/";
+    var disqus_url = "http://example.com/2020/06/22/Web%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E5%88%86%E5%B1%82/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>

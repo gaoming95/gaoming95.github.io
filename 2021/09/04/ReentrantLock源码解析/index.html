@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="技术博客">
+    <meta name="keyword"  content="Java Python NLP">
+    <link rel="shortcut icon" href="/img/favicon.ico">
+
+    <title>
+        
+          ReentrantLock源码解析 - 高明的博客 | GaoMing&#39;s Blog
+        
+    </title>
+
+    <link rel="canonical" href="http://example.com/2021/09/04/ReentrantLock源码解析/">
+
+    <!-- Bootstrap Core CSS -->
+    
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/hux-blog.min.css">
+
+
+    <!-- Pygments Highlight CSS -->
+    
+<link rel="stylesheet" href="/css/highlight.css">
+
+
+    
+<link rel="stylesheet" href="/css/toc.css">
+
+
+
+    <!-- Custom Fonts -->
+    <!-- <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="https://cdn.staticfile.org/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Gao Ming’s Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+
+                    
+
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/about/">About</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/tags/">Tags</a>
+                        </li>
+                        
+                    
+
+                        
+                        <li>
+                            <a href="/archives/">Archives</a>
+                        </li>
+                        
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Main Content -->
+    
+<!-- Image to hack wechat -->
+<!-- <img src="{{ site.baseurl }}/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="{{ site.baseurl }}/{% if page.header-img %}{{ page.header-img }}{% else %}{{ site.header-img }}{% endif %}" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/home-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                          <a class="tag" href="/tags/#源码解析" title="源码解析">源码解析</a>
+                        
+                    </div>
+                    <h1>ReentrantLock源码解析</h1>
+                    <h2 class="subheading">java除了使用关键字synchronized外，还可以使用ReentrantLock实现独占锁的功能。而且ReentrantLock相比synchronized而言功能更加丰富，使用起来更为灵活，也更适合复杂的并发场景</h2>
+                    <span class="meta">
+                        Posted by 高明 on
+                        2021-09-04
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <h1 id="ReentrantLock&#x6E90;&#x7801;&#x89E3;&#x6790;"><a href="#ReentrantLock&#x6E90;&#x7801;&#x89E3;&#x6790;" class="headerlink" title="ReentrantLock&#x6E90;&#x7801;&#x89E3;&#x6790;"></a>ReentrantLock&#x6E90;&#x7801;&#x89E3;&#x6790;</h1><p><code>ReentrantLock</code>&#x4F4D;&#x4E8E;<code>java.util.concurrent.locks</code>&#x5305;&#x4E0B;&#x9762;</p>
+<p><code>java</code>&#x53EF;&#x91CD;&#x5165;&#x9501;</p>
+<p><img src="/2021/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/image-20210831204835.png" alt="image-20210831204835"></p>
+<h2 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.concurrent.locks.ReentrantLock;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>{</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">ThreadDemo</span> <span class="keyword">extends</span> <span class="title">Thread</span> </span>{</span><br><span class="line">        ReentrantLock lock;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">ThreadDemo</span><span class="params">(ReentrantLock lock)</span> </span>{</span><br><span class="line">            <span class="keyword">this</span>.lock = lock;</span><br><span class="line">        }</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>{</span><br><span class="line">            lock.lock();</span><br><span class="line">            <span class="keyword">try</span> {</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">3</span>; i++) {</span><br><span class="line">                    System.out.println(Thread.currentThread().getName() + <span class="string">&quot;do something&quot;</span>);</span><br><span class="line">                    sleep(<span class="number">2000</span>);</span><br><span class="line">                }</span><br><span class="line">            } <span class="keyword">catch</span> (InterruptedException e) {</span><br><span class="line">                e.printStackTrace();</span><br><span class="line">            } <span class="keyword">finally</span> {</span><br><span class="line">                lock.unlock();</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>{</span><br><span class="line">        ReentrantLock lock = <span class="keyword">new</span> ReentrantLock();</span><br><span class="line">        ThreadDemo thread1 = <span class="keyword">new</span> ThreadDemo(lock);</span><br><span class="line">        ThreadDemo thread2 = <span class="keyword">new</span> ThreadDemo(lock);</span><br><span class="line">        thread1.start();</span><br><span class="line">        thread2.start();</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">Thread</span><span class="number">-0</span><span class="keyword">do</span> something</span><br><span class="line"><span class="keyword">Thread</span><span class="number">-0</span><span class="keyword">do</span> something</span><br><span class="line"><span class="keyword">Thread</span><span class="number">-0</span><span class="keyword">do</span> something</span><br><span class="line"><span class="keyword">Thread</span><span class="number">-1</span><span class="keyword">do</span> something</span><br><span class="line"><span class="keyword">Thread</span><span class="number">-1</span><span class="keyword">do</span> something</span><br><span class="line"><span class="keyword">Thread</span><span class="number">-1</span><span class="keyword">do</span> something</span><br></pre></td></tr></table></figure>
+
+<h2 id="method"><a href="#method" class="headerlink" title="method"></a>method</h2><h3 id="lock"><a href="#lock" class="headerlink" title="lock"></a>lock</h3><h4 id="&#x8C03;&#x7528;&#x6D41;&#x7A0B;"><a href="#&#x8C03;&#x7528;&#x6D41;&#x7A0B;" class="headerlink" title="&#x8C03;&#x7528;&#x6D41;&#x7A0B;"></a>&#x8C03;&#x7528;&#x6D41;&#x7A0B;</h4><p><img src="/2021/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/image-20210901154610931.png" alt="image-20210901154610931"></p>
+<ol>
+<li><p><code>ReentrantLock</code>&#x7684;<code>lock</code>&#x65B9;&#x6CD5;&#x8C03;&#x7528;&#x5176;&#x5185;&#x90E8;&#x7C7B;<code>Sync</code>&#x7684;&#x62BD;&#x8C61;&#x65B9;&#x6CD5;<code>lock</code></p>
+</li>
+<li><p><code>Sync</code>&#x6709;&#x4E24;&#x4E2A;&#x5B50;&#x7C7B;&#xFF0C;<code>NonfairSync</code>&#x548C;<code>FairSync</code>&#xFF08;&#x540C;&#x65F6;&#x4E5F;&#x662F;<code>ReentrantLock</code>&#x7684;&#x5185;&#x90E8;&#x7C7B;&#xFF09;&#xFF0C;&#x5176;&#x5206;&#x522B;&#x4EE3;&#x8868;&#x516C;&#x5E73;&#x540C;&#x6B65;&#x548C;&#x975E;&#x516C;&#x5E73;&#x540C;&#x6B65;&#xFF0C;&#x7531;<code>ReentrantLock</code>&#x521D;&#x59CB;&#x5316;&#x65F6;&#x4F20;&#x53C2;&#x51B3;&#x5B9A;&#xFF08;<code>fair=false/true</code>&#xFF09;&#xFF0C;&#x9ED8;&#x8BA4;&#x662F;&#x975E;&#x516C;&#x5E73;&#x9501;&#xFF0C;&#x7531;<code>NonfairSync</code>&#x6765;&#x5B9E;&#x73B0;<code>lock</code>&#x65B9;&#x6CD5;&#x3002;</p>
+<p><code>NonfairSync</code>&#x7684;<code>lock</code>&#x65B9;&#x6CD5;&#x8FDB;&#x5165;&#x4E00;&#x4E2A;&#x903B;&#x8F91;&#x5224;&#x65AD;<code>compareAndSetState</code></p>
+</li>
+<li><p>&#x5728;&#x4E0D;&#x6EE1;&#x8DB3;&#x6761;&#x4EF6;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#xFF0C;&#x4F1A;&#x8C03;&#x7528;<code>AbstractQueuedSynchronizer</code>&#x7684;<code>acquire</code>&#x65B9;&#x6CD5;&#xFF0C;&#xFF08;<code>NonfairSync</code>&#x7EE7;&#x627F;<code>Sync</code>&#xFF0C;&#x800C;<code>Sync</code>&#x7EE7;&#x627F;<code>AbstractQueuedSynchronizer</code>&#xFF09;</p>
+</li>
+<li><p><code>AbstractQueuedSynchronizer</code>&#x4E2D;&#x7684;<code>acquire</code>&#x65B9;&#x6CD5;&#x8C03;&#x7528;<code>tryAcquire</code>&#x65B9;&#x6CD5;</p>
+</li>
+<li><p><code>tryAcquire</code>&#x65B9;&#x6CD5;&#x7531;&#x5B50;&#x7C7B;&#x91CD;&#x5199;&#xFF0C;&#x56E0;&#x800C;&#x8C03;&#x7528;&#x5B50;&#x7C7B;<code>NonfairSync</code>&#x7684;&#x5177;&#x4F53;&#x5B9E;&#x73B0;</p>
+</li>
+<li><p><code>NonfairSync</code>&#x7684;<code>tryAcquire</code>&#x8C03;&#x7528;<code>sync</code>&#x7684;<code>nonfairTryAcquire</code>&#x65B9;&#x6CD5;</p>
+</li>
+</ol>
+<h4 id="Nonfair&#x548C;Fair"><a href="#Nonfair&#x548C;Fair" class="headerlink" title="Nonfair&#x548C;Fair"></a>Nonfair&#x548C;Fair</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ReentrantLock lock = <span class="keyword">new</span> ReentrantLock(<span class="keyword">true</span>); <span class="comment">// &#x516C;&#x5E73;&#x9501;</span></span><br><span class="line">ReentrantLock lock = <span class="keyword">new</span> ReentrantLock(<span class="keyword">false</span>); <span class="comment">// &#x975E;&#x516C;&#x5E73;&#x9501;</span></span><br><span class="line">ReentrantLock lock = <span class="keyword">new</span> ReentrantLock(); <span class="comment">// &#x975E;&#x516C;&#x5E73;&#x9501;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ReentrantLock</span><span class="params">(<span class="keyword">boolean</span> fair)</span> </span>{</span><br><span class="line">    sync = fair ? <span class="keyword">new</span> FairSync() : <span class="keyword">new</span> NonfairSync();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x6839;&#x636E;&#x521D;&#x59CB;&#x5316;&#x7684;&#x53C2;&#x6570;<code>fair</code>&#xFF0C;&#x5C31;&#x51B3;&#x5B9A;&#x4E86;&#x5185;&#x90E8;&#x7C7B;<code>Sync</code>&#x7684;&#x5B9E;&#x4F8B;</p>
+<h4 id="compareAndSetState"><a href="#compareAndSetState" class="headerlink" title="compareAndSetState"></a>compareAndSetState</h4><p><code>NonfairSync</code>&#x7684;<code>lock</code>&#x65B9;&#x6CD5;&#x8FDB;&#x5165;&#x4E00;&#x4E2A;&#x903B;&#x8F91;&#x5224;&#x65AD;<code>compareAndSetState</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Performs lock. Try immediate barge, backing up to normal acquire on failure.</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">        setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        acquire(<span class="number">1</span>);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p><code>compareAndSetState</code>&#x662F;<code>AbstractQueuedSynchronizer</code>&#x91CC;&#x9762;&#x7684;&#x65B9;&#x6CD5;&#xFF0C;&#xFF08;<code>NonfairSync</code>&#x662F;<code>Sync</code>&#x7684;&#x5B50;&#x7C7B;&#xFF0C;<code>Sync</code>&#x662F;<code>AbstractQueuedSynchronizer</code>&#x7684;&#x5B50;&#x7C7B;&#xFF09;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">compareAndSetState</span><span class="params">(<span class="keyword">int</span> expect, <span class="keyword">int</span> update)</span> </span>{</span><br><span class="line">    <span class="comment">// See below for intrinsics setup to support this</span></span><br><span class="line">    <span class="keyword">return</span> unsafe.compareAndSwapInt(<span class="keyword">this</span>, stateOffset, expect, update);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p><code>AbstractQueuedSynchronizer</code>&#x91CC;&#x9762;&#x6267;&#x884C;&#x4E86;<code>unsafe</code>&#x7684;<code>compareAndSwapInt</code>&#xFF0C;&#x8FD9;&#x5B9E;&#x9645;&#x4E0A;&#x662F;<code>CAS</code>&#x64CD;&#x4F5C;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">native</span> <span class="keyword">boolean</span> <span class="title">compareAndSwapInt</span><span class="params">(Object var1, <span class="keyword">long</span> var2, <span class="keyword">int</span> var4, <span class="keyword">int</span> var5)</span></span>;</span><br></pre></td></tr></table></figure>
+
+<p>&#x8FD9;&#x91CC;&#x5171;&#x6709;4&#x4E2A;&#x53C2;&#x6570;</p>
+<ol>
+<li>object&#xFF1A;&#x5C31;&#x662F;&#x5C06;&#x8981;&#x4FEE;&#x6539;&#x7684;&#x503C;&#x7684;&#x5BF9;&#x8C61;</li>
+<li>offect&#xFF1A;&#x5BF9;&#x8C61;&#x5728;&#x5185;&#x5B58;&#x4E2D;&#x504F;&#x79FB;&#x91CF;&#x4E3A;<code>offset</code>&#x5904;&#x7684;&#x503C;,&#x5C31;&#x662F;&#x8981;&#x4FEE;&#x6539;&#x7684;&#x6570;&#x636E;&#x7684;&#x503C;&#x5728;&#x5185;&#x5B58;&#x4E2D;&#x7684;&#x504F;&#x79FB;&#x91CF;&#xFF0C;&#x7ED3;&#x5408;<code>object + offect</code>&#x627E;&#x5230;&#x8981;&#x4FEE;&#x6539;&#x7684;&#x503C;.</li>
+<li>expect&#xFF1A;&#x671F;&#x671B;&#x5185;&#x5B58;&#x4E2D;&#x7684;&#x503C;&#xFF0C;&#x5C31;&#x662F;&#x62FF;&#x8FD9;&#x4E2A;&#x503C;&#x548C; <code>object + offect</code>&#x503C;&#x8FDB;&#x884C;&#x6BD4;&#x8F83;&#xFF1B;&#x5982;&#x679C;&#x76F8;&#x540C;&#x5219;&#x4FEE;&#x6539;&#xFF0C;&#x8FD4;&#x56DE;<code>true</code>&#xFF0C;&#x5426;&#x5219;&#x8FD4;&#x56DE;<code>false</code>&#xFF0C;&#x7B49;&#x4E0B;&#x6B21;&#x4FEE;&#x6539;</li>
+<li>update&#xFF1A;&#x5982;&#x679C;&#x4E0A;&#x4E00;&#x6B65;&#x5BF9;&#x6BD4;&#x76F8;&#x7B49;&#xFF0C;&#x5219;&#x5C06;&#x8FD9;&#x4E2A;&#x503C;&#x8D4B;&#x503C;&#x7ED9;<code>object + offect</code>&#x503C;&#xFF0C;&#x7136;&#x540E;&#x8FD4;&#x56DE;<code>true</code></li>
+</ol>
+<p>&#x56E0;&#x800C;&#x5B9E;&#x9645;&#x4E0A;&#xFF0C;<code>AbstractQueuedSynchronizer</code>&#x7684;<code>compareAndSetState</code>&#x65B9;&#x6CD5;&#xFF0C;&#x5C1D;&#x8BD5;&#x5BF9;&#x5F53;&#x524D;&#x5BF9;&#x8C61;<code>AbstractQueuedSynchronizer</code>&#xFF0C;&#x91CC;&#x9762;&#x5185;&#x5B58;&#x504F;&#x79FB;&#x91CF;&#x4E3A;<code>stateOffset</code>&#x7684;&#x6267;&#x884C;<code>CAS</code>&#x64CD;&#x4F5C;&#xFF0C;&#x800C;<code>stateOffset</code>&#x504F;&#x79FB;&#x91CF;&#x4EE3;&#x8868;&#x4EC0;&#x4E48;&#x503C;&#xFF1F;</p>
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Unsafe unsafe = Unsafe.getUnsafe();</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> stateOffset;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> headOffset;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> tailOffset;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> waitStatusOffset;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> nextOffset;</span><br><span class="line"><span class="keyword">static</span> {</span><br><span class="line">    <span class="keyword">try</span> {</span><br><span class="line">        stateOffset = unsafe.objectFieldOffset</span><br><span class="line">            (AbstractQueuedSynchronizer.class.getDeclaredField(<span class="string">&quot;state&quot;</span>));</span><br><span class="line">        headOffset = unsafe.objectFieldOffset</span><br><span class="line">            (AbstractQueuedSynchronizer.class.getDeclaredField(<span class="string">&quot;head&quot;</span>));</span><br><span class="line">        tailOffset = unsafe.objectFieldOffset</span><br><span class="line">            (AbstractQueuedSynchronizer.class.getDeclaredField(<span class="string">&quot;tail&quot;</span>));</span><br><span class="line">        waitStatusOffset = unsafe.objectFieldOffset</span><br><span class="line">            (Node.class.getDeclaredField(<span class="string">&quot;waitStatus&quot;</span>));</span><br><span class="line">        nextOffset = unsafe.objectFieldOffset</span><br><span class="line">            (Node.class.getDeclaredField(<span class="string">&quot;next&quot;</span>));</span><br><span class="line"></span><br><span class="line">    } <span class="keyword">catch</span> (Exception ex) { <span class="keyword">throw</span> <span class="keyword">new</span> Error(ex); }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x5728;<code>AbstractQueuedSynchronizer</code>&#x4E2D;&#xFF0C;<code>stateOffset</code>&#x5B9E;&#x9645;&#x4E0A;&#x4EE3;&#x8868;&#x4E86;<code>state</code>&#x7684;&#x5185;&#x5B58;&#x504F;&#x79FB;&#x5730;&#x5740;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The synchronization state.</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">int</span> state;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Performs lock. Try immediate barge, backing up to normal acquire on failure.</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">lock</span><span class="params">()</span> </span>{</span><br><span class="line">    <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, <span class="number">1</span>))</span><br><span class="line">        setExclusiveOwnerThread(Thread.currentThread());</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        acquire(<span class="number">1</span>);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x56E0;&#x800C;&#x5728;&#x4E0A;&#x9762;&#x4EE3;&#x7801;&#x4E2D;&#xFF0C;&#x52A0;&#x9501;&#x8FC7;&#x7A0B;&#x5B9E;&#x9645;&#x4E0A;&#x662F;&#x5148;&#x5BF9;<code>AbstractQueuedSynchronizer</code>&#x4E2D;&#x7684;<code>State</code>&#x5148;&#x8FDB;&#x884C;<code>CAS</code>&#x64CD;&#x4F5C;&#xFF0C;&#x4ECE;<code>0</code>&#x53D8;&#x6210;<code>1</code>&#xFF0C;&#x5982;&#x679C;&#x6210;&#x529F;&#xFF0C;&#x5219;&#x6267;&#x884C;<code>setExclusiveOwnerThread(Thread.currentThread());</code>&#x64CD;&#x4F5C;&#xFF0C;&#x5426;&#x5219;&#x8FDB;&#x884C;<code>acquire(1);</code>&#x64CD;&#x4F5C;</p>
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> Thread exclusiveOwnerThread;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Sets the thread that currently owns exclusive access.</span></span><br><span class="line"><span class="comment"> * A {<span class="doctag">@code</span> null} argument indicates that no thread owns access.</span></span><br><span class="line"><span class="comment"> * This method does not otherwise impose any synchronization or</span></span><br><span class="line"><span class="comment"> * {<span class="doctag">@code</span> volatile} field accesses.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> thread the owner thread</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">setExclusiveOwnerThread</span><span class="params">(Thread thread)</span> </span>{</span><br><span class="line">    exclusiveOwnerThread = thread;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x8BBE;&#x7F6E;<strong>&#x4E92;&#x65A5;&#x9501;&#x7684;&#x62E5;&#x6709;&#x7EBF;&#x7A0B;</strong>(<strong>ExclusiveOwnerThread</strong>)&#x4E3A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;</p>
+<h4 id="acquire-arg"><a href="#acquire-arg" class="headerlink" title="acquire(arg)"></a>acquire(arg)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>{</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h4 id="tryAcquire-arg"><a href="#tryAcquire-arg" class="headerlink" title="tryAcquire(arg)"></a>tryAcquire(arg)</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>{</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p><code>AbstractQueuedSynchronizer</code>&#x4E2D;&#x6CA1;&#x6709;&#x5B9E;&#x73B0;<code>tryAcquire</code>&#xFF0C;&#x6216;&#x8005;&#x8BF4;&#x76F4;&#x63A5;&#x629B;&#x51FA;&#x5F02;&#x5E38;&#xFF0C;&#x7531;&#x5B50;&#x7C7B;&#x5B9E;&#x73B0;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>{</span><br><span class="line">    <span class="keyword">return</span> nonfairTryAcquire(acquires);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x5B50;&#x7C7B;<code>NonfairSync</code>&#x91CD;&#x5199;&#x4E86;&#x7236;&#x7C7B;<code>AbstractQueuedSynchronizer</code>&#x7684;<code>tryAcquire</code>&#x65B9;&#x6CD5;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">tryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>{</span><br><span class="line">    <span class="keyword">return</span> nonfairTryAcquire(acquires);</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<hr>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">nonfairTryAcquire</span><span class="params">(<span class="keyword">int</span> acquires)</span> </span>{</span><br><span class="line">    <span class="keyword">final</span> Thread current = Thread.currentThread();</span><br><span class="line">    <span class="keyword">int</span> c = getState();</span><br><span class="line">    <span class="keyword">if</span> (c == <span class="number">0</span>) {</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetState(<span class="number">0</span>, acquires)) {</span><br><span class="line">            setExclusiveOwnerThread(current);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (current == getExclusiveOwnerThread()) {</span><br><span class="line">        <span class="keyword">int</span> nextc = c + acquires;</span><br><span class="line">        <span class="keyword">if</span> (nextc &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">&quot;Maximum lock count exceeded&quot;</span>);</span><br><span class="line">        setState(nextc);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x975E;&#x516C;&#x5E73;&#x9501;&#x7684;&#x83B7;&#x53D6;&#x8FC7;&#x7A0B;</p>
+<ol>
+<li>&#x5148;&#x83B7;&#x53D6;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;</li>
+<li>&#x83B7;&#x53D6;<code>AbstractQueuedSynchronizer</code>&#x7684;<code>State</code>&#xFF0C;<code>State</code>&#x4E3A;0&#x8868;&#x793A;&#x8BE5;&#x9501;&#x672A;&#x88AB;&#x5360;&#x7528;&#xFF0C;<code>State</code>&#x4E3A;1&#x8868;&#x793A;&#x9501;&#x88AB;&#x5360;&#x7528;</li>
+<li>&#x5982;&#x679C;<code>State=0</code>&#xFF0C;&#x8FD8;&#x662F;&#x6267;&#x884C;<code>CAS</code>&#x64CD;&#x4F5C;&#xFF0C;&#x5C1D;&#x8BD5;&#x5C06;<code>State</code>&#x4ECE;<code>0</code>&#x6539;&#x6210;<code>1</code>&#xFF0C;&#x5982;&#x679C;&#x6210;&#x529F;&#x5219;&#x5C06;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8BBE;&#x7F6E;&#x4E3A;&#x4E92;&#x65A5;&#x9501;&#x7684;&#x62E5;&#x6709;&#x7EBF;&#x7A0B;</li>
+<li>&#x5982;&#x679C;<code>State!=0</code>&#xFF0C;&#x4F46;&#x662F;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x7B49;&#x4E8E;&#x4E92;&#x65A5;&#x9501;&#x7684;&#x62E5;&#x6709;&#x7EBF;&#x7A0B;&#xFF0C;&#x5C06;State&#x8BBE;&#x7F6E;&#x4E3A;<code> c + acquires</code>&#xFF0C;&#x5373;<code>State+1</code>(<code>acquires = 1</code>)</li>
+<li>&#x5426;&#x5219;&#x52A0;&#x9501;&#x5931;&#x8D25;</li>
+</ol>
+<h4 id="acquireQueued"><a href="#acquireQueued" class="headerlink" title="acquireQueued"></a>acquireQueued</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>{</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">acquireQueued(addWaiter(Node.EXCLUSIVE), arg)</span><br></pre></td></tr></table></figure>
+
+<p><code>static final Node EXCLUSIVE = null;</code>&#x67E5;&#x770B;<code>addWaiter</code>&#x65B9;&#x6CD5;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Creates and enqueues node for current thread and given mode.</span></span><br><span class="line"><span class="comment"> * Params:</span></span><br><span class="line"><span class="comment"> * mode &#x2013; Node.EXCLUSIVE for exclusive, Node.SHARED for shared</span></span><br><span class="line"><span class="comment"> * Returns:</span></span><br><span class="line"><span class="comment"> * the new node</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">addWaiter</span><span class="params">(Node mode)</span> </span>{</span><br><span class="line">    Node node = <span class="keyword">new</span> Node(Thread.currentThread(), mode);</span><br><span class="line">    <span class="comment">// Try the fast path of enq; backup to full enq on failure</span></span><br><span class="line">    Node pred = tail;</span><br><span class="line">    <span class="keyword">if</span> (pred != <span class="keyword">null</span>) {</span><br><span class="line">        node.prev = pred;</span><br><span class="line">        <span class="keyword">if</span> (compareAndSetTail(pred, node)) {</span><br><span class="line">            pred.next = node;</span><br><span class="line">            <span class="keyword">return</span> node;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    enq(node);</span><br><span class="line">    <span class="keyword">return</span> node;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>&#x4E3A;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x548C;&#x7ED9;&#x5B9A;&#x6A21;&#x5F0F;&#x521B;&#x5EFA;&#x5E76;&#x6392;&#x961F;&#x8282;&#x70B9;</li>
+<li><code>mode</code>&#xFF1A;<code>Node.EXCLUSIVE</code>&#x662F;&#x6392;&#x4ED6;&#x7684;&#xFF0C; <code>Node.SHARED</code>&#x662F;&#x5171;&#x4EAB;&#x7684;</li>
+<li>&#x8FD4;&#x56DE;&#x65B0;&#x7684;&#x8282;&#x70B9;</li>
+</ol>
+<hr>
+<h5 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>{</span><br><span class="line">    <span class="comment">/** Marker to indicate a node is waiting in shared mode */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Node SHARED = <span class="keyword">new</span> Node();</span><br><span class="line">    <span class="comment">/** Marker to indicate a node is waiting in exclusive mode */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Node EXCLUSIVE = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** waitStatus value to indicate thread has cancelled */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CANCELLED =  <span class="number">1</span>;</span><br><span class="line">    <span class="comment">/** waitStatus value to indicate successor&apos;s thread needs unparking */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SIGNAL    = -<span class="number">1</span>;</span><br><span class="line">    <span class="comment">/** waitStatus value to indicate thread is waiting on condition */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CONDITION = -<span class="number">2</span>;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * waitStatus value to indicate the next acquireShared should</span></span><br><span class="line"><span class="comment">         * unconditionally propagate</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PROPAGATE = -<span class="number">3</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Status field, taking on only the values:</span></span><br><span class="line"><span class="comment">         *   SIGNAL:     The successor of this node is (or will soon be)</span></span><br><span class="line"><span class="comment">         *               blocked (via park), so the current node must</span></span><br><span class="line"><span class="comment">         *               unpark its successor when it releases or</span></span><br><span class="line"><span class="comment">         *               cancels. To avoid races, acquire methods must</span></span><br><span class="line"><span class="comment">         *               first indicate they need a signal,</span></span><br><span class="line"><span class="comment">         *               then retry the atomic acquire, and then,</span></span><br><span class="line"><span class="comment">         *               on failure, block.</span></span><br><span class="line"><span class="comment">         *   CANCELLED:  This node is cancelled due to timeout or interrupt.</span></span><br><span class="line"><span class="comment">         *               Nodes never leave this state. In particular,</span></span><br><span class="line"><span class="comment">         *               a thread with cancelled node never again blocks.</span></span><br><span class="line"><span class="comment">         *   CONDITION:  This node is currently on a condition queue.</span></span><br><span class="line"><span class="comment">         *               It will not be used as a sync queue node</span></span><br><span class="line"><span class="comment">         *               until transferred, at which time the status</span></span><br><span class="line"><span class="comment">         *               will be set to 0. (Use of this value here has</span></span><br><span class="line"><span class="comment">         *               nothing to do with the other uses of the</span></span><br><span class="line"><span class="comment">         *               field, but simplifies mechanics.)</span></span><br><span class="line"><span class="comment">         *   PROPAGATE:  A releaseShared should be propagated to other</span></span><br><span class="line"><span class="comment">         *               nodes. This is set (for head node only) in</span></span><br><span class="line"><span class="comment">         *               doReleaseShared to ensure propagation</span></span><br><span class="line"><span class="comment">         *               continues, even if other operations have</span></span><br><span class="line"><span class="comment">         *               since intervened.</span></span><br><span class="line"><span class="comment">         *   0:          None of the above</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * The values are arranged numerically to simplify use.</span></span><br><span class="line"><span class="comment">         * Non-negative values mean that a node doesn&apos;t need to</span></span><br><span class="line"><span class="comment">         * signal. So, most code doesn&apos;t need to check for particular</span></span><br><span class="line"><span class="comment">         * values, just for sign.</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * The field is initialized to 0 for normal sync nodes, and</span></span><br><span class="line"><span class="comment">         * CONDITION for condition nodes.  It is modified using CAS</span></span><br><span class="line"><span class="comment">         * (or when possible, unconditional volatile writes).</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    <span class="keyword">volatile</span> <span class="keyword">int</span> waitStatus;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Link to predecessor node that current node/thread relies on</span></span><br><span class="line"><span class="comment">         * for checking waitStatus. Assigned during enqueuing, and nulled</span></span><br><span class="line"><span class="comment">         * out (for sake of GC) only upon dequeuing.  Also, upon</span></span><br><span class="line"><span class="comment">         * cancellation of a predecessor, we short-circuit while</span></span><br><span class="line"><span class="comment">         * finding a non-cancelled one, which will always exist</span></span><br><span class="line"><span class="comment">         * because the head node is never cancelled: A node becomes</span></span><br><span class="line"><span class="comment">         * head only as a result of successful acquire. A</span></span><br><span class="line"><span class="comment">         * cancelled thread never succeeds in acquiring, and a thread only</span></span><br><span class="line"><span class="comment">         * cancels itself, not any other node.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    <span class="keyword">volatile</span> Node prev;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Link to the successor node that the current node/thread</span></span><br><span class="line"><span class="comment">         * unparks upon release. Assigned during enqueuing, adjusted</span></span><br><span class="line"><span class="comment">         * when bypassing cancelled predecessors, and nulled out (for</span></span><br><span class="line"><span class="comment">         * sake of GC) when dequeued.  The enq operation does not</span></span><br><span class="line"><span class="comment">         * assign next field of a predecessor until after attachment,</span></span><br><span class="line"><span class="comment">         * so seeing a null next field does not necessarily mean that</span></span><br><span class="line"><span class="comment">         * node is at end of queue. However, if a next field appears</span></span><br><span class="line"><span class="comment">         * to be null, we can scan prev&apos;s from the tail to</span></span><br><span class="line"><span class="comment">         * double-check.  The next field of cancelled nodes is set to</span></span><br><span class="line"><span class="comment">         * point to the node itself instead of null, to make life</span></span><br><span class="line"><span class="comment">         * easier for isOnSyncQueue.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    <span class="keyword">volatile</span> Node next;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * The thread that enqueued this node.  Initialized on</span></span><br><span class="line"><span class="comment">         * construction and nulled out after use.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    <span class="keyword">volatile</span> Thread thread;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Link to next node waiting on condition, or the special</span></span><br><span class="line"><span class="comment">         * value SHARED.  Because condition queues are accessed only</span></span><br><span class="line"><span class="comment">         * when holding in exclusive mode, we just need a simple</span></span><br><span class="line"><span class="comment">         * linked queue to hold nodes while they are waiting on</span></span><br><span class="line"><span class="comment">         * conditions. They are then transferred to the queue to</span></span><br><span class="line"><span class="comment">         * re-acquire. And because conditions can only be exclusive,</span></span><br><span class="line"><span class="comment">         * we save a field by using special value to indicate shared</span></span><br><span class="line"><span class="comment">         * mode.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    Node nextWaiter;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Returns true if node is waiting in shared mode.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    <span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">isShared</span><span class="params">()</span> </span>{</span><br><span class="line">        <span class="keyword">return</span> nextWaiter == SHARED;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">         * Returns previous node, or throws NullPointerException if null.</span></span><br><span class="line"><span class="comment">         * Use when predecessor cannot be null.  The null check could</span></span><br><span class="line"><span class="comment">         * be elided, but is present to help the VM.</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> the predecessor of this node</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">    <span class="function"><span class="keyword">final</span> Node <span class="title">predecessor</span><span class="params">()</span> <span class="keyword">throws</span> NullPointerException </span>{</span><br><span class="line">        Node p = prev;</span><br><span class="line">        <span class="keyword">if</span> (p == <span class="keyword">null</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            <span class="keyword">return</span> p;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    Node() {    <span class="comment">// Used to establish initial head or SHARED marker</span></span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    Node(Thread thread, Node mode) {     <span class="comment">// Used by addWaiter</span></span><br><span class="line">        <span class="keyword">this</span>.nextWaiter = mode;</span><br><span class="line">        <span class="keyword">this</span>.thread = thread;</span><br><span class="line">    }</span><br><span class="line"></span><br><span class="line">    Node(Thread thread, <span class="keyword">int</span> waitStatus) { <span class="comment">// Used by Condition</span></span><br><span class="line">        <span class="keyword">this</span>.waitStatus = waitStatus;</span><br><span class="line">        <span class="keyword">this</span>.thread = thread;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p>&#x6392;&#x9664;&#x4E00;&#x4E9B;&#x5E38;&#x6570;&#x7684;&#x5B9A;&#x4E49;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>{</span><br><span class="line">    <span class="keyword">volatile</span> <span class="keyword">int</span> waitStatus;</span><br><span class="line">    <span class="keyword">volatile</span> Node prev;</span><br><span class="line">    <span class="keyword">volatile</span> Node next;</span><br><span class="line">    <span class="keyword">volatile</span> Thread thread;</span><br><span class="line">    Node nextWaiter;</span><br><span class="line">    Node() {    <span class="comment">// Used to establish initial head or SHARED marker</span></span><br><span class="line">    }</span><br><span class="line">    Node(Thread thread, Node mode) {     <span class="comment">// Used by addWaiter</span></span><br><span class="line">        <span class="keyword">this</span>.nextWaiter = mode;</span><br><span class="line">        <span class="keyword">this</span>.thread = thread;</span><br><span class="line">    }</span><br><span class="line">    Node(Thread thread, <span class="keyword">int</span> waitStatus) { <span class="comment">// Used by Condition</span></span><br><span class="line">        <span class="keyword">this</span>.waitStatus = waitStatus;</span><br><span class="line">        <span class="keyword">this</span>.thread = thread;</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p><code>Node</code>&#x672C;&#x8D28;&#x4E0A;&#x662F;&#x53CC;&#x5411;&#x94FE;&#x8868;&#x7684;<code>Node</code>&#x5B9A;&#x4E49;&#xFF0C;&#x5176;&#x524D;&#x6307;&#x9488;<code>prev</code>&#xFF0C;&#x540E;&#x6307;&#x9488;<code>next</code>&#xFF0C;&#x91CC;&#x9762;&#x7EF4;&#x62A4;&#x4E86;&#x4E24;&#x4E2A;<code>value</code>&#xFF0C;&#x5206;&#x522B;&#x662F;<code>waitStatus</code>&#x548C;<code>thread</code>&#xFF0C;&#x5728;&#x6784;&#x9020;&#x51FD;&#x6570;&#x4E2D;&#x7528;&#x5230;</p>
+<p><img src="/2021/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/image-20210901211509351.png" alt="image-20210901211509351"></p>
+<hr>
+<h5 id="addWaiter"><a href="#addWaiter" class="headerlink" title="addWaiter"></a>addWaiter</h5><p>&#x56E0;&#x800C;&#x5728;<code>addWaiter</code>&#x65B9;&#x6CD5;&#x4E2D;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">addWaiter</span><span class="params">(Node mode)</span> </span>{</span><br><span class="line">    <span class="comment">//&#x521D;&#x59CB;&#x5316;&#x8282;&#x70B9;,&#x8BBE;&#x7F6E;&#x5173;&#x8054;&#x7EBF;&#x7A0B;&#x548C;&#x6A21;&#x5F0F;(&#x72EC;&#x5360; or &#x5171;&#x4EAB;)</span></span><br><span class="line">    Node node = <span class="keyword">new</span> Node(Thread.currentThread(), mode);</span><br><span class="line">    <span class="comment">// Try the fast path of enq; backup to full enq on failure</span></span><br><span class="line">    <span class="comment">// // &#x83B7;&#x53D6;&#x5C3E;&#x8282;&#x70B9;&#x5F15;&#x7528;</span></span><br><span class="line">    Node pred = tail;</span><br><span class="line">    <span class="comment">// &#x5C3E;&#x8282;&#x70B9;&#x4E0D;&#x4E3A;&#x7A7A;,&#x8BF4;&#x660E;&#x961F;&#x5217;&#x5DF2;&#x7ECF;&#x521D;&#x59CB;&#x5316;&#x8FC7;</span></span><br><span class="line">    <span class="keyword">if</span> (pred != <span class="keyword">null</span>) {</span><br><span class="line">        node.prev = pred;</span><br><span class="line">        <span class="comment">// &#x8BBE;&#x7F6E;&#x65B0;&#x8282;&#x70B9;&#x4E3A;&#x5C3E;&#x8282;&#x70B9;</span></span><br><span class="line">        <span class="keyword">if</span> (compareAndSetTail(pred, node)) {</span><br><span class="line">            pred.next = node;</span><br><span class="line">            <span class="keyword">return</span> node;</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">    <span class="comment">// &#x5C3E;&#x8282;&#x70B9;&#x4E3A;&#x7A7A;,&#x8BF4;&#x660E;&#x961F;&#x5217;&#x8FD8;&#x672A;&#x521D;&#x59CB;&#x5316;,&#x9700;&#x8981;&#x521D;&#x59CB;&#x5316;head&#x8282;&#x70B9;&#x5E76;&#x5165;&#x961F;&#x65B0;&#x8282;&#x70B9;</span></span><br><span class="line">    enq(node);</span><br><span class="line">    <span class="keyword">return</span> node;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>&#x5148;&#x6784;&#x9020;&#x4E86;&#x4E00;&#x4E2A;<code>Node</code>&#xFF0C;&#x5E76;&#x5C06;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x8FDB;&#x884C;&#x521D;&#x59CB;&#x5316;&#xFF0C;&#x5E76;&#x6307;&#x5B9A;<code>Node.EXCLUSIVE</code>&#xFF0C;&#x8BBE;&#x7F6E;&#x5173;&#x8054;&#x7EBF;&#x7A0B;&#x548C;&#x6A21;&#x5F0F;(&#x72EC;&#x5360; or &#x5171;&#x4EAB;)</li>
+<li>&#x83B7;&#x53D6;&#x5C3E;&#x8282;&#x70B9;&#x5F15;&#x7528;</li>
+<li>&#x5C3E;&#x8282;&#x70B9;&#x4E0D;&#x4E3A;&#x7A7A;&#xFF0C;&#x8BF4;&#x660E;&#x961F;&#x5217;&#x5DF2;&#x7ECF;&#x521D;&#x59CB;&#x5316;&#x8FC7;&#xFF0C;&#x56E0;&#x800C;&#x5C06;<code>node</code>&#x8282;&#x70B9;&#x7684;&#x524D;&#x6307;&#x9488;&#x6307;&#x5411;<code>tail</code>&#xFF0C;&#x5E76;&#x7528;<code>CAS</code>&#x7684;&#x65B9;&#x5F0F;&#xFF0C;&#x5C06;<code>tail</code>&#x7684;&#x540E;&#x6307;&#x9488;&#x6307;&#x5411;<code>Node</code></li>
+<li>&#x5C3E;&#x8282;&#x70B9;&#x4E3A;&#x7A7A;&#xFF0C;&#x8BF4;&#x660E;&#x961F;&#x5217;&#x8FD8;&#x672A;&#x521D;&#x59CB;&#x5316;&#xFF0C;&#x9700;&#x8981;&#x521D;&#x59CB;&#x5316;head&#x8282;&#x70B9;&#x5E76;&#x5165;&#x961F;&#x65B0;&#x8282;&#x70B9;</li>
+</ol>
+<p><strong>&#x3010;&#x94FE;&#x8868;&#x5DF2;&#x7ECF;&#x521D;&#x59CB;&#x5316;&#x3011;</strong></p>
+<p><img src="/2021/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/image-20210904133506650.png" alt="image-20210904133506650"></p>
+<p><strong>&#x3010;&#x94FE;&#x8868;&#x672A;&#x521D;&#x59CB;&#x5316;&#x3011;</strong></p>
+<ol>
+<li>&#x5982;&#x679C;&#x961F;&#x5C3E;&#x8282;&#x70B9;&#x4ECD;&#x4E3A;&#x7A7A;<ol>
+<li><code>CAS</code>&#x5C06;&#x5F53;&#x524D;&#x7684;<code>Node</code>&#x8282;&#x70B9;&#x4F5C;&#x4E3A;&#x5934;&#x8282;&#x70B9;&#xFF0C;&#x521D;&#x59CB;&#x5316;&#x94FE;&#x8868;</li>
+</ol>
+</li>
+<li>&#x5982;&#x679C;&#x961F;&#x5C3E;&#x8282;&#x70B9;&#x4E0D;&#x4E3A;&#x7A7A;<ol>
+<li>&#x5C06;<code>node</code>&#x8282;&#x70B9;&#x7684;&#x524D;&#x6307;&#x9488;&#x6307;&#x5411;&#x94FE;&#x8868;&#x7684;&#x961F;&#x5C3E;tail&#x8282;&#x70B9;</li>
+<li>&#x7528;<code>CAS</code>&#x7684;&#x65B9;&#x5F0F;&#x5C06;<code>node</code>&#x6302;&#x5728;&#x94FE;&#x8868;&#x7684;&#x5C3E;&#x8282;&#x70B9;&#x4E0A;</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Node <span class="title">enq</span><span class="params">(<span class="keyword">final</span> Node node)</span> </span>{</span><br><span class="line">    <span class="keyword">for</span> (;;) {</span><br><span class="line">        Node t = tail;</span><br><span class="line">        <span class="comment">// &#x5982;&#x679C;&#x961F;&#x5C3E;&#x8282;&#x70B9;&#x4ECD;&#x4E3A;&#x7A7A;&#xFF0C;&#x8BF4;&#x660E;&#x8FD8;&#x672A;&#x521D;&#x59CB;&#x5316;</span></span><br><span class="line">        <span class="keyword">if</span> (t == <span class="keyword">null</span>) { <span class="comment">// Must initialize</span></span><br><span class="line">            <span class="comment">// CAS&#x5C06;&#x5F53;&#x524D;&#x7684;Node&#x8282;&#x70B9;&#x4F5C;&#x4E3A;&#x5934;&#x8282;&#x70B9;&#xFF0C;&#x521D;&#x59CB;&#x5316;&#x94FE;&#x8868;</span></span><br><span class="line">            <span class="keyword">if</span> (compareAndSetHead(<span class="keyword">new</span> Node()))</span><br><span class="line">                tail = head;</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">            <span class="comment">// &#x5982;&#x679C;&#x961F;&#x5C3E;&#x8282;&#x70B9;&#x4E0D;&#x4E3A;&#x7A7A;&#xFF0C;&#x8BF4;&#x660E;&#x5DF2;&#x7ECF;&#x521D;&#x59CB;&#x5316;&#x7ED3;&#x675F;</span></span><br><span class="line">            <span class="comment">// &#x5C06;node&#x8282;&#x70B9;&#x7684;&#x524D;&#x6307;&#x9488;&#x6307;&#x5411;&#x94FE;&#x8868;&#x7684;&#x961F;&#x5C3E;tail&#x8282;&#x70B9;</span></span><br><span class="line">            node.prev = t;</span><br><span class="line">            <span class="comment">// &#x7528;CAS&#x7684;&#x65B9;&#x5F0F;&#x5C06;node&#x6302;&#x5728;&#x94FE;&#x8868;&#x7684;&#x5C3E;&#x8282;&#x70B9;&#x4E0A;</span></span><br><span class="line">            <span class="keyword">if</span> (compareAndSetTail(t, node)) {</span><br><span class="line">                t.next = node;</span><br><span class="line">                <span class="keyword">return</span> t;</span><br><span class="line">            }</span><br><span class="line">        }</span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h5 id="acquireQueued-1"><a href="#acquireQueued-1" class="headerlink" title="acquireQueued"></a>acquireQueued</h5><p><strong>&#x4E0D;&#x65AD;&#x81EA;&#x65CB;&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x540C;&#x6B65;&#x72B6;&#x6001;(&#x9501;)&#xFF0C;&#x83B7;&#x53D6;&#x4E0D;&#x6210;&#x529F;&#xFF0C;&#x5219;&#x627E;&#x5B89;&#x5168;&#x70B9;&#x4F11;&#x606F;</strong></p>
+<p>&#x901A;&#x8FC7;<code>tryAcquire()</code>&#x548C;<code>addWaiter()</code>&#xFF0C;&#x8BE5;&#x7EBF;&#x7A0B;&#x83B7;&#x53D6;&#x8D44;&#x6E90;&#x5931;&#x8D25;&#xFF0C;&#x5DF2;&#x7ECF;&#x88AB;&#x653E;&#x5165;&#x7B49;&#x5F85;&#x961F;&#x5217;&#x5C3E;&#x90E8;&#x4E86;&#x3002;&#x7EBF;&#x7A0B;&#x4E00;&#x6B65;&#xFF1A;<strong>&#x8FDB;&#x5165;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#x4F11;&#x606F;&#xFF0C;&#x76F4;&#x5230;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x5F7B;&#x5E95;&#x91CA;&#x653E;&#x8D44;&#x6E90;&#x540E;&#x5524;&#x9192;&#x81EA;&#x5DF1;&#xFF0C;&#x62FF;&#x5230;&#x8D44;&#x6E90;&#x518D;&#x6267;&#x884C;</strong></p>
+<p>&#x5728;<code>acquire</code>&#x65B9;&#x6CD5;&#x4E2D;&#xFF0C;&#x8C03;&#x7528;<code>acquireQueued</code>&#x65B9;&#x6CD5;&#xFF0C;<code>acquireQueued</code>&#x65B9;&#x6CD5;&#x7684;&#x53C2;&#x6570;&#x662F;<code>addWaiter(Node.EXCLUSIVE), arg)</code></p>
+<p><code>addWaiter(Node.EXCLUSIVE), arg)</code>&#x65B9;&#x6CD5;&#x662F;&#x5C06;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x5C01;&#x88C5;&#x5728;<code>Node</code>&#x8282;&#x70B9;&#x4E2D;&#xFF0C;&#x5982;&#x679C;<code>AQS</code>&#x7EF4;&#x62A4;&#x7684;&#x7EBF;&#x7A0B;&#x94FE;&#x8868;&#x4E3A;&#x7A7A;&#xFF0C;&#x5C31;&#x5C06;&#x8BE5;<code>Node</code>&#x8282;&#x70B9;&#x4F5C;&#x4E3A;&#x5934;&#x8282;&#x70B9;&#xFF0C;&#x5982;&#x679C;&#x7EBF;&#x7A0B;&#x94FE;&#x8868;&#x4E0D;&#x4E3A;&#x7A7A;&#xFF0C;&#x5C31;&#x5C06;&#x8BE5;&#x8282;&#x70B9;&#x653E;&#x5728;&#x94FE;&#x8868;&#x7684;&#x5C3E;&#x8282;&#x70B9;``tail`&#x4E2D;</p>
+<p><code>addWaiter(Node.EXCLUSIVE), arg)</code>&#x8FD4;&#x56DE;&#x7684;&#x5C31;&#x662F;<code>Node</code>&#x8282;&#x70B9;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>{</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<p><code>acquireQueued</code>&#x65B9;&#x6CD5;&#x63A5;&#x6536;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x7684;<code>Node</code>&#x8282;&#x70B9;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Acquires in exclusive uninterruptible mode for thread already in</span></span><br><span class="line"><span class="comment"> * queue. Used by condition wait methods as well as acquire.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> node the node</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> arg the acquire argument</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> {<span class="doctag">@code</span> true} if interrupted while waiting</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// &#x5DF2;&#x5728;&#x961F;&#x5217;&#x4E2D;&#x7684;&#x7EBF;&#x7A0B;&#x4EE5;&#x72EC;&#x5360;&#x4E0D;&#x95F4;&#x65AD;&#x6A21;&#x5F0F;&#x83B7;&#x53D6;&#x3002;&#x7528;&#x4E8E;&#x6761;&#x4EF6;&#x7B49;&#x5F85;&#x65B9;&#x6CD5;&#x548C;&#x83B7;&#x53D6;</span></span><br><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">acquireQueued</span><span class="params">(<span class="keyword">final</span> Node node, <span class="keyword">int</span> arg)</span> </span>{</span><br><span class="line">    <span class="keyword">boolean</span> failed = <span class="keyword">true</span>; <span class="comment">// //&#x6807;&#x8BB0;&#x662F;&#x5426;&#x6210;&#x529F;&#x62FF;&#x5230;&#x8D44;&#x6E90;</span></span><br><span class="line">    <span class="keyword">try</span> {</span><br><span class="line">        <span class="keyword">boolean</span> interrupted = <span class="keyword">false</span>; <span class="comment">// &#x6807;&#x8BB0;&#x7B49;&#x5F85;&#x8FC7;&#x7A0B;&#x4E2D;&#x662F;&#x5426;&#x88AB;&#x4E2D;&#x65AD;&#x8FC7;</span></span><br><span class="line">        <span class="comment">// &#x6B7B;&#x5FAA;&#x73AF; &#x53C8;&#x662F;&#x4E00;&#x4E2A;&#x201C;&#x81EA;&#x65CB;&#x201D;&#xFF01;</span></span><br><span class="line">        <span class="keyword">for</span> (;;) {</span><br><span class="line">            <span class="comment">// &#x83B7;&#x5F97;&#x8BE5;node&#x7684;&#x524D;&#x7F6E;&#x8282;&#x70B9;</span></span><br><span class="line">            <span class="keyword">final</span> Node p = node.predecessor();</span><br><span class="line">            <span class="comment">// &#x5982;&#x679C;&#x524D;&#x7F6E;&#x8282;&#x70B9;&#x5DF2;&#x7ECF;&#x662F;&#x5934;&#x8282;&#x70B9;&#x4E86;&#xFF0C;&#x5E76;&#x4E14;&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x9501;&#x6210;&#x529F;</span></span><br><span class="line">            <span class="comment">// &#x5E2E;&#x52A9;&#x7406;&#x89E3;&#xFF1A;&#x5982;&#x679C;&#x524D;&#x7F6E;&#x8282;&#x70B9;&#x662F;head&#xFF0C;&#x8868;&#x793A;&#x4E4B;&#x524D;&#x7684;&#x8282;&#x70B9;&#x5C31;&#x662F;&#x6B63;&#x5728;&#x8FD0;&#x884C;&#x7684;&#x7EBF;&#x7A0B;&#xFF0C;&#x8868;&#x793A;&#x662F;&#x7B2C;&#x4E00;&#x4E2A;&#x6392;&#x961F;&#x7684;&#xFF08;&#x4E00;&#x822C;&#x8BB2;&#x961F;&#x5217;&#x4E2D;&#x7B2C;&#x4E00;&#x4E2A;&#x662F;&#x6B63;&#x5728;&#x5904;&#x7406;&#x7684;&#xFF0C;&#x53EF;&#x4EE5;&#x60F3;&#x8C61;&#x4E70;&#x7968;&#x7684;&#x8FC7;&#x7A0B;&#xFF0C;&#x7B2C;&#x4E00;&#x4E2A;&#x4EBA;&#x662F;&#x6B63;&#x5728;&#x4E70;&#x7968;(&#x5904;&#x7406;&#x4E2D;)&#xFF0C;&#x7B2C;&#x4E8C;&#x4E2A;&#x624D;&#x662F;&#x771F;&#x6B63;&#x6392;&#x961F;&#x7684;&#x4EBA;&#xFF09;&#xFF1B;&#x90A3;&#x4E48;&#x518D;&#x53BB;tryAcquire&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x9501;&#xFF0C;&#x5982;&#x679C;&#x83B7;&#x53D6;&#x6210;&#x529F;&#xFF0C;&#x8BF4;&#x660E;&#x6B64;&#x65F6;&#x524D;&#x7F6E;&#x7EBF;&#x7A0B;&#x5DF2;&#x7ECF;&#x8FD0;&#x884C;&#x7ED3;&#x675F;&#xFF0C;&#x5219;&#x5C06;head&#x8BBE;&#x7F6E;&#x4E3A;&#x5F53;&#x524D;&#x8282;&#x70B9;&#x8FD4;&#x56DE;</span></span><br><span class="line">            <span class="comment">// &#x5982;&#x679C;&#x524D;&#x9A71;&#x662F;head&#xFF0C;&#x5373;&#x8BE5;&#x7ED3;&#x70B9;&#x5DF2;&#x6210;&#x8001;&#x4E8C;&#xFF0C;&#x90A3;&#x4E48;&#x4FBF;&#x6709;&#x8D44;&#x683C;&#x53BB;&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x8D44;&#x6E90;</span></span><br><span class="line">            <span class="keyword">if</span> (p == head &amp;&amp; tryAcquire(arg)) {</span><br><span class="line">                <span class="comment">// &#x8BBE;&#x7F6E;&#x5934;&#x8282;&#x70B9;&#x4E3A;&#x81EA;&#x5DF1; &#x62FF;&#x5230;&#x8D44;&#x6E90;&#x540E;&#xFF0C;&#x5C06;head&#x6307;&#x5411;&#x8BE5;&#x7ED3;&#x70B9;&#x3002;&#x6240;&#x4EE5;head&#x6240;&#x6307;&#x7684;&#x6807;&#x6746;&#x7ED3;&#x70B9;&#xFF0C;&#x5C31;&#x662F;&#x5F53;&#x524D;&#x83B7;&#x53D6;&#x5230;&#x8D44;&#x6E90;&#x7684;&#x90A3;&#x4E2A;&#x7ED3;&#x70B9;&#x6216;null</span></span><br><span class="line">                setHead(node);</span><br><span class="line">                <span class="comment">// &#x4E4B;&#x524D;&#x7684;&#x524D;&#x7F6E;&#x8282;&#x70B9;&#x7684;next&#x4E3A;&#x7A7A;&#xFF0C;&#x5E2E;&#x52A9;GC setHead&#x4E2D;node.prev&#x5DF2;&#x7F6E;&#x4E3A;null&#xFF0C;&#x6B64;&#x5904;&#x518D;&#x5C06;head.next&#x7F6E;&#x4E3A;null&#xFF0C;&#x5C31;&#x662F;&#x4E3A;&#x4E86;&#x65B9;&#x4FBF;GC&#x56DE;&#x6536;&#x4EE5;&#x524D;&#x7684;head&#x7ED3;&#x70B9;&#x3002;&#x4E5F;&#x5C31;&#x610F;&#x5473;&#x7740;&#x4E4B;&#x524D;&#x62FF;&#x5B8C;&#x8D44;&#x6E90;&#x7684;&#x7ED3;&#x70B9;&#x51FA;&#x961F;&#x4E86;</span></span><br><span class="line">                p.next = <span class="keyword">null</span>; <span class="comment">// help GC</span></span><br><span class="line">                failed = <span class="keyword">false</span>; <span class="comment">// &#x6210;&#x529F;&#x83B7;&#x53D6;&#x8D44;&#x6E90;</span></span><br><span class="line">                <span class="keyword">return</span> interrupted; <span class="comment">// //&#x8FD4;&#x56DE;&#x7B49;&#x5F85;&#x8FC7;&#x7A0B;&#x4E2D;&#x662F;&#x5426;&#x88AB;&#x4E2D;&#x65AD;&#x8FC7;</span></span><br><span class="line">            }</span><br><span class="line">            <span class="comment">// &#x524D;&#x7F6E;&#x8282;&#x70B9;&#x975E;&#x5934;&#x8282;&#x70B9;&#x6216;&#x8005;&#x52A0;&#x9501;&#x5931;&#x8D25;</span></span><br><span class="line">            <span class="comment">// shouldParkAfterFailedAcquire&#x5C06;&#x524D;&#x7F6E;node&#x8BBE;&#x7F6E;&#x4E3A;&#x9700;&#x8981;&#x88AB;&#x6302;&#x8D77;&#xFF0C;&#x6CE8;&#x610F;&#x8FD9;&#x91CC;&#x7684;waitStatus&#x662F;&#x9488;&#x5BF9;&#x5F53;&#x524D;&#x8282;&#x70B9;&#x6765;&#x8BF4;&#x7684;&#xFF0C;&#x5373;&#x662F;&#x524D;&#x7F6E;node&#x7684;ws&#x6307;&#x7684;&#x662F;&#x4E0B;&#x4E00;&#x4E2A;&#x8282;&#x70B9;&#x7684;&#x72B6;&#x6001;</span></span><br><span class="line">            <span class="comment">// parkAndCheckInterrupt /&#x6302;&#x8D77;&#x7EBF;&#x7A0B; park()</span></span><br><span class="line">            <span class="keyword">if</span> (shouldParkAfterFailedAcquire(p, node) &amp;&amp;</span><br><span class="line">                parkAndCheckInterrupt())</span><br><span class="line">                interrupted = <span class="keyword">true</span>; <span class="comment">// &#x5982;&#x679C;&#x7B49;&#x5F85;&#x8FC7;&#x7A0B;&#x4E2D;&#x88AB;&#x4E2D;&#x65AD;&#x8FC7;&#xFF0C;&#x54EA;&#x6015;&#x53EA;&#x6709;&#x90A3;&#x4E48;&#x4E00;&#x6B21;&#xFF0C;&#x5C31;&#x5C06;interrupted&#x6807;&#x8BB0;&#x4E3A;true</span></span><br><span class="line">        }</span><br><span class="line">    } <span class="keyword">finally</span> {</span><br><span class="line">        <span class="keyword">if</span> (failed)</span><br><span class="line">            <span class="comment">// &#x5982;&#x679C;&#x7B49;&#x5F85;&#x8FC7;&#x7A0B;&#x4E2D;&#x6CA1;&#x6709;&#x6210;&#x529F;&#x83B7;&#x53D6;&#x8D44;&#x6E90;&#xFF08;&#x5982;timeout&#xFF0C;&#x6216;&#x8005;&#x53EF;&#x4E2D;&#x65AD;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#x88AB;&#x4E2D;&#x65AD;&#x4E86;&#xFF09;&#xFF0C;&#x90A3;&#x4E48;&#x53D6;&#x6D88;&#x7ED3;&#x70B9;&#x5728;&#x961F;&#x5217;&#x4E2D;&#x7684;&#x7B49;&#x5F85;</span></span><br><span class="line">            cancelAcquire(node);</span><br><span class="line">    }</span><br><span class="line">}</span><br><span class="line"><span class="comment">// &#x770B;&#x5230;&#x56E0;&#x4E3A;&#x662F;&#x6B7B;&#x5FAA;&#x73AF;&#xFF0C;&#x6240;&#x4EE5;&#x5F53;&#x6267;&#x884C;&#x5230;parkAndCheckInterrupt()&#x65F6;&#xFF0C;&#x5F53;&#x524D;&#x7EBF;&#x7A0B;&#x88AB;&#x6302;&#x8D77;&#xFF0C;&#x7B49;&#x5230;&#x67D0;&#x4E00;&#x5929;&#x88AB;unpark&#x7EE7;&#x7EED;&#x6267;&#x884C;&#xFF0C;&#x8FD9;&#x4E2A;&#x65F6;&#x5019;&#x5DF2;&#x7ECF;&#x662F;&#x5BF9;&#x5934;&#x7684;&#x7B2C;&#x4E8C;&#x4E2A;&#x8282;&#x70B9;&#x4E86;&#xFF0C;&#x90A3;&#x4E48;&#x5C31;&#x4F1A;&#x8FDB;&#x5165;if (p == head &amp;&amp; tryAcquire(arg))&#x903B;&#x8F91;&#x83B7;&#x53D6;&#x5230;&#x9501;&#x5E76;&#x7ED3;&#x675F;&#x5FAA;&#x73AF;</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="predecessor"><a href="#predecessor" class="headerlink" title="predecessor"></a>predecessor</h5><p>&#x83B7;&#x53D6;<code>node</code>&#x7684;&#x524D;&#x7F6E;&#x8282;&#x70B9;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> Node <span class="title">predecessor</span><span class="params">()</span> <span class="keyword">throws</span> NullPointerException </span>{</span><br><span class="line">    Node p = prev;</span><br><span class="line">    <span class="keyword">if</span> (p == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NullPointerException();</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> p;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h5 id="shouldParkAfterFailedAcquire"><a href="#shouldParkAfterFailedAcquire" class="headerlink" title="shouldParkAfterFailedAcquire"></a>shouldParkAfterFailedAcquire</h5><p>&#x5982;&#x679C;&#x524D;&#x9A71;&#x7ED3;&#x70B9;&#x7684;&#x72B6;&#x6001;&#x4E0D;&#x662F;<code>SIGNAL</code>&#xFF0C;&#x90A3;&#x4E48;&#x81EA;&#x5DF1;&#x5C31;&#x4E0D;&#x80FD;&#x5B89;&#x5FC3;&#x53BB;&#x4F11;&#x606F;&#xFF0C;&#x9700;&#x8981;&#x53BB;&#x627E;&#x4E2A;&#x5B89;&#x5FC3;&#x7684;&#x4F11;&#x606F;&#x70B9;&#xFF0C;&#x540C;&#x65F6;&#x53EF;&#x4EE5;&#x518D;&#x5C1D;&#x8BD5;&#x4E0B;&#x770B;&#x6709;&#x6CA1;&#x6709;&#x673A;&#x4F1A;&#x8F6E;&#x5230;&#x81EA;&#x5DF1;&#x62FF;&#x53F7;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// pred &#x662F; node &#x7684;&#x524D;&#x7F6E;&#x8282;&#x70B9;</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">shouldParkAfterFailedAcquire</span><span class="params">(Node pred, Node node)</span> </span>{</span><br><span class="line">    <span class="comment">// &#x83B7;&#x53D6;&#x524D;&#x7F6E;&#x8282;&#x70B9;pred&#x7684;waitStatus</span></span><br><span class="line">    <span class="keyword">int</span> ws = pred.waitStatus;</span><br><span class="line">    <span class="comment">// waitStatus&#x503C;&#xFF0C;&#x6307;&#x793A;&#x540E;&#x7EED;&#x7EBF;&#x7A0B;&#x9700;&#x8981;uppark&#x7684;&#x8BDD;&#xFF0C;&#x8FD4;&#x56DE;true</span></span><br><span class="line">    <span class="keyword">if</span> (ws == Node.SIGNAL)</span><br><span class="line">        <span class="comment">// ws = -1</span></span><br><span class="line">        <span class="comment">// &#x524D;&#x9A71;&#x8282;&#x70B9;&#x5DF2;&#x7ECF;&#x8BBE;&#x7F6E;&#x4E86;SIGNAL&#xFF0C;&#x95F9;&#x949F;&#x5DF2;&#x7ECF;&#x8BBE;&#x597D;&#xFF0C;&#x73B0;&#x5728;&#x6211;&#x53EF;&#x4EE5;&#x5B89;&#x5FC3;&#x7761;&#x89C9;&#xFF08;&#x963B;&#x585E;&#xFF09;&#x4E86;&#x3002;</span></span><br><span class="line">        <span class="comment">// &#x5982;&#x679C;&#x524D;&#x9A71;&#x53D8;&#x6210;&#x4E86;head&#xFF0C;&#x5E76;&#x4E14;head&#x7684;&#x4EE3;&#x8868;&#x7EBF;&#x7A0B;exclusiveOwnerThread&#x91CA;&#x653E;&#x4E86;&#x9501;&#xFF0C;</span></span><br><span class="line">        <span class="comment">// &#x5C31;&#x4F1A;&#x6765;&#x6839;&#x636E;&#x8FD9;&#x4E2A;SIGNAL&#x6765;&#x5524;&#x9192;&#x81EA;&#x5DF1;</span></span><br><span class="line">        <span class="comment">// &#x5982;&#x679C;&#x5DF2;&#x7ECF;&#x544A;&#x8BC9;&#x524D;&#x9A71;&#x62FF;&#x5B8C;&#x53F7;&#x540E;&#x901A;&#x77E5;&#x81EA;&#x5DF1;&#x4E00;&#x4E0B;&#xFF0C;&#x90A3;&#x5C31;&#x53EF;&#x4EE5;&#x5B89;&#x5FC3;&#x4F11;&#x606F;&#x4E86;</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * This node has already set status asking a release</span></span><br><span class="line"><span class="comment">         * to signal it, so it can safely park.</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    <span class="comment">// waitStatus&#x503C; &gt; 0 &#x5B9E;&#x9645;&#x4E0A;ws = 1 &#x8868;&#x793A;&#x7EBF;&#x7A0B;&#x5C06;&#x88AB;&#x53D6;&#x6D88;</span></span><br><span class="line">    <span class="keyword">if</span> (ws &gt; <span class="number">0</span>) {</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * Predecessor was cancelled. Skip over predecessors and</span></span><br><span class="line"><span class="comment">         * indicate retry.</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="comment">// &#x53D1;&#x73B0;&#x4F20;&#x5165;&#x7684;&#x524D;&#x9A71;&#x7684;&#x72B6;&#x6001;&#x5927;&#x4E8E;0&#xFF0C;&#x5373;CANCELLED&#x3002;&#x8BF4;&#x660E;&#x524D;&#x9A71;&#x8282;&#x70B9;&#x5DF2;&#x7ECF;&#x56E0;&#x4E3A;&#x8D85;&#x65F6;&#x6216;&#x54CD;&#x5E94;&#x4E86;&#x4E2D;&#x65AD;&#xFF0C;&#x800C;&#x53D6;&#x6D88;&#x4E86;&#x81EA;&#x5DF1;&#x3002;&#x6240;&#x4EE5;&#x9700;&#x8981;&#x8DE8;&#x8D8A;&#x6389;&#x8FD9;&#x4E9B;CANCELLED&#x8282;&#x70B9;&#xFF0C;&#x76F4;&#x5230;&#x627E;&#x5230;&#x4E00;&#x4E2A;&lt;=0&#x7684;&#x8282;&#x70B9;</span></span><br><span class="line">        <span class="comment">// &#x5982;&#x679C;&#x524D;&#x9A71;&#x653E;&#x5F03;&#x4E86;&#xFF0C;&#x90A3;&#x5C31;&#x4E00;&#x76F4;&#x5F80;&#x524D;&#x627E;&#xFF0C;&#x76F4;&#x5230;&#x627E;&#x5230;&#x6700;&#x8FD1;&#x4E00;&#x4E2A;&#x6B63;&#x5E38;&#x7B49;&#x5F85;&#x7684;&#x72B6;&#x6001;&#xFF0C;&#x5E76;&#x6392;&#x5728;&#x5B83;&#x7684;&#x540E;&#x8FB9;</span></span><br><span class="line">        <span class="comment">// &#x6CE8;&#x610F;&#xFF1A;&#x90A3;&#x4E9B;&#x653E;&#x5F03;&#x7684;&#x7ED3;&#x70B9;&#xFF0C;&#x7531;&#x4E8E;&#x88AB;&#x81EA;&#x5DF1;&#x201C;&#x52A0;&#x585E;&#x201D;&#x5230;&#x5B83;&#x4EEC;&#x524D;&#x8FB9;&#xFF0C;&#x5B83;&#x4EEC;&#x76F8;&#x5F53;&#x4E8E;&#x5F62;&#x6210;&#x4E00;&#x4E2A;&#x65E0;&#x5F15;&#x7528;&#x94FE;&#xFF0C;&#x7A0D;&#x540E;&#x5C31;&#x4F1A;&#x88AB;GC&#x56DE;&#x6536;</span></span><br><span class="line">        <span class="keyword">do</span> {</span><br><span class="line">            <span class="comment">// pred&#x7684;&#x524D;&#x7F6E;&#x6307;&#x9488;&#x8BBE;&#x7F6E;&#x4E3A;node&#x7684;&#x524D;&#x7F6E;&#x6307;&#x9488;&#xFF0C;&#x4E5F;&#x5C31;&#x662F;prev&#x7EBF;&#x7A0B;&#x88AB;&#x53D6;&#x6D88;&#x4E86;</span></span><br><span class="line">            <span class="comment">// &#x5E76;&#x4E14;&#x5C06;pred&#x8BBE;&#x7F6E;&#x4E3A;pred&#x7684;prev</span></span><br><span class="line">            <span class="comment">// &#x603B;&#x7684;&#x6765;&#x8BF4;&#xFF0C;&#x5C31;&#x662F;&#x60F3;&#x5220;&#x9664;pred&#x8282;&#x70B9; head&lt;=&gt;pred&lt;=&gt;node</span></span><br><span class="line">            <span class="comment">// &#x56E0;&#x6B64;&#x5C06;head&#x8BBE;&#x7F6E;&#x4E3A;node&#x7684;&#x524D;&#x7F6E;&#x8282;&#x70B9;</span></span><br><span class="line">            <span class="comment">// &#x518D;&#x5C06;pred&#x6307;&#x9488;&#x6307;&#x5411;head</span></span><br><span class="line">            node.prev = pred = pred.prev;</span><br><span class="line">        } <span class="keyword">while</span> (pred.waitStatus &gt; <span class="number">0</span>);</span><br><span class="line">        <span class="comment">// pred&#x518D;&#x6307;&#x5411;node</span></span><br><span class="line">        pred.next = node;</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">        <span class="comment">// ws = 0 or -3 or -2</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">         * waitStatus must be 0 or PROPAGATE.  Indicate that we</span></span><br><span class="line"><span class="comment">         * need a signal, but don&apos;t park yet.  Caller will need to</span></span><br><span class="line"><span class="comment">         * retry to make sure it cannot acquire before parking.</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="comment">// &#x8FDB;&#x5165;&#x8FD9;&#x4E2A;&#x5206;&#x652F;&#xFF0C;ws&#x53EA;&#x80FD;&#x662F;0&#x6216;PROPAGATE&#x3002;CAS&#x8BBE;&#x7F6E;ws&#x4E3A;SIGNAL</span></span><br><span class="line">        <span class="comment">// &#x5982;&#x679C;&#x524D;&#x9A71;&#x6B63;&#x5E38;&#xFF0C;&#x90A3;&#x5C31;&#x628A;&#x524D;&#x9A71;&#x7684;&#x72B6;&#x6001;&#x8BBE;&#x7F6E;&#x6210;SIGNAL&#xFF0C;&#x544A;&#x8BC9;&#x5B83;&#x62FF;&#x5B8C;&#x53F7;&#x540E;&#x901A;&#x77E5;&#x81EA;&#x5DF1;&#x4E00;&#x4E0B;&#x3002;&#x6709;&#x53EF;&#x80FD;&#x5931;&#x8D25;&#xFF0C;&#x4EBA;&#x5BB6;&#x8BF4;&#x4E0D;&#x5B9A;&#x521A;&#x521A;&#x91CA;&#x653E;&#x5B8C;&#x5462;</span></span><br><span class="line">        compareAndSetWaitStatus(pred, ws, Node.SIGNAL);</span><br><span class="line">    }</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/** waitStatus value to indicate thread has cancelled */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CANCELLED =  <span class="number">1</span>;</span><br><span class="line"><span class="comment">/** waitStatus value to indicate successor&apos;s thread needs unparking */</span></span><br><span class="line"><span class="comment">// // waitStatus&#x503C;&#xFF0C;&#x6307;&#x793A;&#x540E;&#x7EED;&#x7EBF;&#x7A0B;&#x9700;&#x8981;uppark</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SIGNAL    = -<span class="number">1</span>;</span><br><span class="line"><span class="comment">/** waitStatus value to indicate thread is waiting on condition */</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> CONDITION = -<span class="number">2</span>;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * waitStatus value to indicate the next acquireShared should</span></span><br><span class="line"><span class="comment"> * unconditionally propagate</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> PROPAGATE = -<span class="number">3</span>;</span><br></pre></td></tr></table></figure>
+
+<p><code>Node</code>&#x7ED3;&#x70B9;&#x662F;&#x5BF9;&#x6BCF;&#x4E00;&#x4E2A;&#x7B49;&#x5F85;&#x83B7;&#x53D6;&#x8D44;&#x6E90;&#x7684;&#x7EBF;&#x7A0B;&#x7684;&#x5C01;&#x88C5;&#xFF0C;&#x5176;&#x5305;&#x542B;&#x4E86;&#x9700;&#x8981;&#x540C;&#x6B65;&#x7684;&#x7EBF;&#x7A0B;&#x672C;&#x8EAB;&#x53CA;&#x5176;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#xFF0C;&#x5982;&#x662F;&#x5426;&#x88AB;&#x963B;&#x585E;&#x3001;&#x662F;&#x5426;&#x7B49;&#x5F85;&#x5524;&#x9192;&#x3001;&#x662F;&#x5426;&#x5DF2;&#x7ECF;&#x88AB;&#x53D6;&#x6D88;&#x7B49;&#x3002;&#x53D8;&#x91CF;<code>waitStatus</code>&#x5219;&#x8868;&#x793A;&#x5F53;&#x524D;<code>Node</code>&#x7ED3;&#x70B9;&#x7684;&#x7B49;&#x5F85;&#x72B6;&#x6001;&#xFF0C;&#x5171;&#x6709;<code>5</code>&#x79CD;&#x53D6;&#x503C;<code>CANCELLED</code>&#x3001;<code>SIGNAL</code>&#x3001;<code>CONDITION</code>&#x3001;<code>PROPAGATE</code>&#x3001;<code>0</code></p>
+<ol>
+<li><strong><code>CANCELLED</code></strong>(1)&#xFF1A;&#x8868;&#x793A;&#x5F53;&#x524D;&#x7ED3;&#x70B9;&#x5DF2;&#x53D6;&#x6D88;&#x8C03;&#x5EA6;&#x3002;&#x5F53;<code>timeout</code>&#x6216;&#x88AB;&#x4E2D;&#x65AD;&#xFF08;&#x54CD;&#x5E94;&#x4E2D;&#x65AD;&#x7684;&#x60C5;&#x51B5;&#x4E0B;&#xFF09;&#xFF0C;&#x4F1A;&#x89E6;&#x53D1;&#x53D8;&#x66F4;&#x4E3A;&#x6B64;&#x72B6;&#x6001;&#xFF0C;&#x8FDB;&#x5165;&#x8BE5;&#x72B6;&#x6001;&#x540E;&#x7684;&#x7ED3;&#x70B9;&#x5C06;&#x4E0D;&#x4F1A;&#x518D;&#x53D8;&#x5316;&#x3002;</li>
+<li><strong><code>SIGNAL</code></strong>(-1)&#xFF1A;&#x8868;&#x793A;&#x540E;&#x7EE7;&#x7ED3;&#x70B9;&#x5728;&#x7B49;&#x5F85;&#x5F53;&#x524D;&#x7ED3;&#x70B9;&#x5524;&#x9192;&#x3002;&#x540E;&#x7EE7;&#x7ED3;&#x70B9;&#x5165;&#x961F;&#x65F6;&#xFF0C;&#x4F1A;&#x5C06;&#x524D;&#x7EE7;&#x7ED3;&#x70B9;&#x7684;&#x72B6;&#x6001;&#x66F4;&#x65B0;&#x4E3A;<code>SIGNAL</code>&#x3002;</li>
+<li><strong><code>CONDITION</code></strong>(-2)&#xFF1A;&#x8868;&#x793A;&#x7ED3;&#x70B9;&#x7B49;&#x5F85;&#x5728;<code>Condition</code>&#x4E0A;&#xFF0C;&#x5F53;&#x5176;&#x4ED6;&#x7EBF;&#x7A0B;&#x8C03;&#x7528;&#x4E86;<code>Condition</code>&#x7684;<code>signal()</code>&#x65B9;&#x6CD5;&#x540E;&#xFF0C;<code>CONDITION</code>&#x72B6;&#x6001;&#x7684;&#x7ED3;&#x70B9;&#x5C06;<strong>&#x4ECE;&#x7B49;&#x5F85;&#x961F;&#x5217;&#x8F6C;&#x79FB;&#x5230;&#x540C;&#x6B65;&#x961F;&#x5217;&#x4E2D;</strong>&#xFF0C;&#x7B49;&#x5F85;&#x83B7;&#x53D6;&#x540C;&#x6B65;&#x9501;&#x3002;</li>
+<li><strong><code>PROPAGATE</code></strong>(-3)&#xFF1A;&#x5171;&#x4EAB;&#x6A21;&#x5F0F;&#x4E0B;&#xFF0C;&#x524D;&#x7EE7;&#x7ED3;&#x70B9;&#x4E0D;&#x4EC5;&#x4F1A;&#x5524;&#x9192;&#x5176;&#x540E;&#x7EE7;&#x7ED3;&#x70B9;&#xFF0C;&#x540C;&#x65F6;&#x4E5F;&#x53EF;&#x80FD;&#x4F1A;&#x5524;&#x9192;&#x540E;&#x7EE7;&#x7684;&#x540E;&#x7EE7;&#x7ED3;&#x70B9;&#x3002;</li>
+<li>**<code>0</code>**&#xFF1A;&#x65B0;&#x7ED3;&#x70B9;&#x5165;&#x961F;&#x65F6;&#x7684;&#x9ED8;&#x8BA4;&#x72B6;&#x6001;&#x3002;</li>
+</ol>
+<h5 id="parkAndCheckInterrupt"><a href="#parkAndCheckInterrupt" class="headerlink" title="parkAndCheckInterrupt"></a>parkAndCheckInterrupt</h5><p>&#x5982;&#x679C;&#x7EBF;&#x7A0B;&#x627E;&#x597D;&#x5B89;&#x5168;&#x4F11;&#x606F;&#x70B9;&#x540E;&#xFF0C;&#x90A3;&#x5C31;&#x53EF;&#x4EE5;&#x5B89;&#x5FC3;&#x53BB;&#x4F11;&#x606F;&#x4E86;&#x3002;&#x6B64;&#x65B9;&#x6CD5;&#x5C31;&#x662F;&#x8BA9;&#x7EBF;&#x7A0B;&#x53BB;&#x4F11;&#x606F;&#xFF0C;&#x771F;&#x6B63;&#x8FDB;&#x5165;&#x7B49;&#x5F85;&#x72B6;&#x6001;</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Convenience method to park and then check if interrupted</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> {<span class="doctag">@code</span> true} if interrupted</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> <span class="title">parkAndCheckInterrupt</span><span class="params">()</span> </span>{</span><br><span class="line">    LockSupport.park(<span class="keyword">this</span>); <span class="comment">// &#x8C03;&#x7528;park()&#x4F7F;&#x7EBF;&#x7A0B;&#x8FDB;&#x5165;waiting&#x72B6;&#x6001;</span></span><br><span class="line">    <span class="keyword">return</span> Thread.interrupted(); <span class="comment">// &#x5982;&#x679C;&#x88AB;&#x5524;&#x9192;&#xFF0C;&#x67E5;&#x770B;&#x81EA;&#x5DF1;&#x662F;&#x4E0D;&#x662F;&#x88AB;&#x4E2D;&#x65AD;&#x7684;</span></span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h5 id="cancelAcquire"><a href="#cancelAcquire" class="headerlink" title="cancelAcquire"></a>cancelAcquire</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">cancelAcquire</span><span class="params">(Node node)</span> </span>{</span><br><span class="line">    <span class="comment">// Ignore if node doesn&apos;t exist</span></span><br><span class="line">    <span class="keyword">if</span> (node == <span class="keyword">null</span>)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    node.thread = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Skip cancelled predecessors</span></span><br><span class="line">    Node pred = node.prev;</span><br><span class="line">    <span class="keyword">while</span> (pred.waitStatus &gt; <span class="number">0</span>)</span><br><span class="line">        node.prev = pred = pred.prev;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// predNext is the apparent node to unsplice. CASes below will</span></span><br><span class="line">    <span class="comment">// fail if not, in which case, we lost race vs another cancel</span></span><br><span class="line">    <span class="comment">// or signal, so no further action is necessary.</span></span><br><span class="line">    Node predNext = pred.next;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Can use unconditional write instead of CAS here.</span></span><br><span class="line">    <span class="comment">// After this atomic step, other Nodes can skip past us.</span></span><br><span class="line">    <span class="comment">// Before, we are free of interference from other threads.</span></span><br><span class="line">    node.waitStatus = Node.CANCELLED;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// If we are the tail, remove ourselves.</span></span><br><span class="line">    <span class="keyword">if</span> (node == tail &amp;&amp; compareAndSetTail(node, pred)) {</span><br><span class="line">        compareAndSetNext(pred, predNext, <span class="keyword">null</span>);</span><br><span class="line">    } <span class="keyword">else</span> {</span><br><span class="line">        <span class="comment">// If successor needs signal, try to set pred&apos;s next-link</span></span><br><span class="line">        <span class="comment">// so it will get one. Otherwise wake it up to propagate.</span></span><br><span class="line">        <span class="keyword">int</span> ws;</span><br><span class="line">        <span class="keyword">if</span> (pred != head &amp;&amp;</span><br><span class="line">            ((ws = pred.waitStatus) == Node.SIGNAL ||</span><br><span class="line">             (ws &lt;= <span class="number">0</span> &amp;&amp; compareAndSetWaitStatus(pred, ws, Node.SIGNAL))) &amp;&amp;</span><br><span class="line">            pred.thread != <span class="keyword">null</span>) {</span><br><span class="line">            Node next = node.next;</span><br><span class="line">            <span class="keyword">if</span> (next != <span class="keyword">null</span> &amp;&amp; next.waitStatus &lt;= <span class="number">0</span>)</span><br><span class="line">                compareAndSetNext(pred, predNext, next);</span><br><span class="line">        } <span class="keyword">else</span> {</span><br><span class="line">            unparkSuccessor(node);</span><br><span class="line">        }</span><br><span class="line"></span><br><span class="line">        node.next = node; <span class="comment">// help GC</span></span><br><span class="line">    }</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h5 id="selfInterrupt"><a href="#selfInterrupt" class="headerlink" title="selfInterrupt"></a>selfInterrupt</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">selfInterrupt</span><span class="params">()</span> </span>{</span><br><span class="line">    Thread.currentThread().interrupt();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<h5 id="&#x5C0F;&#x7ED3;"><a href="#&#x5C0F;&#x7ED3;" class="headerlink" title="&#x5C0F;&#x7ED3;"></a>&#x5C0F;&#x7ED3;</h5><ol>
+<li>&#x7ED3;&#x70B9;&#x8FDB;&#x5165;&#x961F;&#x5C3E;&#x540E;&#xFF0C;&#x68C0;&#x67E5;&#x72B6;&#x6001;&#xFF0C;&#x627E;&#x5230;&#x5B89;&#x5168;&#x4F11;&#x606F;&#x70B9;&#xFF1B;</li>
+<li>&#x8C03;&#x7528;<code>park()</code>&#x8FDB;&#x5165;<code>waiting</code>&#x72B6;&#x6001;&#xFF0C;&#x7B49;&#x5F85;<code>unpark()</code>&#x6216;<code>interrupt()</code>&#x5524;&#x9192;&#x81EA;&#x5DF1;&#xFF1B;</li>
+<li>&#x88AB;&#x5524;&#x9192;&#x540E;&#xFF0C;&#x770B;&#x81EA;&#x5DF1;&#x662F;&#x4E0D;&#x662F;&#x6709;&#x8D44;&#x683C;&#x80FD;&#x62FF;&#x5230;&#x53F7;&#x3002;&#x5982;&#x679C;&#x62FF;&#x5230;&#xFF0C;<code>head</code>&#x6307;&#x5411;&#x5F53;&#x524D;&#x7ED3;&#x70B9;&#xFF0C;&#x5E76;&#x8FD4;&#x56DE;&#x4ECE;&#x5165;&#x961F;&#x5230;&#x62FF;&#x5230;&#x53F7;&#x7684;&#x6574;&#x4E2A;&#x8FC7;&#x7A0B;&#x4E2D;&#x662F;&#x5426;&#x88AB;&#x4E2D;&#x65AD;&#x8FC7;&#xFF1B;&#x5982;&#x679C;&#x6CA1;&#x62FF;&#x5230;&#xFF0C;&#x7EE7;&#x7EED;&#x6D41;&#x7A0B;1</li>
+</ol>
+<h4 id="&#x5C0F;&#x7ED3;-1"><a href="#&#x5C0F;&#x7ED3;-1" class="headerlink" title="&#x5C0F;&#x7ED3;"></a>&#x5C0F;&#x7ED3;</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">void</span> <span class="title">acquire</span><span class="params">(<span class="keyword">int</span> arg)</span> </span>{</span><br><span class="line">    <span class="keyword">if</span> (!tryAcquire(arg) &amp;&amp;</span><br><span class="line">        acquireQueued(addWaiter(Node.EXCLUSIVE), arg))</span><br><span class="line">        selfInterrupt();</span><br><span class="line">}</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>&#x8C03;&#x7528;<code>tryAcquire()</code>&#x5C1D;&#x8BD5;&#x76F4;&#x63A5;&#x53BB;&#x83B7;&#x53D6;&#x8D44;&#x6E90;&#xFF0C;&#x5982;&#x679C;&#x6210;&#x529F;&#x5219;&#x76F4;&#x63A5;&#x8FD4;&#x56DE;</li>
+<li>&#x6CA1;&#x6210;&#x529F;&#xFF0C;&#x5219;<code>addWaiter()</code>&#x5C06;&#x8BE5;&#x7EBF;&#x7A0B;&#x52A0;&#x5165;&#x7B49;&#x5F85;&#x961F;&#x5217;&#x7684;&#x5C3E;&#x90E8;&#xFF0C;&#x5E76;&#x6807;&#x8BB0;&#x4E3A;&#x72EC;&#x5360;&#x6A21;&#x5F0F;</li>
+<li><code>acquireQueued()</code>&#x4F7F;&#x7EBF;&#x7A0B;&#x5728;&#x7B49;&#x5F85;&#x961F;&#x5217;&#x4E2D;&#x4F11;&#x606F;&#xFF0C;&#x6709;&#x673A;&#x4F1A;&#x65F6;&#xFF08;&#x8F6E;&#x5230;&#x81EA;&#x5DF1;&#xFF0C;&#x4F1A;&#x88AB;<code>unpark()</code>&#xFF09;&#x4F1A;&#x53BB;&#x5C1D;&#x8BD5;&#x83B7;&#x53D6;&#x8D44;&#x6E90;&#x3002;&#x83B7;&#x53D6;&#x5230;&#x8D44;&#x6E90;&#x540E;&#x624D;&#x8FD4;&#x56DE;&#x3002;&#x5982;&#x679C;&#x5728;&#x6574;&#x4E2A;&#x7B49;&#x5F85;&#x8FC7;&#x7A0B;&#x4E2D;&#x88AB;&#x4E2D;&#x65AD;&#x8FC7;&#xFF0C;&#x5219;&#x8FD4;&#x56DE;<code>true</code>&#xFF0C;&#x5426;&#x5219;&#x8FD4;&#x56DE;<code>false</code></li>
+<li>&#x5982;&#x679C;&#x7EBF;&#x7A0B;&#x5728;&#x7B49;&#x5F85;&#x8FC7;&#x7A0B;&#x4E2D;&#x88AB;&#x4E2D;&#x65AD;&#x8FC7;&#xFF0C;&#x5B83;&#x662F;&#x4E0D;&#x54CD;&#x5E94;&#x7684;&#x3002;&#x53EA;&#x662F;&#x83B7;&#x53D6;&#x8D44;&#x6E90;&#x540E;&#x624D;&#x518D;&#x8FDB;&#x884C;&#x81EA;&#x6211;&#x4E2D;&#x65AD;<code>selfInterrupt()</code>&#xFF0C;&#x5C06;&#x4E2D;&#x65AD;&#x8865;&#x4E0A;</li>
+</ol>
+<p><img src="/2021/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/721070-20151102145743461-623794326.png" alt="img"></p>
+<h2 id="&#x53C2;&#x8003;&#x6587;&#x6863;"><a href="#&#x53C2;&#x8003;&#x6587;&#x6863;" class="headerlink" title="&#x53C2;&#x8003;&#x6587;&#x6863;"></a>&#x53C2;&#x8003;&#x6587;&#x6863;</h2><p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/dcbcea767d69">AQS&#x6E90;&#x7801;&#x89E3;&#x6790;&#xFF08;1&#xFF09;acquireQueued</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/waterystone/p/4920797.html">Java&#x5E76;&#x53D1;&#x4E4B;AQS&#x8BE6;&#x89E3;</a></p>
+
+
+                <hr>
+
+                
+
+                <ul class="pager">
+                    
+                        <li class="previous">
+                            <a href="/2021/09/13/策略模式/" data-toggle="tooltip" data-placement="top" title="策略模式">&larr; Previous Post</a>
+                        </li>
+                    
+                    
+                        <li class="next">
+                            <a href="/2021/09/03/Spring/" data-toggle="tooltip" data-placement="top" title="Spring">Next Post &rarr;</a>
+                        </li>
+                    
+                </ul>
+
+                
+
+                
+                <!-- disqus 评论框 start -->
+                <div class="comment">
+                    <div id="disqus_thread" class="disqus-thread"></div>
+                </div>
+                <!-- disqus 评论框 end -->
+                
+
+            </div>
+        <!-- Tabe of Content -->
+            <!-- Table of Contents -->
+
+<aside id="sidebar">
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">Contents</strong>
+        
+            <ol class="toc-nav"><li class="toc-nav-item toc-nav-level-1"><a class="toc-nav-link" href="#ReentrantLock&#x6E90;&#x7801;&#x89E3;&#x6790;"><span class="toc-nav-number">1.</span> <span class="toc-nav-text">ReentrantLock&amp;#x6E90;&amp;#x7801;&amp;#x89E3;&amp;#x6790;</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#demo"><span class="toc-nav-number">1.1.</span> <span class="toc-nav-text">demo</span></a></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#method"><span class="toc-nav-number">1.2.</span> <span class="toc-nav-text">method</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-3"><a class="toc-nav-link" href="#lock"><span class="toc-nav-number">1.2.1.</span> <span class="toc-nav-text">lock</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x8C03;&#x7528;&#x6D41;&#x7A0B;"><span class="toc-nav-number">1.2.1.1.</span> <span class="toc-nav-text">&amp;#x8C03;&amp;#x7528;&amp;#x6D41;&amp;#x7A0B;</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#Nonfair&#x548C;Fair"><span class="toc-nav-number">1.2.1.2.</span> <span class="toc-nav-text">Nonfair&amp;#x548C;Fair</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#compareAndSetState"><span class="toc-nav-number">1.2.1.3.</span> <span class="toc-nav-text">compareAndSetState</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#acquire-arg"><span class="toc-nav-number">1.2.1.4.</span> <span class="toc-nav-text">acquire(arg)</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#tryAcquire-arg"><span class="toc-nav-number">1.2.1.5.</span> <span class="toc-nav-text">tryAcquire(arg)</span></a></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#acquireQueued"><span class="toc-nav-number">1.2.1.6.</span> <span class="toc-nav-text">acquireQueued</span></a><ol class="toc-nav-child"><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#Node"><span class="toc-nav-number">1.2.1.6.1.</span> <span class="toc-nav-text">Node</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#addWaiter"><span class="toc-nav-number">1.2.1.6.2.</span> <span class="toc-nav-text">addWaiter</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#acquireQueued-1"><span class="toc-nav-number">1.2.1.6.3.</span> <span class="toc-nav-text">acquireQueued</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#predecessor"><span class="toc-nav-number">1.2.1.6.4.</span> <span class="toc-nav-text">predecessor</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#shouldParkAfterFailedAcquire"><span class="toc-nav-number">1.2.1.6.5.</span> <span class="toc-nav-text">shouldParkAfterFailedAcquire</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#parkAndCheckInterrupt"><span class="toc-nav-number">1.2.1.6.6.</span> <span class="toc-nav-text">parkAndCheckInterrupt</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#cancelAcquire"><span class="toc-nav-number">1.2.1.6.7.</span> <span class="toc-nav-text">cancelAcquire</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#selfInterrupt"><span class="toc-nav-number">1.2.1.6.8.</span> <span class="toc-nav-text">selfInterrupt</span></a></li><li class="toc-nav-item toc-nav-level-5"><a class="toc-nav-link" href="#&#x5C0F;&#x7ED3;"><span class="toc-nav-number">1.2.1.6.9.</span> <span class="toc-nav-text">&amp;#x5C0F;&amp;#x7ED3;</span></a></li></ol></li><li class="toc-nav-item toc-nav-level-4"><a class="toc-nav-link" href="#&#x5C0F;&#x7ED3;-1"><span class="toc-nav-number">1.2.1.7.</span> <span class="toc-nav-text">&amp;#x5C0F;&amp;#x7ED3;</span></a></li></ol></li></ol></li><li class="toc-nav-item toc-nav-level-2"><a class="toc-nav-link" href="#&#x53C2;&#x8003;&#x6587;&#x6863;"><span class="toc-nav-number">1.3.</span> <span class="toc-nav-text">&amp;#x53C2;&amp;#x8003;&amp;#x6587;&amp;#x6863;</span></a></li></ol></li></ol>
+        
+    </div>
+</aside>
+
+            <!-- Side Catalog Container -->
+        
+
+    <!-- Sidebar Container -->
+
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <!-- no hr -->
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+                       
+                          <a class="tag" href="/tags/#Java基础" title="Java基础">Java基础</a>
+                        
+                          <a class="tag" href="/tags/#源码解析" title="源码解析">源码解析</a>
+                        
+                    </div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+
+                    
+                        <li><a href="https://shitianming.github.io/" target="_blank">shitianming&#39;s Blog</a></li>
+                    
+                </ul>
+                
+            </div>
+
+        </div>
+    </div>
+</article>
+
+
+
+
+<!-- disqus 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = "hexo-theme-huxblog";
+    var disqus_identifier = "http://example.com/2021/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/";
+    var disqus_url = "http://example.com/2021/09/04/ReentrantLock%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/";
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<!-- disqus 公共JS代码 end -->
+
+
+
+
+<!-- async load function -->
+<script>
+
+
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+    function IsPC() {
+      var userAgentInfo = navigator.userAgent;
+      var Agents = ["Android", "iPhone",
+        "SymbianOS", "Windows Phone",
+        "iPad", "iPod"];
+      var flag = true;
+      for (var v = 0; v < Agents.length; v++) {
+        if (userAgentInfo.indexOf(Agents[v]) > 0) {
+          flag = false;
+          break;
+        }
+      }
+      return flag;
+    }
+    setTimeout(()=> {
+      if (!IsPC()) {
+        var bignav = document.querySelector('.toc');//获取到导航栏id
+        bignav.style.display = 'none';
+        return
+      }
+
+      let tocText = document.getElementsByClassName('toc-nav-text')
+      let arr = Array.prototype.slice.call(tocText)
+      arr.forEach((item)=> {
+        item.innerText = unescape(item.innerText.replace(/&#x/g,'%u').replace(/;/g,''))
+
+      })
+
+      var toc = document.getElementById('toc')
+
+      if (toc != null) {
+        window.addEventListener("scroll", scrollcatelogHandler);
+        var tocPosition = toc.offsetTop;
+        var height_header = $("#signature").height();
+        function scrollcatelogHandler(e) {
+          var event = e || window.event,
+            target = event.target || event.srcElement;
+          var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+          if (scrollTop >  tocPosition -60) {
+            toc.classList.add("toc-fixed");
+          } else {
+            toc.classList.remove("toc-fixed");
+          }
+        }
+      }
+
+
+      //
+      // window.onscroll= function(e){
+      //   console.log(e)
+      //   var topScroll = document.documentElement.scrollTop || document.body.scrollTop || window.pageYOffset || 0//滚动的距离,距离顶部的距离
+      //
+      //   var bignav = document.getElementById('#toc');//获取到导航栏id
+      //   if(topScroll >= 532){
+      //     //当滚动距离小于250的时候执行下面的内容，也就是让导航栏恢复原状
+      //     bignav.style.position = 'fixed';
+      //     bignav.style.top = '80px';
+      //     bignav.style.right = '0';
+      //   } else {
+      //     bignav.style.position = 'absolute';
+      //     bignav.style.top = '582px';
+      //     bignav.style.right = '0';
+      //   }
+      //
+      // }
+      console.log(tocText)
+    }, 0)
+
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("https://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+
+        }
+    }
+    .post-toc {
+        position: absolute;
+        top: 582px;
+        right: 0;
+    }
+    .post-toc-child {
+        min-width: 240px;
+    }
+
+</style>
+
+
+
+    <!-- Footer -->
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                
+                
+                
+                    <li>
+                        <a target="_blank" href="https://www.zhihu.com/people/gao-ming-40-81">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa  fa-stack-1x fa-inverse">知</i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank" href="http://weibo.com/u/3874944289">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-weibo fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://github.com/gaoming95">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                
+                    <li>
+                        <a target="_blank"  href="https://www.linkedin.com/in/明-高-7570aa105">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-linkedin fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                
+
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Gao Ming’s Blog 2022 
+                    <br>
+					<!--
+                    Theme by <a target="_blank" rel="noopener" href="http://huangxuan.me">Hux</a> 
+                    <span style="display: inline-block; margin: 0 5px;">
+                        <i class="fa fa-heart"></i>
+                    </span> 
+                    Ported by <a target="_blank" rel="noopener" href="http://blog.kaijun.rocks">Kaijun</a> | 
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=kaijun&repo=hexo-theme-huxblog&type=star&count=true" >
+                    </iframe>
+					-->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+
+<script src="/js/jquery.min.js"></script>
+
+
+<!-- Bootstrap Core JavaScript -->
+
+<script src="/js/bootstrap.min.js"></script>
+
+
+<!-- Custom Theme JavaScript -->
+
+<script src="/js/hux-blog.min.js"></script>
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- 
+     Because of the native support for backtick-style fenced code blocks 
+     right within the Markdown is landed in Github Pages, 
+     From V1.6, There is no need for Highlight.js, 
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0  
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/    
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("http://example.com/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+
+<!--fastClick.js -->
+<script>
+    async("https://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '87fec1e5b2bb914ad19c5ba8ca638aad';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+<!-- Side Catalog -->
+
+
+
+
+</body>
+
+</html>
