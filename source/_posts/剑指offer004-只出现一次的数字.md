@@ -1,7 +1,7 @@
 ---
 title: 剑指offer004-只出现一次的数字
 subtitle: 只出现一次的数字
-date: 2021-11-02
+date: 2020-01-01
 author: 高明
 tags:
 	- 剑指offer

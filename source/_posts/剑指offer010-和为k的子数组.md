@@ -1,7 +1,7 @@
 ---
 title: 剑指offer010-和为k的子数组
 subtitle: 和为k的子数组
-date: 2021-11-03
+date: 2020-01-01
 author: 高明
 tags:
 	- 剑指offer

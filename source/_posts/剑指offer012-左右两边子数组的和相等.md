@@ -1,7 +1,7 @@
 ---
 title: 剑指offer012-左右两边子数组的和相等
 subtitle: 左右两边子数组的和相等
-date: 2021-11-03
+date: 2020-01-01
 author: 高明
 tags:
 	- 剑指offer

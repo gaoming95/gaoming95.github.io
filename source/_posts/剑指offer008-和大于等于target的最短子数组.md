@@ -1,7 +1,7 @@
 ---
 title: 剑指offer008-和大于等于target的最短子数组
 subtitle: 和大于等于target的最短子数组
-date: 2021-11-03
+date: 2020-01-01
 author: 高明
 tags:
 	- 剑指offer

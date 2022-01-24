@@ -1,7 +1,7 @@
 ---
 title: 剑指offer017-含有所有字符的最短字符串
 subtitle: 含有所有字符的最短字符串
-date: 2021-11-03
+date: 2020-01-01
 author: 高明
 tags:
 	- 剑指offer

@@ -1,7 +1,7 @@
 ---
 title: 剑指offer018-有效的回文
 subtitle: 有效的回文
-date: 2021-11-03
+date: 2020-01-01
 author: 高明
 tags:
 	- 剑指offer

@@ -1,7 +1,7 @@
 ---
 title: 剑指offer005-单词长度的最大乘积
 subtitle: 单词长度的最大乘积
-date: 2021-11-03
+date: 2020-01-01
 author: 高明
 tags:
 	- 剑指offer

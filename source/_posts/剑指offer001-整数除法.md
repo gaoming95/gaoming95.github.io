@@ -1,7 +1,7 @@
 ---
 title: 剑指offer001-整数除法
 subtitle: 整数除法
-date: 2021-11-01
+date: 2020-01-01
 author: 高明
 tags:
 	- 剑指offer
